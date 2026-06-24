@@ -1,0 +1,11 @@
+{
+  "plugins": [
+    "expo-mlkit-ocr"
+  ],
+  "extra": {
+    "eas": {
+      "projectId": "f5a14c1a-8d8e-4f6b-bc17-29b697b3bdb2"
+    }
+  },
+  "owner": "chris_kim"
+}

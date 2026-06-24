@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@google-cloud/vision": "^5.3.7",
+    "@google/generative-ai": "^0.24.1",
+    "base64-arraybuffer": "^1.0.2",
+    "expo-camera": "~56.0.8",
+    "expo-image-picker": "~56.0.17",
+    "expo-mlkit-ocr": "^0.2.7",
+    "pg": "^8.21.0",
+    "react": "^19.2.7",
+    "react-native": "^0.85.3",
+    "react-native-signature-canvas": "^5.0.2"
+  }
+}

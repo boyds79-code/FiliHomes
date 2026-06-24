@@ -1,0 +1,399 @@
+
+> admin-web@0.1.0 dev
+> next dev -H 0.0.0.0
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+- Environments: .env.local, .env
+✓ Ready in 181ms
+
+ GET / 200 in 324ms (next.js: 100ms, application-code: 225ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]",
+    "sound": "default",
+    "title": "🚨 [EMERGENCY] Test Alert directly to API",
+    "body": "This is a direct API post test.",
+    "badge": 1,
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 8,
+      "category": "EMERGENCY"
+    }
+  }
+]
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 394ms (next.js: 26ms, application-code: 368ms)
+ GET /api/billings 200 in 419ms (next.js: 14ms, application-code: 406ms)
+ GET /api/admin/staff 200 in 459ms (next.js: 39ms, application-code: 420ms)
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef6f9-eaed-7268-a4bd-889835927ffc"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 864ms (next.js: 39ms, application-code: 825ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[Test_1782260163714]",
+    "sound": "default",
+    "title": "🚨 [EMERGENCY] Test Alert directly to API",
+    "body": "This is a direct API post test.",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 9,
+      "category": "EMERGENCY"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"error","message":"\"ExponentPushToken[Test_1782260163714]\" is not a valid Expo push token","details":{"error":"DeviceNotRegistered","expoPushToken":"ExponentPushToken[Test_1782260163714]"}}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 829ms (next.js: 2ms, application-code: 827ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]",
+    "sound": "default",
+    "title": "🚨 [EMERGENCY] Test Alert directly to API",
+    "body": "This is a direct API post test.",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 10,
+      "category": "EMERGENCY"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef6fd-106a-7096-b0b7-5f3d114d8b42"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 757ms (next.js: 1058µs, application-code: 756ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 294ms (next.js: 1981µs, application-code: 292ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 118ms (next.js: 3ms, application-code: 115ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]",
+    "sound": "default",
+    "title": "📢 [GENERAL] Elevator",
+    "body": "aaaa",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 11,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef6fd-b77f-739e-bca5-3d256a8d8ba1"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 762ms (next.js: 4ms, application-code: 758ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 104ms (next.js: 1888µs, application-code: 102ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "🚨 [EMERGENCY] Test Alert directly to API",
+    "body": "This is a direct API post test.",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 12,
+      "category": "EMERGENCY"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef6ff-ba97-762e-8608-b26b948b4414"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 1239ms (next.js: 962µs, application-code: 1238ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] ddd",
+    "body": "dddd",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 13,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef702-039b-71e6-a24c-9b7e6931b187"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 737ms (next.js: 2ms, application-code: 734ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 120ms (next.js: 2ms, application-code: 118ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] dfasdgasdg",
+    "body": "asjadfhasdg",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 14,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef705-9551-71ef-9e96-2b8c508c5bf4"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 1394ms (next.js: 7ms, application-code: 1387ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 123ms (next.js: 1503µs, application-code: 121ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] asdfadhnadfncv",
+    "body": "sdfjfgbxcvbxcvb",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 15,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef708-c9c6-74fc-a0b7-f33beecda098"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 1105ms (next.js: 6ms, application-code: 1099ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 117ms (next.js: 1579µs, application-code: 116ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] gashqew",
+    "body": "asfdagdshashn",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 16,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef70d-0e64-7689-8b8d-6010df48a9eb"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 927ms (next.js: 7ms, application-code: 920ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 121ms (next.js: 1204µs, application-code: 120ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] wedsdfh",
+    "body": "sdfadsg",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 17,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef70f-0fad-75d8-b2c4-dc9f4d28e90a"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 778ms (next.js: 7ms, application-code: 770ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 99ms (next.js: 1792µs, application-code: 97ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] fkjghjltrtdyjf",
+    "body": "asdhashasjasfj",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 18,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef710-be56-763f-b4aa-136dd0d70646"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 833ms (next.js: 9ms, application-code: 824ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 126ms (next.js: 4ms, application-code: 122ms)
+ DELETE /api/admin/notices?id=18 200 in 272ms (next.js: 1778µs, application-code: 270ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 113ms (next.js: 1840µs, application-code: 111ms)
+ DELETE /api/admin/notices?id=17 200 in 162ms (next.js: 2ms, application-code: 160ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 100ms (next.js: 1759µs, application-code: 98ms)
+ DELETE /api/admin/notices?id=16 200 in 145ms (next.js: 2ms, application-code: 143ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 102ms (next.js: 1917µs, application-code: 100ms)
+ DELETE /api/admin/notices?id=15 200 in 112ms (next.js: 1926µs, application-code: 110ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 190ms (next.js: 1998µs, application-code: 188ms)
+ DELETE /api/admin/notices?id=14 200 in 182ms (next.js: 1977µs, application-code: 180ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 113ms (next.js: 2ms, application-code: 110ms)
+ DELETE /api/admin/notices?id=13 200 in 113ms (next.js: 2ms, application-code: 111ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 103ms (next.js: 1508µs, application-code: 101ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] asdhasdh",
+    "body": "asdhadsfjasfjd",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 19,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef713-3fa0-70d0-ac1a-c5d6864296f2"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 1045ms (next.js: 7ms, application-code: 1038ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 203ms (next.js: 2ms, application-code: 201ms)
+Attempting to dispatch push notifications for new notice to 1 devices.
+Push payload: [
+  {
+    "to": "ExponentPushToken[82NA37B1yD44ZMCsD4Yn1K]",
+    "sound": "default",
+    "title": "📢 [GENERAL] adshancvbzcvn",
+    "body": "sfkfdfhksfj",
+    "badge": 1,
+    "channelId": "default",
+    "data": {
+      "type": "NEW_NOTICE",
+      "noticeId": 20,
+      "category": "GENERAL"
+    }
+  }
+]
+Expo API Response Status: 200
+Expo API Response Body: {"data":[{"status":"ok","id":"019ef714-ca96-74be-b855-12c8049c7a93"}]}
+Dispatched push notifications for new notice to 1 devices.
+ POST /api/admin/notices 200 in 815ms (next.js: 7ms, application-code: 807ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 105ms (next.js: 3ms, application-code: 102ms)
+ DELETE /api/admin/notices?id=20 200 in 422ms (next.js: 39ms, application-code: 383ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 108ms (next.js: 1654µs, application-code: 106ms)
+ DELETE /api/admin/notices?id=19 200 in 107ms (next.js: 1988µs, application-code: 105ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 103ms (next.js: 1224µs, application-code: 102ms)
+ DELETE /api/admin/notices?id=12 200 in 110ms (next.js: 7ms, application-code: 104ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 106ms (next.js: 2ms, application-code: 103ms)
+ DELETE /api/admin/notices?id=11 200 in 175ms (next.js: 2ms, application-code: 173ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 107ms (next.js: 2ms, application-code: 105ms)
+ DELETE /api/admin/notices?id=10 200 in 103ms (next.js: 1560µs, application-code: 101ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 148ms (next.js: 1377µs, application-code: 147ms)
+ DELETE /api/admin/notices?id=9 200 in 110ms (next.js: 1883µs, application-code: 108ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 97ms (next.js: 1246µs, application-code: 96ms)
+ DELETE /api/admin/notices?id=8 200 in 104ms (next.js: 3ms, application-code: 102ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 107ms (next.js: 1805µs, application-code: 105ms)
+ DELETE /api/admin/notices?id=7 200 in 107ms (next.js: 1620µs, application-code: 105ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 123ms (next.js: 1172µs, application-code: 122ms)
+ DELETE /api/admin/notices?id=6 200 in 112ms (next.js: 1561µs, application-code: 111ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 108ms (next.js: 3ms, application-code: 106ms)
+ DELETE /api/admin/notices?id=5 200 in 113ms (next.js: 2ms, application-code: 111ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 98ms (next.js: 889µs, application-code: 97ms)
+✓ Compiled in 318ms
+ GET / 200 in 65ms (next.js: 35ms, application-code: 31ms)
+ GET / 200 in 15ms (next.js: 811µs, application-code: 14ms)
+ GET / 200 in 14ms (next.js: 906µs, application-code: 13ms)
+ GET / 200 in 8ms (next.js: 1143µs, application-code: 7ms)
+✓ Compiled in 27ms
+🔔 [PUSH NOTIFICATION]: Dispatching tech notifications...
+🔔 Sent push notification to 1 technicians.
+🔔 [PUSH NOTIFICATION]: Dispatching tech notifications...
+🔔 Sent push notification to 1 technicians.
+ POST /api/maintenance/create 200 in 1913ms (next.js: 160ms, application-code: 1753ms)
+ GET /api/maintenance/list?historyTechId=bb3971a8-a58c-4682-a8e6-e28341646b25 200 in 441ms (next.js: 173ms, application-code: 268ms)
+ GET /api/maintenance/list?techId=bb3971a8-a58c-4682-a8e6-e28341646b25 200 in 602ms (next.js: 207ms, application-code: 395ms)
+ GET /api/billings 200 in 563ms (next.js: 35ms, application-code: 528ms)
+ GET /api/billings 200 in 144ms (next.js: 2ms, application-code: 142ms)
+ GET /api/admin/units 200 in 417ms (next.js: 53ms, application-code: 364ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 423ms (next.js: 25ms, application-code: 398ms)
+ GET /api/admin/units 200 in 108ms (next.js: 3ms, application-code: 106ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 104ms (next.js: 1963µs, application-code: 102ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 108ms (next.js: 1550µs, application-code: 107ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 179ms (next.js: 1617µs, application-code: 178ms)
+ GET /api/admin/units 200 in 382ms (next.js: 1910µs, application-code: 381ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 394ms (next.js: 6ms, application-code: 387ms)
+ GET /api/admin/units 200 in 103ms (next.js: 2ms, application-code: 101ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 101ms (next.js: 1601µs, application-code: 100ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 133ms (next.js: 1617µs, application-code: 131ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 129ms (next.js: 1790µs, application-code: 127ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 105ms (next.js: 5ms, application-code: 100ms)
+ GET /api/admin/units 200 in 116ms (next.js: 1957µs, application-code: 114ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 96ms (next.js: 1084µs, application-code: 95ms)
+ GET /api/admin/units 200 in 111ms (next.js: 1312µs, application-code: 109ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 94ms (next.js: 1371µs, application-code: 93ms)
+ GET /api/admin/occupants/modify-requests 200 in 438ms (next.js: 30ms, application-code: 407ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 149ms (next.js: 2ms, application-code: 147ms)
+ GET /api/admin/occupants/modify-requests 200 in 105ms (next.js: 1500µs, application-code: 103ms)
+ GET /api/billings 200 in 325ms (next.js: 3ms, application-code: 322ms)
+ GET /api/billings 200 in 108ms (next.js: 1745µs, application-code: 106ms)
+ GET /api/billings 200 in 362ms (next.js: 1680µs, application-code: 360ms)
+ GET /api/billings 200 in 114ms (next.js: 1847µs, application-code: 112ms)
+ GET /api/admin/units 200 in 102ms (next.js: 5ms, application-code: 98ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 120ms (next.js: 11ms, application-code: 109ms)
+ GET /api/admin/units 200 in 93ms (next.js: 1868µs, application-code: 92ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 106ms (next.js: 1390µs, application-code: 105ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 176ms (next.js: 1788µs, application-code: 175ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 104ms (next.js: 1622µs, application-code: 102ms)
+ GET /api/admin/units 200 in 93ms (next.js: 1726µs, application-code: 91ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 116ms (next.js: 5ms, application-code: 111ms)
+ GET /api/admin/units 200 in 122ms (next.js: 1753µs, application-code: 120ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 191ms (next.js: 1723µs, application-code: 189ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 95ms (next.js: 1703µs, application-code: 93ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 110ms (next.js: 1595µs, application-code: 108ms)
+ GET /api/admin/occupants/modify-requests 200 in 111ms (next.js: 4ms, application-code: 107ms)
+ GET /api/admin/units 200 in 122ms (next.js: 8ms, application-code: 114ms)
+ GET /api/admin/occupants/modify-requests 200 in 97ms (next.js: 1623µs, application-code: 96ms)
+ GET /api/admin/units 200 in 104ms (next.js: 1930µs, application-code: 102ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 366ms (next.js: 12ms, application-code: 354ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 95ms (next.js: 1652µs, application-code: 93ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 99ms (next.js: 1582µs, application-code: 97ms)
+ GET /api/admin/occupants?condoId=c1111111-1111-1111-1111-111111111111 200 in 93ms (next.js: 3ms, application-code: 91ms)
+ GET /api/billings 200 in 120ms (next.js: 1539µs, application-code: 118ms)
+ GET /api/billings 200 in 148ms (next.js: 2ms, application-code: 146ms)
+ GET /api/billings 200 in 140ms (next.js: 1833µs, application-code: 138ms)
+ GET /api/billings 200 in 121ms (next.js: 1644µs, application-code: 119ms)
+ GET /api/maintenance/list?condoId=c1111111-1111-1111-1111-111111111111 200 in 225ms (next.js: 2ms, application-code: 223ms)
+ GET /api/maintenance/list?condoId=c1111111-1111-1111-1111-111111111111 200 in 94ms (next.js: 1825µs, application-code: 93ms)
+ GET /api/maintenance/techs 200 in 226ms (next.js: 32ms, application-code: 194ms)
+ GET /api/maintenance/techs 200 in 117ms (next.js: 1925µs, application-code: 115ms)
+ GET /api/maintenance/list?condoId=c1111111-1111-1111-1111-111111111111 200 in 95ms (next.js: 1894µs, application-code: 93ms)
+ GET /api/maintenance/list?condoId=c1111111-1111-1111-1111-111111111111 200 in 104ms (next.js: 1096µs, application-code: 103ms)
+ GET /api/maintenance/techs 200 in 191ms (next.js: 4ms, application-code: 187ms)
+ GET /api/maintenance/techs 200 in 90ms (next.js: 1476µs, application-code: 88ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 247ms (next.js: 25ms, application-code: 222ms)
+ GET /api/admin/notices?condoId=c1111111-1111-1111-1111-111111111111 200 in 102ms (next.js: 1796µs, application-code: 100ms)
+ GET /api/security-sanction 200 in 411ms (next.js: 42ms, application-code: 369ms)
+ GET /api/security-sanction 200 in 185ms (next.js: 1606µs, application-code: 184ms)
+ GET /api/admin/staff 200 in 345ms (next.js: 33ms, application-code: 312ms)
+ GET /api/admin/staff 200 in 352ms (next.js: 28ms, application-code: 324ms)
+ GET /api/admin/staff 200 in 321ms (next.js: 9ms, application-code: 312ms)
+ GET /api/admin/staff 200 in 324ms (next.js: 3ms, application-code: 321ms)
+ GET /api/billings 200 in 738ms (next.js: 11ms, application-code: 727ms)
+ GET /api/billings 200 in 153ms (next.js: 2ms, application-code: 151ms)
+ GET /api/billings 200 in 976ms (next.js: 3ms, application-code: 973ms)
+ GET /api/billings 200 in 234ms (next.js: 3ms, application-code: 231ms)

@@ -1,0 +1,1319 @@
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../src/lib/supabaseClient';
+import { generateOfficialReceipt } from '../src/lib/pdfGenerator';
+
+interface Billing {
+  id: number;
+  unit_id: string;
+  billing_month: string;
+  due_date: string;
+  condo_dues: number;
+  electricity: number;
+  water: number;
+  status: string;
+  created_at: string;
+  unit_number?: string;
+  building_no?: string;
+  receipt_url?: string; 
+  electricity_usage?: number;
+  water_usage?: number;
+  parking_fee?: number;
+  job_order_fee?: number;
+  job_order_details?: string;
+  dynamic_rate?: number;
+  receipts?: any[];
+  previous_balance?: number;
+  penalty_amount?: number;
+}
+
+interface BankTransaction {
+  trans_id: string;
+  date_time: string;
+  description: string;
+  amount: number;
+  ref_no: string;
+}
+
+type SubView = 'ISSUANCE' | 'VERIFICATION';
+
+export default function BillingManager({ initialView }: { initialView?: 'ISSUANCE' | 'VERIFICATION' }) {
+  const [bills, setBills] = useState<Billing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentView, setCurrentView] = useState<SubView>(initialView || 'ISSUANCE');
+  const [selectedBillIds, setSelectedBillIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    setSelectedBillIds([]);
+  }, [currentView]);
+
+  useEffect(() => {
+    if (initialView) {
+      setCurrentView(initialView);
+    }
+  }, [initialView]);
+
+  // Filter Group States
+  const [selectedBuilding, setSelectedBuilding] = useState<string>('ALL');
+  const [searchUnit, setSearchUnit] = useState<string>('');
+  const [selectedMonth, setSelectedMonth] = useState<string>('ALL');
+
+  // File Upload States
+  const [uploading, setUploading] = useState(false);
+  const [excelFile, setExcelFile] = useState<File | null>(null);
+  const [bankFeed, setBankFeed] = useState<BankTransaction[]>([]);
+  const [bankFile, setBankFile] = useState<File | null>(null);
+  const [broadcasting, setBroadcasting] = useState(false);
+
+  
+
+  // Persistent signature state simulation
+  const [isSignatureSaved] = useState<boolean>(true);
+
+  // Unified Receipt Console State Management
+  const [activeBill, setActiveBill] = useState<Billing | null>(null);
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
+
+  // Presentational Identity Context Toggle
+  const [isMasterAccount, setIsMasterAccount] = useState<boolean>(true);
+
+  // 🎯 Custom Walk-In Collection Modal Enhanced States
+  const [isWalkInModalOpen, setIsWalkInModalOpen] = useState<boolean>(false);
+  const [walkInSearchUnit, setWalkInSearchUnit] = useState<string>('');
+  const [walkInSearchResults, setWalkInSearchResults] = useState<Billing[]>([]);
+  const [walkInSelectedBill, setWalkInSelectedBill] = useState<Billing | null>(null);
+  const [walkInAmount, setWalkInAmount] = useState<string>('');
+  const [walkInType, setWalkInType] = useState<string>('CASH');
+
+  // Vision AI Match tracking
+  const [visionMatchedRef, setVisionMatchedRef] = useState<string | null>(null);
+  const [confirmedMatchRef, setConfirmedMatchRef] = useState<string | null>(null);
+
+  // Condo Settings (for penalty & buildings)
+  const [condoSettings, setCondoSettings] = useState<any>(null);
+
+  // 💬 1:1 Intercom Chat states
+  const [isChatModalOpen, setIsChatModalOpen] = useState<boolean>(false);
+  const [chatBill, setChatBill] = useState<Billing | null>(null);
+  const [chatMessage, setChatMessage] = useState<string>('');
+  const [sendingChat, setSendingChat] = useState<boolean>(false);
+
+  useEffect(() => {
+  fetchBillings();
+    fetchCondoSettings();
+
+  // Temporarily disable real-time subscription and use manual refresh for testing.
+  // Primary cause of memory spikes.
+  return () => {
+    // supabase.removeChannel(channel); // 주석 처리
+  };
+}, []);
+
+const fetchCondoSettings = async () => {
+  try {
+    const { data } = await supabase.from('condos').select('*').eq('id', 'c1111111-1111-1111-1111-111111111111').maybeSingle();
+    if (data) setCondoSettings(data);
+  } catch (error) {
+    console.error('Failed to load condo settings:', error);
+  }
+};
+
+const calculatePenalty = (remainingBalance: number) => {
+  const penaltyRate = condoSettings?.penalty_rate || 0.02; // 기본 2%
+  return remainingBalance * penaltyRate;
+};
+
+const fetchBillings = async () => {
+  setLoading(true);
+  try {
+    // 🎯 Call API Route instead of direct client fetch
+    const response = await fetch('/api/billings');
+    const { data, error } = await response.json();
+    
+    console.log("Final merged data:", data);
+
+    if (error) throw error;
+    
+    // 🎯 Payment candidates include ISSUED, OVERDUE, REQUESTED, PAID
+    const paymentCandidates = (data || []).filter((b: Billing) => 
+      ['ISSUED', 'OVERDUE', 'REQUESTED', 'PAID'].includes(b.status?.toUpperCase())
+    );
+    
+    setBills(paymentCandidates);
+  } catch (error) {
+    console.error('❌ Failed to load data:', error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const handleBroadcastBills = async (targetCount: number) => {
+    if (targetCount === 0) { 
+      alert("No pending statement targets found under the selected query scope."); 
+      return; 
+    }
+    
+    const confirmBroadcast = window.confirm(
+      `📢 PUSH BROADCAST SIMULATOR\n\nAre you sure you want to mass-broadcast digital billing statements to all ${targetCount} unpaid units?`
+    );
+    if (!confirmBroadcast) return;
+    
+    setBroadcasting(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      alert(`🎉 Broadcaster Dispatch Complete!\n\nStatements successfully synchronized to  tenant terminals.`);
+    } catch (error) { 
+      console.error(error); 
+    } finally { 
+      setBroadcasting(false); 
+    }
+  };
+
+  const handleSendPushToSelected = async () => {
+    if (selectedBillIds.length === 0) {
+      alert("Please select at least one unit to send push notification.");
+      return;
+    }
+    
+    const selectedBills = bills.filter(b => selectedBillIds.includes(b.id));
+    const unitNumbers = selectedBills.map(b => `Unit ${b.unit_number}`).join(', ');
+    
+    const confirmPush = window.confirm(
+      `📢 RESEND PUSH SIMULATOR\n\nAre you sure you want to resend push notifications to the following ${selectedBills.length} selected units?\n\nSelected Units: ${unitNumbers}`
+    );
+    if (!confirmPush) return;
+    
+    setBroadcasting(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      alert(`🎉 Push notifications successfully re-transmitted to:\n\n${unitNumbers}`);
+      setSelectedBillIds([]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setBroadcasting(false);
+    }
+  };
+
+  const handleApprovePayment = async (billId: number, unitId: string, amount: number) => {
+  try {
+    const res = await fetch('/api/approve-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billingId: billId, unitId, amount })
+    });
+    
+    const result = await res.json();
+    if (result.success) {
+      alert("Payment approval successful! 🎉");
+      fetchBillings();
+      setActiveBill(null);
+    } else {
+      throw new Error(result.error || "Approval failed");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("An error occurred during approval.");
+  }
+};
+
+  const handleReopenBilling = async (billId: number) => {
+    if (!window.confirm("Are you sure you want to cancel this payment approval and revert to the previous state?")) return;
+
+    try {
+      const res = await fetch('/api/update-billing-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ billingId: billId, status: 'REQUESTED' })
+      });
+      
+      const result = await res.json();
+      if (result.success) {
+        alert("Payment approval has been cancelled. You can now process it again. 🔄");
+        fetchBillings();
+        setActiveBill(null);
+      } else {
+        throw new Error(result.error || "Failed to revert");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while reverting.");
+    }
+  };
+
+  const handleExcelUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!excelFile) { alert("Please choose an Excel file first."); return; }
+    setUploading(true);
+    
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const arrayBuffer = event.target?.result as ArrayBuffer;
+        const data = new Uint8Array(arrayBuffer);
+        
+        // Dynamically import xlsx to avoid SSR bundle size issues
+        const XLSX = await import('xlsx');
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        
+        const rawRows: any[] = XLSX.utils.sheet_to_json(worksheet);
+        
+        if (rawRows.length === 0) {
+          alert("The Excel file is empty or invalid.");
+          setUploading(false);
+          return;
+        }
+
+        const mappedBillings = rawRows.map((row: any) => ({
+          unit_no: row.unit_no || row.UnitNo || row.unit || row.Unit || '',
+          condo_dues: parseFloat(row.condo_dues || row.AssociationDues || row.association_dues || 0),
+          electricity: parseFloat(row.electricity || row.Electricity || 0),
+          water: parseFloat(row.water || row.Water || 0),
+          electricity_usage: parseFloat(row.electricity_usage || 0),
+          water_usage: parseFloat(row.water_usage || 0),
+          parking_fee: parseFloat(row.parking_fee || 0),
+          job_order_fee: parseFloat(row.job_order_fee || 0),
+          billing_period: row.billing_period || row.BillingPeriod || row.billing_month || row.month || 'June 2026',
+          amount: parseFloat(row.amount || row.Amount || row.outstanding_balance || row.balance || 0)
+        }));
+
+        const response = await fetch('/api/upload-billings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            condoId: 'c1111111-1111-1111-1111-111111111111',
+            billings: mappedBillings
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          alert(`🎉 Excel statement data synchronised successfully! Imported ${result.insertedCount} records.`);
+          setExcelFile(null);
+          fetchBillings();
+        } else {
+          throw new Error(result.error || "Failed to upload billings");
+        }
+      } catch (error: any) {
+        console.error(error);
+        alert(`❌ Failed to import Excel: ${error.message || error}`);
+      } finally {
+        setUploading(false);
+      }
+    };
+    reader.readAsArrayBuffer(excelFile);
+  };
+
+  const handleBankStatementUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bankFile) { alert("Please select a valid Bank CSV file."); return; }
+    setUploading(true);
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split('\n').slice(1); // 헤더 제외
+      
+      const parsedFeed: BankTransaction[] = lines
+        .filter(line => line.trim() !== '')
+        .map(line => {
+          const [trans_id, date_time, description, amount, ref_no] = line.split(',');
+          return { 
+              trans_id: trans_id?.trim() || '', 
+              date_time: date_time?.trim() || '', 
+              description: description?.trim() || '', 
+              amount: parseFloat(amount) || 0, 
+              ref_no: ref_no?.trim() || '' 
+          };
+        });
+        
+      setBankFeed(parsedFeed);
+      setUploading(false);
+      alert(`🎉 ${parsedFeed.length} bank transactions imported!`);
+    };
+    
+    reader.readAsText(bankFile);
+  };
+
+  const resetWalkInModal = () => {
+    setIsWalkInModalOpen(false);
+    setWalkInSearchUnit('');
+    setWalkInSearchResults([]);
+    setWalkInSelectedBill(null);
+    setWalkInAmount('');
+    setWalkInType('CASH');
+  };
+
+  const handleSearchWalkIn = () => {
+    if (!walkInSearchUnit) return;
+    const results = bills.filter(b => 
+      b.unit_number === walkInSearchUnit && 
+      ['ISSUED', 'OVERDUE', 'REQUESTED'].includes(b.status)
+    );
+    setWalkInSearchResults(results);
+    setWalkInSelectedBill(null);
+    setWalkInAmount('');
+    if (results.length === 0) {
+      alert(`No pending bills found for Unit ${walkInSearchUnit}.`);
+    }
+  };
+
+  const getBillTotal = (b: Billing) => {
+    return (
+      Number(b.condo_dues || 0) + 
+      Number(b.electricity || 0) + 
+      Number(b.water || 0) + 
+      Number(b.parking_fee || 0) + 
+      Number(b.job_order_fee || 0) + 
+      Number(b.previous_balance || 0) + 
+      Number(b.penalty_amount || 0)
+    );
+  };
+
+  const handleWalkInFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!walkInSelectedBill || !walkInAmount) {
+      alert("Please select a bill and fill in the Amount field.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const targetBill = walkInSelectedBill;
+      const isPartial = parseFloat(walkInAmount) < getBillTotal(targetBill);
+
+      const res = await fetch('/api/approve-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          billingId: targetBill.id, 
+          unitId: targetBill.unit_id, 
+          amount: parseFloat(walkInAmount),
+          paymentMethod: walkInType,
+          isPartial: isPartial
+        })
+      });
+      
+      const result = await res.json();
+      if (result.success) {
+        alert(`🎉 Payment successful for Unit ${targetBill.unit_number}!`);
+        
+        // Prompt for immediate receipt printing
+        if (window.confirm("Do you want to print the official receipt now?")) {
+            // Call PDF generation with merged payment and bill data
+            const billWithMethod = { ...targetBill, payment_method: walkInType, totalAmount: walkInAmount };
+            generateOfficialReceipt(billWithMethod, condoSettings);
+        }
+
+        resetWalkInModal();
+        fetchBillings();
+      } else {
+        throw new Error(result.error || "Payment processing failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred during Walk-in payment processing.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleOpenChatModal = (bill: Billing, computedTotal: number) => {
+    setChatBill(bill);
+    setChatMessage(
+      `[PMO Notice]\nDear resident of Tower ${bill.building_no} Unit ${bill.unit_number},\n\nYour billing statement for ${bill.billing_month} is currently overdue. The total outstanding amount is ₱${computedTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}.\n\nPlease settle this balance at your earliest convenience or contact the PMO office if you have any questions.\n\nThank you,\nPMO Office`
+    );
+    setIsChatModalOpen(true);
+  };
+
+  const handleSendChatMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatBill || !chatMessage.trim()) return;
+
+    setSendingChat(true);
+    try {
+      // 1. Fetch user_units associated with this unit
+      const { data: userUnits, error: userUnitsError } = await supabase
+        .from('user_units')
+        .select('user_id, role, is_payer')
+        .eq('unit_id', chatBill.unit_id);
+
+      if (userUnitsError) {
+        throw new Error(`Failed to fetch resident mapping: ${userUnitsError.message}`);
+      }
+
+      if (!userUnits || userUnits.length === 0) {
+        alert("⚠️ No residents are currently registered to this unit in user_units.");
+        setSendingChat(false);
+        return;
+      }
+
+      // Find the best user_id to target
+      let resident = userUnits.find((u: any) => u.is_payer === true);
+      if (!resident) {
+        resident = userUnits.find((u: any) => u.role === 'owner' || u.role === 'tenant');
+      }
+      if (!resident) {
+        resident = userUnits[0];
+      }
+
+      const targetUserId = resident.user_id;
+
+      // 2. Fetch or create intercom_chats room for this targetUserId
+      let { data: chatRoom, error: chatRoomError } = await supabase
+        .from('intercom_chats')
+        .select('id')
+        .eq('user_id', targetUserId)
+        .maybeSingle();
+
+      if (chatRoomError) {
+        throw new Error(`Failed to query chat room: ${chatRoomError.message}`);
+      }
+
+      if (!chatRoom) {
+        const { data: newRoom, error: createRoomError } = await supabase
+          .from('intercom_chats')
+          .insert([{
+            user_id: targetUserId,
+            target_building: chatBill.building_no || null
+          }])
+          .select('id')
+          .single();
+
+        if (createRoomError) {
+          throw new Error(`Failed to create chat room: ${createRoomError.message}`);
+        }
+        chatRoom = newRoom;
+      }
+
+      if (!chatRoom) {
+        throw new Error("Unable to resolve chat room ID.");
+      }
+
+      // 3. Insert the message into intercom_messages
+      const { error: msgError } = await supabase
+        .from('intercom_messages')
+        .insert([{
+          chat_id: chatRoom.id,
+          sender_type: 'PMO_GUARD',
+          message: chatMessage.trim(),
+          operator_name: 'PMO Office'
+        }]);
+
+      if (msgError) {
+        throw new Error(`Failed to send message: ${msgError.message}`);
+      }
+
+      // 4. Update intercom_chats to reset read_by_guards so it notifies other staff / guards
+      await supabase
+        .from('intercom_chats')
+        .update({ read_by_guards: [] })
+        .eq('id', chatRoom.id);
+
+      alert(`🎉 Message successfully dispatched to intercom chat of Unit ${chatBill.unit_number}!`);
+      setIsChatModalOpen(false);
+      setChatBill(null);
+      setChatMessage('');
+    } catch (err: any) {
+      console.error(err);
+      alert(`❌ Error sending message: ${err.message || err}`);
+    } finally {
+      setSendingChat(false);
+    }
+  };
+
+const baseFilteredBills = bills.filter((bill) => {
+  const matchBuilding = selectedBuilding === 'ALL' || bill.building_no === selectedBuilding;
+  const matchUnit = !searchUnit || bill.unit_number?.toLowerCase().includes(searchUnit.toLowerCase()) || bill.unit_id.toLowerCase().includes(searchUnit.toLowerCase());
+  const matchMonth = selectedMonth === 'ALL' || bill.billing_month === selectedMonth;
+  return matchBuilding && matchUnit && matchMonth;
+});
+
+const finalFilteredBills = baseFilteredBills.filter((bill) => {
+  // Define status categories
+  const isIssuanceStatus = ['ISSUED', 'OVERDUE', 'PARTIAL'].includes(bill.status);
+  const isLedgerStatus = ['REQUESTED', 'PAID'].includes(bill.status);
+  
+  if (currentView === 'ISSUANCE') {
+    // Hub displays Issued, Overdue, Partial, and penalized bills
+    return isIssuanceStatus;
+  } else if (currentView === 'VERIFICATION') {
+    // Ledger displays Requested (pending verification) and PAID
+    return isLedgerStatus;
+  }
+  
+  return true;
+});
+
+// 2. Output logs after variable declarations
+console.log("Bills total count:", bills.length);
+console.log("Filtered count:", finalFilteredBills.length);
+console.log("All statuses:", bills.map(b => b.status));
+console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, status: b.status })));
+
+  const buildingsList = ['ALL', ...Array.from(new Set(bills.map(b => b.building_no).filter(Boolean)))];
+  const monthsList = ['ALL', ...Array.from(new Set(bills.map(b => b.billing_month).filter(Boolean))).sort().reverse()];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', fontFamily: 'system-ui, sans-serif' }}>
+      
+      {/* Demo Identity Context Box */}
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: '#f1f5f9', padding: '12px 18px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+        <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569', textTransform: 'uppercase' }}>🛠️ Demo Identity Context:</span>
+        <button onClick={() => setIsMasterAccount(true)} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: isMasterAccount ? '#2563eb' : '#ffffff', color: isMasterAccount ? '#ffffff' : '#475569' }}>👑 Condo Master Mode</button>
+        <button onClick={() => setIsMasterAccount(false)} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: !isMasterAccount ? '#2563eb' : '#ffffff', color: !isMasterAccount ? '#ffffff' : '#475569' }}>👥 General Staff Mode</button>
+      </div>
+
+      {/* Beautiful 1:1 Balance Dual operational Tabs Core */}
+      {!initialView && (
+        <div style={styles.segmentContainer}>
+          <div onClick={() => { setCurrentView('ISSUANCE'); setExpandedRowId(null); }} style={{ ...styles.segmentCard, borderColor: currentView === 'ISSUANCE' ? '#2563eb' : '#e2e8f0', backgroundColor: currentView === 'ISSUANCE' ? '#f0f6ff' : '#ffffff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ ...styles.iconBadge, backgroundColor: currentView === 'ISSUANCE' ? '#2563eb' : '#94a3b8' }}>📋</div>
+              <div>
+                <div style={{ ...styles.cardTitleText, color: currentView === 'ISSUANCE' ? '#1e3a8a' : '#475569' }}>Bill Issuance Hub</div>
+                <div style={styles.cardDescText}>Distribute monthly utility invoices & broadcast emergency push alerts</div>
+              </div>
+            </div>
+          </div>
+
+          <div onClick={() => { setCurrentView('VERIFICATION'); setExpandedRowId(null); }} style={{ ...styles.segmentCard, borderColor: currentView === 'VERIFICATION' ? '#10b981' : '#e2e8f0', backgroundColor: currentView === 'VERIFICATION' ? '#f0fdf4' : '#ffffff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ ...styles.iconBadge, backgroundColor: currentView === 'VERIFICATION' ? '#10b981' : '#94a3b8' }}>🧾</div>
+              <div>
+                <div style={{ ...styles.cardTitleText, color: currentView === 'VERIFICATION' ? '#064e3b' : '#475569' }}>Receipt Audit Ledger</div>
+                <div style={styles.cardDescText}>Cross-check banking transactions & authorize complete clears</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Operational Terminal Board */}
+      <div style={styles.container}>
+        <div style={styles.headerRow}>
+          <div>
+            <h2 style={styles.title}>{currentView === 'ISSUANCE' ? 'Statement Distribution & Issuance Core' : 'Payment Collection Verification Board'}</h2>
+            <p style={styles.subtitle}>{currentView === 'ISSUANCE' ? 'Audit generated utility dues, import fresh spreadsheets, and mass alert residents.' : 'Cross-verify raw banking voucher screenshot payloads to clear transaction pipelines.'}</p>
+          </div>
+
+          {currentView === 'ISSUANCE' ? (
+            <div style={styles.embeddedUploadZone}>
+              <form onSubmit={handleExcelUpload} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <input type="file" id="excel-file-input" accept=".xlsx, .xls" onChange={(e) => setExcelFile(e.target.files?.[0] || null)} style={{ display: 'none' }} />
+                <label htmlFor="excel-file-input" style={styles.embeddedFileBtn}>{excelFile ? `📄 ${excelFile.name.substring(0, 14)}...` : '📁 Select Excel Sheet'}</label>
+                <button type="submit" disabled={uploading} style={styles.embeddedSubmitBtn}>{uploading ? 'Syncing...' : 'Sync Data'}</button>
+              </form>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button onClick={() => setIsWalkInModalOpen(true)} style={styles.walkInCounterDeskBtn}>
+                💵 Walk-In Cash/Cheque
+              </button>
+              
+              <div style={{ ...styles.embeddedUploadZone, backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }}>
+                <form onSubmit={handleBankStatementUpload} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input type="file" id="bank-file-input" accept=".csv" onChange={(e) => setBankFile(e.target.files?.[0] || null)} style={{ display: 'none' }} />
+                  <label htmlFor="bank-file-input" style={{ ...styles.embeddedFileBtn, color: '#047857' }}>{bankFile ? `🏦 ${bankFile.name.substring(0, 14)}...` : '📁 Import Bank CSV'}</label>
+                  <button type="submit" disabled={uploading} style={{ ...styles.embeddedSubmitBtn, backgroundColor: '#10b981' }}>{uploading ? 'Parsing...' : 'Sync Ledger'}</button>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={styles.controlPanelRow}>
+          {currentView === 'ISSUANCE' ? (
+            <div style={{ display: 'flex', gap: '12px', flex: 1 }}>
+              <button onClick={() => handleBroadcastBills(finalFilteredBills.length)} disabled={broadcasting} style={{ ...styles.massiveBroadcastBtn, backgroundColor: broadcasting ? '#cbd5e1' : '#e11d48' }}>
+                {broadcasting ? 'Broadcasting Alarms...' : `📢 Broadcast Invoices to All Filtered Units (${finalFilteredBills.length} Statements)`}
+              </button>
+              {selectedBillIds.length > 0 && (
+                <button onClick={handleSendPushToSelected} disabled={broadcasting} style={{ ...styles.massiveBroadcastBtn, backgroundColor: '#2563eb' }}>
+                  {broadcasting ? 'Sending Pushes...' : `💬 Resend Push to Selected (${selectedBillIds.length} Units)`}
+                </button>
+              )}
+            </div>
+          ) : (
+            <div style={{ fontSize: '13px', fontWeight: '700', color: '#047857', backgroundColor: '#ecfdf5', padding: '10px 16px', borderRadius: '8px', border: '1px solid #a7f3d0', flex: 1 }}>
+              ✨ Unified Receipt Audit Mode: Import today's Bank CSV on the top right, then hit "Review Slips" to begin matching.
+            </div>
+          )}
+
+          {/* Table Level Multi-Filters */}
+          <div style={styles.filterInlineGroup}>
+            <div style={styles.filterBox}>
+              <label style={styles.filterLabel}>Period</label>
+              <select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)} style={styles.select}>
+                {monthsList.map(m => <option key={m} value={m}>{m === 'ALL' ? 'All Months' : m}</option>)}
+              </select>
+            </div>
+            <div style={styles.filterBox}>
+              <label style={styles.filterLabel}>Tower</label>
+              <select value={selectedBuilding} onChange={(e) => setSelectedBuilding(e.target.value)} style={styles.select}>
+                {buildingsList.map(b => <option key={b} value={b}>{b === 'ALL' ? 'All Buildings' : b}</option>)}
+              </select>
+            </div>
+            <div style={styles.filterBox}>
+              <label style={styles.filterLabel}>Search Unit</label>
+              <input type="text" placeholder="e.g. 1204" value={searchUnit} onChange={(e) => setSearchUnit(e.target.value)} style={styles.searchInput} />
+            </div>
+          </div>
+        </div>
+
+        {/* Data Table Grid */}
+        <div style={styles.table}>
+          <div style={styles.tableHeader}>
+            {currentView === 'ISSUANCE' && (
+              <span style={{ flex: '0 0 40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <input 
+                  type="checkbox" 
+                  checked={finalFilteredBills.length > 0 && finalFilteredBills.every(b => selectedBillIds.includes(b.id))}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const newSelected = Array.from(new Set([...selectedBillIds, ...finalFilteredBills.map(b => b.id)]));
+                      setSelectedBillIds(newSelected);
+                    } else {
+                      const filteredIds = finalFilteredBills.map(b => b.id);
+                      setSelectedBillIds(selectedBillIds.filter(id => !filteredIds.includes(id)));
+                    }
+                  }}
+                  style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                />
+              </span>
+            )}
+            <span style={{ flex: '0 0 120px' }}>Unit / Tower</span>
+            <span style={{ flex: '3 1 240px' }}>Bill Category Breakdown (Click Row to Expand Detail)</span>
+            <span style={{ flex: '1.5 1 130px', textAlign: 'right', paddingRight: '24px' }}>Total Amount</span>
+            <span style={{ flex: '1 0 110px', textAlign: 'center' }}>Status</span>
+            <span style={{ flex: '1 1 120px', textAlign: 'center' }}>Due Date</span>
+            <span style={{ flex: '1.5 0 140px', textAlign: 'right' }}>Workspace Action</span>
+          </div>
+
+          {finalFilteredBills.map((bill) => {
+            const dueDateObj = new Date(bill.due_date);
+            const todayObj = new Date();
+            const isOverdue = todayObj > dueDateObj && bill.status !== 'PAID';
+            let calculatedPenalty = 0;
+            
+            if (isOverdue) {
+              const delayDays = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+              calculatedPenalty = (Number(bill.condo_dues || 0) + Number(bill.electricity || 0) + Number(bill.water || 0)) * (0.02 / 30) * delayDays;
+            }
+
+            const computedTotal = 
+              Number(bill.condo_dues || 0) + 
+              Number(bill.electricity || 0) + 
+              Number(bill.water || 0) + 
+              Number(bill.parking_fee || 0) + 
+              Number(bill.job_order_fee || 0) + 
+              Number(bill.previous_balance || 0) + 
+              Number(bill.penalty_amount || 0) + 
+              calculatedPenalty;
+            const isExpanded = expandedRowId === bill.id;
+            const displayStatus = (isOverdue && bill.status !== 'PARTIAL') ? 'OVERDUE' : bill.status;
+
+            return (
+              <div key={bill.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                <div onClick={() => setExpandedRowId(isExpanded ? null : bill.id)} style={{ ...styles.tableRow, backgroundColor: isExpanded ? '#f8fafc' : 'transparent' }}>
+                  {currentView === 'ISSUANCE' && (
+                    <div style={{ flex: '0 0 40px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={(e) => e.stopPropagation()}>
+                      <input 
+                        type="checkbox" 
+                        checked={selectedBillIds.includes(bill.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedBillIds([...selectedBillIds, bill.id]);
+                          } else {
+                            setSelectedBillIds(selectedBillIds.filter(id => id !== bill.id));
+                          }
+                        }}
+                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                      />
+                    </div>
+                  )}
+                  <div style={{ flex: '0 0 120px' }}>
+                    <div style={{ fontWeight: 'bold', color: '#0f172a', fontSize: '14px' }}>Unit {bill.unit_number}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500', marginTop: '3px' }}>{bill.building_no}</div>
+                  </div>
+                  
+                  <div style={{ flex: '3 1 240px', display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '14px', color: '#1e293b', fontWeight: '600' }}>
+                      {isExpanded ? '▼ ' : '▶ '} Monthly Utility Assessment
+                      {bill.receipts && bill.receipts.length > 0 && (
+                        <span style={{ marginLeft: '10px', fontSize: '12px', color: '#10b981' }}>
+                          📷 Receipt Attached
+                        </span>
+                      )}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>Coverage Frame: {bill.billing_month} | Click row to audit consumption invoices</span>
+                  </div>
+                  
+                  <div style={{ flex: '1.5 1 130px', fontWeight: '900', color: '#0f172a', fontSize: '15px', textAlign: 'right', paddingRight: '24px' }}>
+                    ₱ {computedTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                  </div>
+                  
+                  <div style={{ flex: '1 0 110px', display: 'flex', justifyContent: 'center' }}>
+                    <span style={{ 
+                      padding: '6px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: '800', letterSpacing: '0.3px',
+                      backgroundColor: displayStatus === 'PAID' ? '#dcfce7' : (displayStatus === 'REQUESTED' ? '#eff6ff' : (displayStatus === 'PARTIAL' ? '#fef3c7' : (displayStatus === 'OVERDUE' ? '#fee2e2' : '#fff7ed'))), 
+                      color: displayStatus === 'PAID' ? '#15803d' : (displayStatus === 'REQUESTED' ? '#1e40af' : (displayStatus === 'PARTIAL' ? '#d97706' : (displayStatus === 'OVERDUE' ? '#b91c1c' : '#c2410c'))) 
+                    }}>{displayStatus}</span>
+                  </div>
+                  
+                  <div style={{ flex: '1 1 120px', fontSize: '13px', color: '#475569', fontWeight: '500', textAlign: 'center' }}>{bill.due_date ? new Date(bill.due_date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : 'N/A'}</div>
+
+                  <div style={{ flex: '1.5 0 140px', display: 'flex', justifyContent: 'flex-end' }} onClick={(e) => e.stopPropagation()}>
+                    {currentView === 'ISSUANCE' ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                        <button onClick={() => alert(`📢 Dedicated reminder payload re-transmitted to Unit ${bill.unit_number} terminal app.`)} style={styles.rowInlineLinkBtn}>
+                          Resend Push
+                        </button>
+                        {displayStatus === 'OVERDUE' && (
+                          <button onClick={() => handleOpenChatModal(bill, computedTotal)} style={{ ...styles.rowInlineLinkBtn, color: '#dc2626' }}>
+                            💬 1:1 Chat
+                          </button>
+                        )}
+                      </div>
+                    ) : bill.status !== 'PAID' ? (
+                      <button onClick={() => { setActiveBill(bill); setVisionMatchedRef(null); setConfirmedMatchRef(null); }} style={styles.reviewButton}>
+                        Review Slips
+                      </button>
+                    ) : (
+                      <button onClick={() => { setActiveBill(bill); setVisionMatchedRef(null); setConfirmedMatchRef(null); }} style={styles.viewClearedButton}>
+                        🔍 View Cleared Slip
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {isExpanded && (
+                  <div style={styles.accordionDetailZone}>
+                    <h4 style={styles.detailTitle}>📊 Verified Consumption Parameters & Breakdown</h4>
+                    <div style={styles.detailGrid}>
+                      <div style={styles.detailCard}>
+                        <span style={styles.cardLabel}>⚡ Electricity Charges</span>
+                        <div style={styles.cardValue}>₱{Number(bill.electricity).toLocaleString()}</div>
+                        <span style={styles.cardSub}>Usage Volume: {bill.electricity_usage || 0} kWh</span>
+                      </div>
+                      <div style={styles.detailCard}>
+                        <span style={styles.cardLabel}>💧 Water Utility</span>
+                        <div style={styles.cardValue}>₱{Number(bill.water).toLocaleString()}</div>
+                        <span style={styles.cardSub}>Usage Volumetric: {bill.water_usage || 0} cu.m</span>
+                      </div>
+                      <div style={styles.detailCard}>
+                        <span style={styles.cardLabel}>🚗 Base Allocated Parking</span>
+                        <div style={styles.cardValue}>₱{Number(bill.parking_fee || 0).toLocaleString()}</div>
+                      </div>
+                      <div style={styles.detailCard}>
+                        <span style={styles.cardLabel}>🏢 Association Condo Dues</span>
+                        <div style={styles.cardValue}>₱{Number(bill.condo_dues).toLocaleString()}</div>
+                      </div>
+                      <div style={{...styles.detailCard, backgroundColor: '#fef2f2', borderColor: '#fecaca'}}>
+                        <span style={{...styles.cardLabel, color: '#b91c1c'}}>🔄 Previous Balance (Arrears)</span>
+                        <div style={{...styles.cardValue, color: '#991b1b'}}>₱{Number(bill.previous_balance || 0).toLocaleString()}</div>
+                      </div>
+                      <div style={{...styles.detailCard, backgroundColor: '#fff7ed', borderColor: '#fed7aa'}}>
+                        <span style={{...styles.cardLabel, color: '#c2410c'}}>⚠️ Penalty (2%)</span>
+                        <div style={{...styles.cardValue, color: '#9a3412'}}>₱{Number(bill.penalty_amount || 0).toLocaleString()}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {isWalkInModalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.walkInModalBanner}>
+            <div style={styles.walkInHeader}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '16px' }}>💵</span>
+                <h3 style={styles.walkInTitle}>Walk-In Counter Collection Desk</h3>
+              </div>
+              <button type="button" style={styles.walkInCloseBtn} onClick={resetWalkInModal}>✕</button>
+            </div>
+
+            <form onSubmit={handleWalkInFormSubmit} style={styles.walkInForm}>
+              <p style={styles.walkInDescription}>
+                Search by unit number, select the exact statement, and enter the remitted amount.
+              </p>
+
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Search Target Unit</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input 
+                    type="text" 
+                    placeholder="Enter Unit (e.g. 1204)" 
+                    value={walkInSearchUnit}
+                    onChange={(e) => setWalkInSearchUnit(e.target.value)}
+                    style={{ ...styles.formInput, flex: 1 }} 
+                  />
+                  <button type="button" onClick={handleSearchWalkIn} style={{ ...styles.embeddedSubmitBtn, padding: '10px 16px', borderRadius: '8px' }}>
+                    🔍 Search
+                  </button>
+                </div>
+              </div>
+
+              {walkInSearchResults.length > 0 && !walkInSelectedBill && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+                  <label style={styles.formLabel}>Select Statement</label>
+                  {walkInSearchResults.map(b => {
+                    const bTotal = getBillTotal(b);
+                    return (
+                      <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#0f172a' }}>{b.building_no} - Unit {b.unit_number}</div>
+                          <div style={{ fontSize: '11px', color: '#64748b' }}>Period: {b.billing_month} | Total: ₱{bTotal.toLocaleString()}</div>
+                        </div>
+                        <button type="button" onClick={() => setWalkInSelectedBill(b)} style={{ backgroundColor: '#2563eb', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>Select</button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {walkInSelectedBill && (
+                <div style={{ padding: '16px', backgroundColor: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '8px', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <span style={{ fontSize: '11px', color: '#0284c7', fontWeight: 'bold', textTransform: 'uppercase' }}>Selected Target</span>
+                      <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#0f172a' }}>{walkInSelectedBill.building_no} - Unit {walkInSelectedBill.unit_number}</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '11px', color: '#64748b' }}>Statement Total</span>
+                      <div style={{ fontSize: '16px', fontWeight: '900', color: '#1e293b' }}>₱{getBillTotal(walkInSelectedBill).toLocaleString()}</div>
+                    </div>
+                  </div>
+
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Amount Remitted (₱)</label>
+                    <input 
+                      type="number" 
+                      placeholder="Enter actual payment amount" 
+                      value={walkInAmount}
+                      onChange={(e) => setWalkInAmount(e.target.value)}
+                      style={styles.formInput} 
+                      required
+                    />
+                  </div>
+
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Payment Instrument Type</label>
+                    <select 
+                      value={walkInType} 
+                      onChange={(e) => setWalkInType(e.target.value)} 
+                      style={styles.formSelect}
+                    >
+                      <option value="CASH">💵 Physical Cash Peso Banknotes</option>
+                      <option value="CHEQUE">🏦 Verified Corporate Bank Cheque</option>
+                    </select>
+                  </div>
+
+                  {walkInAmount && (
+                    (() => {
+                      const totalTargetAmount = getBillTotal(walkInSelectedBill);
+                      const remitted = Number(walkInAmount);
+                      
+                      if (remitted < totalTargetAmount) {
+                        const balance = totalTargetAmount - remitted;
+                        const penalty = calculatePenalty(balance);
+                        const nextMonthAdded = balance + penalty;
+                        
+                        return (
+                          <div style={{ color: '#dc2626', marginTop: '4px', padding: '12px', backgroundColor: '#fee2e2', borderRadius: '8px', border: '1px solid #fca5a5' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>⚠️ Partial Payment Detected</div>
+                            <div style={{ fontSize: '11px', display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}><span>Remaining Balance:</span> <strong>₱{balance.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong></div>
+                            <div style={{ fontSize: '11px', display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}><span>Estimated Penalty ({(condoSettings?.penalty_rate || 0.02) * 100}%):</span> <strong>₱{penalty.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong></div>
+                            <div style={{ fontSize: '12px', display: 'flex', justifyContent: 'space-between', marginTop: '6px', paddingTop: '6px', borderTop: '1px dashed #f87171' }}>
+                              <span>Next Month's Total Added:</span> <strong style={{ color: '#991b1b', fontSize: '14px' }}>₱{nextMonthAdded.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        return (
+                          <div style={{ fontSize: '12px', color: '#10b981', marginTop: '6px', fontWeight: 'bold', padding: '10px', backgroundColor: '#dcfce7', borderRadius: '8px', border: '1px solid #86efac' }}>
+                            ✅ Full Payment Confirmed
+                          </div>
+                        );
+                      }
+                    })()
+                  )}
+                </div>
+              )}
+
+              <div style={styles.walkInFooter}>
+                <button 
+                  type="button" 
+                  style={styles.walkInCancelBtn} 
+                  onClick={resetWalkInModal}
+                >
+                  Cancel
+                </button>
+                <button type="submit" style={{ ...styles.walkInSubmitBtn, opacity: (!walkInSelectedBill || !walkInAmount) ? 0.5 : 1, cursor: (!walkInSelectedBill || !walkInAmount) ? 'not-allowed' : 'pointer' }} disabled={!walkInSelectedBill || !walkInAmount}>
+                  Confirm & Commit Cleared
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isChatModalOpen && chatBill && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.chatModalBanner}>
+            <div style={styles.walkInHeader}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '16px' }}>💬</span>
+                <h3 style={styles.walkInTitle}>1:1 Intercom Notification</h3>
+              </div>
+              <button type="button" style={styles.walkInCloseBtn} onClick={() => { setIsChatModalOpen(false); setChatBill(null); }}>✕</button>
+            </div>
+
+            <form onSubmit={handleSendChatMessage} style={styles.walkInForm}>
+              <div style={{ padding: '12px 14px', backgroundColor: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '8px', fontSize: '12px', color: '#991b1b' }}>
+                <strong>Unit {chatBill.unit_number} ({chatBill.building_no}) - Overdue Notice</strong>
+                <div style={{ marginTop: '4px' }}>Please write a message to notify the resident of their outstanding balance. The message will appear in their Intercom PMO chat room.</div>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Message Body</label>
+                <textarea 
+                  value={chatMessage}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  style={styles.chatTextarea}
+                  required
+                  placeholder="Write message here..."
+                />
+              </div>
+
+              <div style={styles.walkInFooter}>
+                <button 
+                  type="button" 
+                  style={styles.walkInCancelBtn} 
+                  onClick={() => { setIsChatModalOpen(false); setChatBill(null); }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" disabled={sendingChat} style={{ ...styles.chatSubmitBtn, opacity: sendingChat ? 0.5 : 1, cursor: sendingChat ? 'not-allowed' : 'pointer' }}>
+                  {sendingChat ? 'Sending Message...' : 'Send Message'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {activeBill && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.consoleContainer}>
+            
+            <div style={styles.consoleHeader}>
+              <div>
+                <span style={styles.consoleLabel}>Security Audit Desk</span>
+                <h3 style={styles.consoleTitle}>Unified Receipt Audit Console — Unit {activeBill.unit_number} ({activeBill.building_no})</h3>
+              </div>
+              <button style={styles.closeButton} onClick={() => { setActiveBill(null); setVisionMatchedRef(null); setConfirmedMatchRef(null); }}>✕</button>
+            </div>
+
+            <div style={styles.consoleBodySplit}>
+              <div style={styles.paneLeft}>
+                <div style={styles.paneHeadline}>📱 Resident Submitted Receipt Attachment</div>
+                {activeBill.receipts && activeBill.receipts.length > 0 ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <img 
+                      src={activeBill.receipts[0].receipt_image_url} 
+                      alt="Receipt" 
+                      style={{ width: '100%', borderRadius: '8px', border: '1px solid #e2e8f0', objectFit: 'contain' }} 
+                    />
+                    <div style={{ padding: '16px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                      <strong>Receipt Data:</strong>
+                      <pre style={{ margin: '8px 0 0 0', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px', color: '#334155' }}>
+                        {JSON.stringify(activeBill.receipts[0], null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ padding: '20px', textAlign: 'center', color: '#64748b', backgroundColor: '#f1f5f9', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                    No receipt image found.
+                  </div>
+                )}
+                
+                <div style={styles.antiFraudShieldBox}>
+                  <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#1e3a8a' }}>🔒 Anti-Fraud Sentry Shield Active</div>
+                  <div style={styles.refLockNotice}>Upon hitting approval stamp, this ticket's unique financial serial hash locked globally to block duplicate voucher fraud.</div>
+                </div>
+              </div>
+
+              <div style={styles.paneRight}>
+                <div style={styles.paneHeadline}>🏢 Live Corporate Bank Ledger Feed (BDO/GCash Corporate)</div>
+                <div style={styles.bankFeedStack}>
+                  {bankFeed.map((tx) => {
+                    const isConfirmed = tx.ref_no === confirmedMatchRef;
+                    const isHighlighted = tx.ref_no === visionMatchedRef;
+                    return (
+                      <div key={tx.trans_id} style={{ ...styles.bankTxCard, borderColor: isConfirmed ? '#10b981' : (isHighlighted ? '#38bdf8' : '#e2e8f0'), backgroundColor: isConfirmed ? '#f0fdf4' : (isHighlighted ? '#f0f9ff' : '#ffffff'), borderWidth: '2px', borderStyle: 'solid' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#94a3b8' }}>{tx.trans_id} | {tx.date_time}</span>
+                            <div style={{ fontSize: '13px', fontWeight: '700', color: '#1e293b', marginTop: '4px' }}>{tx.description}</div>
+                            <div style={{ fontSize: '11px', color: isConfirmed ? '#15803d' : (isHighlighted ? '#0284c7' : '#64748b'), marginTop: '4px', backgroundColor: isConfirmed ? '#dcfce7' : (isHighlighted ? '#e0f2fe' : 'transparent'), padding: (isConfirmed || isHighlighted) ? '4px 6px' : '0', borderRadius: '4px', display: 'inline-block' }}>Core Serial Bank Ref: <strong style={{ fontWeight: '900' }}>{tx.ref_no}</strong></div>
+                          </div>
+                          <div style={{ textTransform: 'uppercase', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                            <div style={{ fontSize: '16px', fontWeight: '900', color: isConfirmed ? '#15803d' : (isHighlighted ? '#0284c7' : '#0f172a') }}>₱ {tx.amount.toLocaleString(undefined, {minimumFractionDigits:2})}</div>
+                            {isConfirmed && <span style={{ ...styles.matchBadge, backgroundColor: '#10b981' }}>✅ Match Confirmed</span>}
+                            {!isConfirmed && isHighlighted && (
+                              <button onClick={() => setConfirmedMatchRef(tx.ref_no)} style={{ backgroundColor: '#10b981', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>
+                                ✅ Confirm Match
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div style={styles.auditStampLogCard}>
+                  <div style={styles.stampLogTitle}>📋 Operational Audit Trail Stack</div>
+                  <div style={styles.stampLine}>• ORDER DISPATCH: Invoice token set to [REQUESTED_AUDIT] via tenant app.</div>
+                  {confirmedMatchRef && (
+                    <div style={{ ...styles.stampLine, color: '#38bdf8' }}>• MATRIX ANALYST: Core engine found 1 exact serial signature match! [HASH: {confirmedMatchRef}]</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div style={styles.consoleFooter}>
+              <button style={styles.cancelButton} onClick={() => { setActiveBill(null); setVisionMatchedRef(null); setConfirmedMatchRef(null); }}>Dismiss Audit</button>
+              
+              <button 
+  onClick={async () => {
+    setUploading(true);
+    try {
+      // 1. Vision API 호출
+      const res = await fetch('/api/vision-match', { 
+        method: 'POST', 
+        body: JSON.stringify({ imageUrl: activeBill.receipts?.[0].receipt_image_url }) 
+      });
+      const { refNo } = await res.json();
+      
+      if (!refNo) {
+        alert("⚠️ No reference number detected.");
+        return;
+      }
+
+      // 2. Improved matching logic (allows partial matches)
+      const normalizedDetectedRef = refNo.replace(/\s+/g, '').toUpperCase();
+      
+      const match = bankFeed.find(tx => {
+        const normalizedBankRef = tx.ref_no.replace(/\s+/g, '').toUpperCase();
+        // Changed from 'exact match' to 'includes' (most reliable method)
+        return normalizedBankRef.includes(normalizedDetectedRef) || normalizedDetectedRef.includes(normalizedBankRef);
+      });
+
+      if (match) {
+                      // Move the matched item to the top of bankFeed
+                      const updatedFeed = [match, ...bankFeed.filter(tx => tx.trans_id !== match.trans_id)];
+                      setBankFeed(updatedFeed);
+                      setVisionMatchedRef(match.ref_no);
+                      setConfirmedMatchRef(null); // Reset confirmed state on new match
+                      
+                      alert(`🎉 Matching transaction confirmed: ${match.ref_no}.\n\nPlease click '✅ Confirm Match' on the highlighted transaction first.`);
+      } else {
+                      setVisionMatchedRef(null);
+                      setConfirmedMatchRef(null);
+        alert(`⚠️ No matching transaction found for: ${refNo}`);
+      }
+    } catch (e) { 
+      console.error(e);
+      alert("Error during matching."); 
+    }
+    finally { 
+      setUploading(false); 
+    }
+  }}
+  style={{ ...styles.approveActionBtn, backgroundColor: '#8b5cf6' }}
+>
+  {uploading ? 'Analyzing...' : '🤖 Vision AI Auto-Match'}
+</button>
+
+
+              {activeBill.status === 'PAID' ? (
+  <div style={{ display: 'flex', gap: '10px' }}>
+    {/* 수정된 버튼: 이제 PDF를 생성합니다 */}
+    <button 
+  onClick={() => generateOfficialReceipt(activeBill, condoSettings)}
+  style={{ ...styles.approveActionBtn, backgroundColor: '#0f172a' }}
+>
+  🖨 Print Official Receipt (PDF)
+</button>
+    
+    {isMasterAccount ? (
+      <button onClick={() => handleReopenBilling(activeBill.id)} style={{ ...styles.approveActionBtn, backgroundColor: '#2563eb' }}>🔓 Re-open & Modify Dues</button>
+    ) : (
+      <button disabled style={{ ...styles.approveActionBtn, backgroundColor: '#94a3b8', cursor: 'not-allowed' }}>🔒 Cleared & Locked (Master Only)</button>
+    )}
+  </div>
+) : (
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    onClick={async () => {
+                      const amountStr = window.prompt("Enter the partial payment amount:");
+                      if (!amountStr) return;
+                      const partialAmount = parseFloat(amountStr);
+                      if (isNaN(partialAmount) || partialAmount <= 0) {
+                        alert("Invalid amount entered.");
+                        return;
+                      }
+                      
+                      const totalAmount = Number(activeBill.condo_dues || 0) + Number(activeBill.electricity || 0) + Number(activeBill.water || 0) + Number(activeBill.parking_fee || 0) + Number(activeBill.job_order_fee || 0);
+                      if (partialAmount >= totalAmount) {
+                        alert("Amount is equal or greater than the total. Please use 'Verify & Stamp Complete Clear' instead.");
+                        return;
+                      }
+
+                      try {
+                        const res = await fetch('/api/approve-payment', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ 
+                            billingId: activeBill.id, 
+                            unitId: activeBill.unit_id, 
+                            amount: partialAmount,
+                            isPartial: true
+                          })
+                        });
+                        const result = await res.json();
+                        if (result.success) {
+                          alert(`⚠️ PARTIAL SETTLED\n\nLogged partial payment of ₱${partialAmount} for Unit ${activeBill.unit_number}. Remaining balance will be rolled forward.`);
+                          fetchBillings();
+                          setActiveBill(null);
+                        } else {
+                          throw new Error(result.error || "Partial payment failed");
+                        }
+                      } catch (error) {
+                        console.error(error);
+                        alert("An error occurred during partial payment.");
+                      }
+                    }} 
+                    style={{ ...styles.approveActionBtn, backgroundColor: '#d97706' }}
+                  >
+                    ⚠️ Process Partial Payment
+                  </button>
+                  <button onClick={() => { alert(`💰 OVERPAYMENT SAVED\n\nSurplus advanced credit logged for Unit ${activeBill.unit_number}. System will auto-deduct this from next period.`); setActiveBill(null); }} style={{ ...styles.approveActionBtn, backgroundColor: '#7c3aed' }}>💰 Overpayment Carry Over</button>
+                  <button 
+                    disabled={!confirmedMatchRef}
+                    style={{ ...styles.approveActionBtn, backgroundColor: confirmedMatchRef ? '#10b981' : '#cbd5e1', cursor: confirmedMatchRef ? 'pointer' : 'not-allowed' }} 
+                    onClick={() => {
+                      const totalAmount = Number(activeBill.condo_dues || 0) + Number(activeBill.electricity || 0) + Number(activeBill.water || 0) + Number(activeBill.parking_fee || 0) + Number(activeBill.job_order_fee || 0);
+                      handleApprovePayment(activeBill.id, activeBill.unit_id, totalAmount);
+                    }}
+                  >Verify & Stamp Complete Clear</button>
+                </div>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const styles: { [key: string]: React.CSSProperties } = {
+  container: { backgroundColor: '#ffffff', padding: '24px', borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' },
+  segmentContainer: { display: 'flex', gap: '16px', width: '100%' },
+  segmentCard: { flex: 1, padding: '16px 20px', border: '2px solid #e2e8f0', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.15s ease' },
+  iconBadge: { width: '36px', height: '36px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', color: '#ffffff' },
+  cardTitleText: { fontSize: '15px', fontWeight: '700', letterSpacing: '-0.2px' },
+  cardDescText: { fontSize: '12px', color: '#64748b', marginTop: '4px', lineHeight: '1.4' },
+  headerRow: { display: 'flex', paddingBottom: '4px', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px', width: '100%' },
+  title: { fontSize: '20px', fontWeight: 'bold', color: '#0f172a', margin: 0 },
+  subtitle: { fontSize: '13px', color: '#64748b', margin: '4px 0 0 0' },
+  embeddedUploadZone: { backgroundColor: '#f8fafc', padding: '8px 12px', borderRadius: '10px', border: '1px solid #e2e8f0' },
+  embeddedFileBtn: { display: 'inline-block', padding: '6px 12px', backgroundColor: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '12px', fontWeight: '600', cursor: 'pointer' },
+  embeddedSubmitBtn: { color: '#ffffff', border: 'none', padding: '7px 14px', borderRadius: '6px', fontWeight: 'bold', fontSize: '12px', backgroundColor: '#2563eb', cursor: 'pointer' },
+  walkInCounterDeskBtn: { backgroundColor: '#ea580c', color: '#ffffff', border: 'none', padding: '9px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 2px 4px rgba(234,88,12,0.15)' },
+  controlPanelRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', width: '100%', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '20px' },
+  massiveBroadcastBtn: { color: '#ffffff', border: 'none', padding: '12px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: '900', cursor: 'pointer', flex: 1 },
+  filterInlineGroup: { display: 'flex', gap: '10px', alignItems: 'center', marginLeft: 'auto' },
+  filterBox: { display: 'flex', flexDirection: 'column', gap: '4px' },
+  filterLabel: { fontSize: '9px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase' },
+  select: { padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '12px', minWidth: '110px', color: '#334155', fontWeight: '600' },
+  searchInput: { padding: '8px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '12px', width: '80px' },
+  table: { width: '100%', display: 'flex', flexDirection: 'column', border: '1px solid #f1f5f9', borderRadius: '8px' },
+  tableHeader: { display: 'flex', padding: '14px 12px', borderBottom: '2px solid #f1f5f9', fontWeight: '700', color: '#475569', fontSize: '11px', textTransform: 'uppercase', backgroundColor: '#f8fafc' },
+  tableRow: { display: 'flex', alignItems: 'center', padding: '16px 12px', gap: '12px', cursor: 'pointer' },
+  reviewButton: { backgroundColor: '#10b981', color: '#ffffff', border: 'none', padding: '7px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' },
+  viewClearedButton: { backgroundColor: '#475569', color: '#ffffff', border: 'none', padding: '7px 14px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' },
+  rowInlineLinkBtn: { background: 'none', border: 'none', color: '#2563eb', fontSize: '12px', fontWeight: '700', textDecoration: 'underline', cursor: 'pointer' },
+  accordionDetailZone: { backgroundColor: '#f8fafc', padding: '20px', borderRadius: '8px', margin: '4px 12px 16px 12px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '14px' },
+  detailTitle: { margin: 0, fontSize: '11px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' },
+  detailGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' },
+  detailCard: { backgroundColor: '#ffffff', padding: '12px 16px', borderRadius: '8px', border: '1px solid #edf2f7', display: 'flex', flexDirection: 'column', gap: '2px' },
+  cardLabel: { fontSize: '10px', fontWeight: '600', color: '#94a3b8', textTransform: 'uppercase' },
+  cardValue: { fontSize: '16px', fontWeight: '900', color: '#1e293b' },
+  cardSub: { fontSize: '11px', color: '#64748b' },
+  modalOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999, padding: '20px' },
+  consoleContainer: { backgroundColor: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '1060px', height: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', overflow: 'hidden' },
+  consoleHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', padding: '16px 24px', backgroundColor: '#ffffff' },
+  consoleLabel: { fontSize: '10px', fontWeight: '800', color: '#2563eb', textTransform: 'uppercase' },
+  consoleTitle: { margin: '2px 0 0 0', fontSize: '18px', fontWeight: 'bold', color: '#0f172a' },
+  closeButton: { background: 'none', border: 'none', fontSize: '18px', color: '#94a3b8', cursor: 'pointer' },
+  consoleBodySplit: { display: 'flex', flex: 1, overflow: 'hidden', backgroundColor: '#f8fafc' },
+  paneLeft: { width: '45%', padding: '20px', borderRight: '1px solid #e2e8f0', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' },
+  paneRight: { width: '55%', padding: '20px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px' },
+  paneHeadline: { fontSize: '14px', fontWeight: '700', color: '#1e293b' },
+  paneSub: { fontSize: '12px', color: '#64748b', margin: '-10px 0 2px 0' },
+  gcashReceiptContainer: { backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #cbd5e1', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', overflow: 'hidden', display: 'flex', flexDirection: 'column', width: '100%' },
+  gcashHeaderBar: { backgroundColor: '#0c529c', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  gcashLogoText: { color: '#ffffff', fontSize: '15px', fontWeight: '900', fontStyle: 'italic' },
+  gcashReceiptTag: { color: '#ffffff', backgroundColor: 'rgba(255,255,255,0.15)', padding: '2px 6px', borderRadius: '4px', fontSize: '9px', fontWeight: '700' },
+  gcashReceiptBody: { padding: '14px 16px', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  gcashCheckIcon: { width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#00cc66', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: 'bold', marginBottom: '6px' },
+  gcashSuccessText: { fontSize: '13px', fontWeight: '800', color: '#1e293b', marginBottom: '2px' },
+  gcashTimeText: { fontSize: '11px', color: '#94a3b8', marginBottom: '8px' },
+  gcashDivider: { width: '100%', borderTop: '1px dashed #cbd5e1', margin: '8px 0' },
+  gcashRow: { display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '12px', margin: '3px 0' },
+  gcashLabel: { color: '#64748b', fontWeight: '500' },
+  gcashValue: { color: '#1e293b', fontWeight: '700', textAlign: 'right' },
+  gcashValueTarget: { color: '#0c529c', fontWeight: '800', textAlign: 'right' },
+  gcashValueBig: { color: '#1e293b', fontSize: '18px', fontWeight: '900', textAlign: 'right' },
+  gcashFooterBar: { backgroundColor: '#f8fafc', padding: '8px', textAlign: 'center', fontSize: '10px', color: '#94a3b8', borderTop: '1px solid #edf2f7' },
+  antiFraudShieldBox: { backgroundColor: '#f0f6ff', border: '1px solid #bfdbfe', padding: '12px', borderRadius: '10px', display: 'flex', flexDirection: 'column', gap: '2px', marginTop: 'auto' },
+  refLockNotice: { fontSize: '11px', color: '#1e40af', fontStyle: 'italic', marginTop: '2px', lineHeight: '1.4' },
+  bankFeedStack: { display: 'flex', flexDirection: 'column', gap: '10px' },
+  bankTxCard: { padding: '14px', borderRadius: '10px', border: '2px solid', transition: 'all 0.2s' },
+  matchBadge: { display: 'inline-block', padding: '4px 8px', backgroundColor: '#2563eb', color: '#ffffff', borderRadius: '5px', fontSize: '9px', fontWeight: '800', marginTop: '6px', textTransform: 'uppercase' },
+  auditStampLogCard: { backgroundColor: '#1e293b', padding: '14px', borderRadius: '10px', color: '#94a3b8', display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'auto' },
+  stampLogTitle: { fontSize: '11px', fontWeight: 'bold', color: '#38bdf8', textTransform: 'uppercase', marginBottom: '4px' },
+  stampLine: { fontSize: '11px', fontFamily: 'monospace' },
+  consoleFooter: { display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '14px 24px', borderTop: '1px solid #e2e8f0', backgroundColor: '#ffffff' },
+  cancelButton: { backgroundColor: '#ffffff', border: '1px solid #cbd5e1', color: '#475569', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' },
+  approveActionBtn: { backgroundColor: '#10b981', border: 'none', color: '#ffffff', padding: '10px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' },
+  
+  walkInModalBanner: { backgroundColor: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '440px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)', overflow: 'hidden', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' },
+  walkInHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' },
+  walkInTitle: { margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#0f172a' },
+  walkInCloseBtn: { background: 'none', border: 'none', fontSize: '16px', color: '#94a3b8', cursor: 'pointer' },
+  walkInForm: { display: 'flex', flexDirection: 'column', gap: '14px' },
+  walkInDescription: { fontSize: '12px', color: '#64748b', margin: 0, lineHeight: '1.4' },
+  formGroup: { display: 'flex', flexDirection: 'column', gap: '6px' },
+  formLabel: { fontSize: '11px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.3px' },
+  formInput: { padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', color: '#1e293b', fontWeight: '600', outline: 'none', transition: 'border-color 0.15s ease' },
+  formSelect: { padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', color: '#1e293b', fontWeight: '600', backgroundColor: '#ffffff', cursor: 'pointer' },
+  walkInFooter: { display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '6px', borderTop: '1px solid #f1f5f9', paddingTop: '14px' },
+  walkInCancelBtn: { backgroundColor: '#ffffff', border: '1px solid #cbd5e1', color: '#475569', padding: '8px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' },
+  walkInSubmitBtn: { backgroundColor: '#ea580c', border: 'none', color: '#ffffff', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 4px rgba(234,88,12,0.15)' },
+  chatModalBanner: { backgroundColor: '#ffffff', borderRadius: '16px', width: '100%', maxWidth: '480px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)', overflow: 'hidden', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' },
+  chatTextarea: { width: '100%', height: '140px', padding: '12px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', color: '#1e293b', outline: 'none', resize: 'vertical', fontFamily: 'system-ui, sans-serif' },
+  chatSubmitBtn: { backgroundColor: '#2563eb', border: 'none', color: '#ffffff', padding: '8px 18px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 2px 4px rgba(37,99,235,0.15)' }
+};

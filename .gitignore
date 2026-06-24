@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.*
+
+# Production / Builds
+.next/
+out/
+build/
+dist/
+
+# Env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# Testing / Local scripts
+/*.js
+/*.log
+test_db.js
+check_schema.js
+generate_report.js
+update_script.js
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# VS Code
+.vscode/
+*.code-workspace
+*.bak.code-workspace

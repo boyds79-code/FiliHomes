@@ -2264,3 +2264,1056 @@ We recommend you instead use a development build to avoid limitations. Learn mor
  LOG  [BadgeContext] No Intercom chats found for unit
  LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
  LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Job orders change detected via Realtime
+ LOG  [BadgeContext] Job orders change detected via Realtime
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Job orders change detected via Realtime
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ ERROR  [TypeError: Network request failed]
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ ERROR  [TypeError: Network request failed]
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🚀 Auth Event: TOKEN_REFRESHED Logged In
+ LOG  🔍 Fetching user profile for ID: e742ffd0-6633-462a-b01c-1a20a0a09eba
+ LOG  ✅ 스태프 프로필 로드 성공: {"assigned_building": "Tower A - Amenity Center", "avatar_url": null, "created_at": "2026-06-23T06:18:30.376306+00:00", "full_name": "Amenity Staff Jane", "id": "e742ffd0-6633-462a-b01c-1a20a0a09eba", "is_active": true, "payroll_settings": {"additions": [], "base_rate": 80, "base_rate_type": "hourly"}, "role": "AMENITY_STAFF"}
+ WARN  🟡 expo-notifications: obtaining a push token may not work on iOS simulators due to an iOS issue. To obtain a push token, use a real device. Read more: https://developer.apple.com/forums/thread/795433
+ LOG  ✅ 푸시 토큰 생성됨: ExponentPushToken[8BbmamCQRMVMVnHlLfbQF_]
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
+ LOG  DEBUG - unitId 상태 변경됨: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Skip Parcels fetch (no activeUnitNumber)
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] Info changed, refreshing badges. Condo: c1111111-1111-1111-1111-111111111111, Unit: null
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
+ LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
+ LOG  [BadgeContext] Parcels count: 0
+ LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
+ LOG  [BadgeContext] No Intercom chats found for unit
+ LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
+ LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)

@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.filicondo.app",
+      "buildNumber": "2",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Face ID is used to provide quick, secure biometric login to your account, protecting your private billing and unit access data. (개인 관리비 내역 및 유닛 보안 데이터 보호를 위해 안전하고 빠른 Face ID 로그인 용도로 사용됩니다.)",
         "ITSAppUsesNonExemptEncryption": false
@@ -22,6 +23,7 @@
     },
     "android": {
       "package": "com.filicondo.app",
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

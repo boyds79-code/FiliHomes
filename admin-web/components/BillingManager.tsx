@@ -316,20 +316,61 @@ const fetchBillings = async () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = event.target?.result as string;
-      const lines = text.split('\n').slice(1); // 헤더 제외
+      const allLines = text.split('\n');
+      if (allLines.length < 2) {
+        setUploading(false);
+        alert("Empty file or invalid format.");
+        return;
+      }
       
-      const parsedFeed: BankTransaction[] = lines
-        .filter(line => line.trim() !== '')
-        .map(line => {
-          const [trans_id, date_time, description, amount, ref_no] = line.split(',');
+      const headerLine = allLines[0].toLowerCase();
+      const isFormatB = headerLine.includes('post') || headerLine.includes('eff') || headerLine.includes('tc') || headerLine.includes('balance');
+      const lines = allLines.slice(1).filter(line => line.trim() !== '');
+
+      const cleanRefNo = (desc: string) => {
+        if (!desc) return '';
+        const trimmed = desc.trim();
+        const words = trimmed.split(/[\s_]+/);
+        const lastWord = words[words.length - 1];
+        if (lastWord && /[0-9]/.test(lastWord)) {
+          if (lastWord.includes('/')) {
+            return lastWord.split('/').pop() || lastWord;
+          }
+          return lastWord;
+        }
+        return trimmed;
+      };
+
+      const parsedFeed: BankTransaction[] = lines.map((line, idx) => {
+        const parts = line.split(',');
+        
+        if (isFormatB) {
+          // Format B: Post,Eff,TC,Description,Amount,Balance
+          const post = parts[0]?.trim() || '';
+          const eff = parts[1]?.trim() || '';
+          const tc = parts[2]?.trim() || '';
+          const description = parts[3]?.trim() || '';
+          const amount = parseFloat(parts[4]) || 0;
+          
+          return {
+            trans_id: `${idx + 1}`,
+            date_time: post || eff,
+            description: description,
+            amount: amount,
+            ref_no: cleanRefNo(description)
+          };
+        } else {
+          // Format A: trans_id,date_time,description,amount,ref_no
+          const [trans_id, date_time, description, amount, ref_no] = parts;
           return { 
-              trans_id: trans_id?.trim() || '', 
+              trans_id: trans_id?.trim() || `${idx + 1}`, 
               date_time: date_time?.trim() || '', 
               description: description?.trim() || '', 
               amount: parseFloat(amount) || 0, 
               ref_no: ref_no?.trim() || '' 
           };
-        });
+        }
+      });
         
       setBankFeed(parsedFeed);
       setUploading(false);

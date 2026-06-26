@@ -38,3 +38,4 @@ Thumbs.db
 .vscode/
 *.code-workspace
 *.bak.code-workspace
+.vercel

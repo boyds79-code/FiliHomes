@@ -546,10 +546,16 @@ export default function BillingScreen({ navigation }: any) {
                 body: JSON.stringify({ billingId: billingId })
               });
 
-              if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.error || "Failed to cancel receipt submission");
-              }
+               if (!response.ok) {
+                 let errMsg = "Failed to cancel receipt submission";
+                 try {
+                   const errData = await response.json();
+                   errMsg = errData.error || errMsg;
+                 } catch (e) {
+                   errMsg = `Server Error (${response.status})`;
+                 }
+                 throw new Error(errMsg);
+               }
 
               Alert.alert('Cancelled', 'Your receipt submission has been cancelled. You can now upload a new receipt.');
               fetchMyBillings();

@@ -528,6 +528,42 @@ export default function BillingScreen({ navigation }: any) {
     }
   };
 
+  const cancelReceiptUpload = async (billingId: number | string) => {
+    Alert.alert(
+      "Cancel Submission",
+      "Are you sure you want to cancel this receipt submission? This will delete the uploaded receipt and let you upload a new one.",
+      [
+        { text: "No", style: "cancel" },
+        { 
+          text: "Yes, Cancel", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setUploading(true);
+              const response = await fetch(`${API_BASE_URL}/api/cancel-receipt`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ billingId: billingId })
+              });
+
+              if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || "Failed to cancel receipt submission");
+              }
+
+              Alert.alert('Cancelled', 'Your receipt submission has been cancelled. You can now upload a new receipt.');
+              fetchMyBillings();
+            } catch (error: any) {
+              Alert.alert('Error', error.message);
+            } finally {
+              setUploading(false);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PAID': return '#16a34a';
@@ -714,8 +750,19 @@ export default function BillingScreen({ navigation }: any) {
             )}
 
             {activeMonthBill && ['REQUESTED', 'PENDING_APPROVAL'].includes(activeMonthBill.status) && (
-              <View style={styles.bannerStatusBoxWaiting}>
-                <Text style={styles.bannerStatusBoxWaitingText}>⏳ PMO Verification in Progress</Text>
+              <View style={{ gap: 8, marginTop: 14 }}>
+                <View style={[styles.bannerStatusBoxWaiting, { marginTop: 0 }]}>
+                  <Text style={styles.bannerStatusBoxWaitingText}>⏳ PMO Verification in Progress</Text>
+                </View>
+                <TouchableOpacity 
+                  style={[styles.bannerUploadButton, { backgroundColor: '#dc2626', marginTop: 0 }]} 
+                  onPress={() => cancelReceiptUpload(activeMonthBill.id)} 
+                  disabled={uploading}
+                >
+                  <Text style={styles.bannerUploadButtonText}>
+                    {uploading ? 'Processing...' : '❌ Cancel Submission'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             )}
 

@@ -6,11 +6,11 @@ const getLocalIp = () => {
   if (hostUri) {
     return hostUri.split(':')[0];
   }
-  return '192.168.1.19'; // Fallback
+  return '172.30.1.74'; // Fallback
 };
 
 const LOCAL_IP = getLocalIp();
 
 export const API_BASE_URL = __DEV__ 
   ? `http://${LOCAL_IP}:3000`
-  : 'https://hey-driver.com';
+  : 'https://filicondo.hey-driver.com';

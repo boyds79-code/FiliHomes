@@ -1151,13 +1151,47 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
         return;
       }
 
-      // 2. Improved matching logic (allows partial matches)
-      const normalizedDetectedRef = refNo.replace(/\s+/g, '').toUpperCase();
+      // Levenshtein distance helper to handle minor OCR typos (e.g. 5029327299933 vs 502932729933)
+      const getLevenshteinDistance = (a: string, b: string): number => {
+        const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+        for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+        for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= a.length; i++) {
+          for (let j = 1; j <= b.length; j++) {
+            if (a[i - 1] === b[j - 1]) {
+              matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+              matrix[i][j] = Math.min(
+                matrix[i - 1][j - 1] + 1, // substitution
+                matrix[i][j - 1] + 1,     // insertion
+                matrix[i - 1][j] + 1      // deletion
+              );
+            }
+          }
+        }
+        return matrix[a.length][b.length];
+      };
+
+      // 2. Improved matching logic (allows partial & fuzzy matching for OCR tolerance)
+      const normalizedDetectedRef = refNo.replace(/[^A-Z0-9]/ig, '').toUpperCase();
       
       const match = bankFeed.find(tx => {
-        const normalizedBankRef = tx.ref_no.replace(/\s+/g, '').toUpperCase();
-        // Changed from 'exact match' to 'includes' (most reliable method)
-        return normalizedBankRef.includes(normalizedDetectedRef) || normalizedDetectedRef.includes(normalizedBankRef);
+        const normalizedBankRef = tx.ref_no.replace(/[^A-Z0-9]/ig, '').toUpperCase();
+        
+        // A. Substring inclusion match (e.g., matching a suffix)
+        if (normalizedBankRef.includes(normalizedDetectedRef) || normalizedDetectedRef.includes(normalizedBankRef)) {
+          return true;
+        }
+
+        // B. Fuzzy Levenshtein match for long reference numbers to tolerate 1-2 character typos (like double vs triple digits)
+        if (normalizedBankRef.length >= 8 && normalizedDetectedRef.length >= 8) {
+          const distance = getLevenshteinDistance(normalizedBankRef, normalizedDetectedRef);
+          if (distance <= 2) {
+            return true;
+          }
+        }
+
+        return false;
       });
 
       if (match) {

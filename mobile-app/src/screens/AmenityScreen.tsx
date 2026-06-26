@@ -394,7 +394,7 @@ export default function AmenityScreen({ navigation }: any) {
       Alert.alert('Booking Requested 📅', `Your request for the ${selectedAmenity.name} has been submitted for approval.`, [
         { text: 'OK', onPress: () => {
           setSelectedSlot(null);
-          setActiveTab('MY_BOOKINGS');
+          handleTabPress('MY_BOOKINGS');
         }}
       ]);
 

@@ -1378,6 +1378,37 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                     ⚠️ Process Partial Payment
                   </button>
                   <button onClick={() => { alert(`💰 OVERPAYMENT SAVED\n\nSurplus advanced credit logged for Unit ${activeBill.unit_number}. System will auto-deduct this from next period.`); setActiveBill(null); }} style={{ ...styles.approveActionBtn, backgroundColor: '#7c3aed' }}>💰 Overpayment Carry Over</button>
+                  
+                  <button 
+                    onClick={async () => {
+                      if (!window.confirm("Are you sure you want to reject this receipt and request the resident to submit the correct payment (including penalty)?")) return;
+                      setUploading(true);
+                      try {
+                        const res = await fetch('/api/cancel-receipt', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ billingId: activeBill.id })
+                        });
+                        const result = await res.json();
+                        if (result.success) {
+                          alert("Receipt has been rejected. The statement is now open for payment again. ❌");
+                          fetchBillings();
+                          setActiveBill(null);
+                        } else {
+                          throw new Error(result.error || "Failed to cancel receipt");
+                        }
+                      } catch (error: any) {
+                        console.error(error);
+                        alert(`Error: ${error.message || error}`);
+                      } finally {
+                        setUploading(false);
+                      }
+                    }} 
+                    style={{ ...styles.approveActionBtn, backgroundColor: '#dc2626' }}
+                  >
+                    ❌ Reject Receipt
+                  </button>
+
                   <button 
                     disabled={!confirmedMatchRef}
                     style={{ ...styles.approveActionBtn, backgroundColor: confirmedMatchRef ? '#10b981' : '#cbd5e1', cursor: confirmedMatchRef ? 'pointer' : 'not-allowed' }} 

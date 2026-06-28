@@ -146,7 +146,7 @@ export async function POST(req: Request) {
       try {
         if (!isMock && resend) {
           const { data: emailData, error: emailErr } = await resend.emails.send({
-            from: `${condoName} <no-reply@filicondo.hey-driver.com>`, 
+            from: `FiliCondo <onboarding@resend.dev>`, 
             to: [email],
             subject: `🏢 Welcome to ${condoName} - App Invitation Code`,
             html: `
@@ -179,6 +179,7 @@ export async function POST(req: Request) {
           if (emailErr) {
             emailErrorMsg = emailErr.message;
             console.error("Resend Email Sending Error:", emailErr);
+            errors.push({ email, error: emailErr.message });
           } else {
             emailSent = true;
             console.log(`✉️ Email successfully dispatched via Resend to ${email} (ID: ${emailData?.id})`);
@@ -194,6 +195,7 @@ export async function POST(req: Request) {
       } catch (e: any) {
         emailErrorMsg = e.message;
         console.error("Email service exception:", e);
+        errors.push({ email, error: e.message });
       }
 
       generatedInvitations.push({
@@ -204,6 +206,13 @@ export async function POST(req: Request) {
         emailSent,
         emailError: emailErrorMsg
       });
+    }
+
+    if (errors.length > 0) {
+      return NextResponse.json({
+        success: false,
+        error: errors[0].error || "Failed to dispatch email invitation code."
+      }, { status: 400 });
     }
 
     return NextResponse.json({

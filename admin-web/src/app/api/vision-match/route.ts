@@ -121,13 +121,35 @@ export async function POST(req: Request) {
       try {
         const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
         const parsed = JSON.parse(cleaned);
-        refNo = parsed.refNo ? String(parsed.refNo).replace(/[^0-9]/g, '') : null;
-        amount = parsed.amount ? parseFloat(String(parsed.amount).replace(/[^0-9.]/g, '')) : null;
+        
+        // Support common variations of reference number keys
+        const extractedRef = parsed.refNo || parsed.ref_no || parsed.referenceNumber || parsed.reference_number || parsed.ref || parsed.transactionNo || parsed.transaction_no;
+        refNo = extractedRef ? String(extractedRef).replace(/[^0-9]/g, '') : null;
+        
+        // Support common variations of amount keys
+        const extractedAmount = parsed.amount || parsed.totalAmount || parsed.total_amount || parsed.paymentAmount || parsed.payment_amount;
+        amount = extractedAmount ? parseFloat(String(extractedAmount).replace(/[^0-9.]/g, '')) : null;
       } catch (err) {
         console.error("JSON parse error for receipt analysis:", err);
-        // regex fallback
-        const matches = rawText.match(/\b\d{10,15}\b/);
+      }
+
+      // Safety net fallback: if refNo is null, parse using regex pattern matching
+      if (!refNo) {
+        const matches = rawText.match(/\b\d{10,16}\b/);
         refNo = matches ? matches[0] : null;
+      }
+      
+      // Safety net fallback: if amount is null, parse numeric amount from text
+      if (!amount) {
+        const numMatches = rawText.match(/\b\d{1,3}(?:,\d{3})*(?:\.\d{2})?\b/g);
+        if (numMatches) {
+          const candidates = numMatches
+            .map(m => parseFloat(m.replace(/,/g, '')))
+            .filter(num => num > 10 && num < 1000000 && String(num) !== refNo);
+          if (candidates.length > 0) {
+            amount = candidates[0];
+          }
+        }
       }
 
       return NextResponse.json({ 

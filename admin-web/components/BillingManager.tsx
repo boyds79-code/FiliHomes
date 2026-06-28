@@ -883,7 +883,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
               Number(bill.amenity_fee || 0) +
               calculatedPenalty;
             const isExpanded = expandedRowId === bill.id;
-            const displayStatus = (isOverdue && bill.status !== 'PARTIAL') ? 'OVERDUE' : bill.status;
+            const displayStatus = isOverdue ? 'OVERDUE' : bill.status;
 
             return (
               <div key={bill.id} style={{ borderBottom: '1px solid #f1f5f9' }}>

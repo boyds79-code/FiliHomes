@@ -11,6 +11,8 @@ import { UnitSwitcherBar } from '../components/UnitSwitcherBar';
 import { Ionicons } from '@expo/vector-icons';
 import { useBadge } from '../contexts/BadgeContext';
 
+const { width } = Dimensions.get('window');
+
 const calculateDynamicPenalty = (bill: any, rate: number) => {
   if (bill.status === 'PAID') return 0;
   

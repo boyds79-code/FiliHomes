@@ -109,12 +109,12 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
   const handleRevokeInvitation = async (inviteId: string) => {
     if (!confirm("Are you sure you want to cancel this invitation? This will invalidate the invite code immediately.")) return;
     try {
-      const { error } = await supabase
-        .from('unit_invitations')
-        .delete()
-        .eq('id', inviteId);
-      
-      if (error) throw error;
+      const response = await fetch(`/api/admin/occupants/invite?inviteId=${inviteId}`, {
+        method: 'DELETE'
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Failed to cancel invitation");
+
       alert("Invitation cancelled and invalidated successfully!");
       fetchInvitations();
     } catch (err: any) {

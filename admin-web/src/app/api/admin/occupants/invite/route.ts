@@ -217,3 +217,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+// DELETE: Revoke/delete an invitation code
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const inviteId = searchParams.get('inviteId');
+
+    if (!inviteId) {
+      return NextResponse.json({ error: "Missing required parameter: inviteId is required." }, { status: 400 });
+    }
+
+    const adminClient = getAdminClient();
+    const { error } = await adminClient
+      .from('unit_invitations')
+      .delete()
+      .eq('id', inviteId);
+
+    if (error) {
+      console.error("Supabase Error (delete invitation):", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, message: "Invitation cancelled successfully." });
+  } catch (error: any) {
+    console.error("API DELETE Invitation Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}

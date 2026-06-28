@@ -79,6 +79,9 @@ export default function HomeScreen({ navigation }: any) {
   const [quickPassVisible, setQuickPassVisible] = useState(false);
   const residentToken = `FILICONDO-RESIDENT-UNIT${activeUnitNumber}-SECURE-2026`; 
 
+  const seenNotifIdsRef = React.useRef<Set<string>>(new Set());
+  const initialNotifsLoadedRef = React.useRef<boolean>(false);
+
   const activeLayout: 'dashboard' | 'concierge' | 'classic' = 'dashboard';
   const colorTheme: 'phili-flag' | 'teal' | 'charcoal' = 'phili-flag';
 
@@ -232,6 +235,63 @@ export default function HomeScreen({ navigation }: any) {
     if (!activeUnitNumber) return;
     const unitStr = String(activeUnitNumber).trim();
 
+    // Reset seen notifs cache when active unit changes
+    seenNotifIdsRef.current = new Set();
+    initialNotifsLoadedRef.current = false;
+
+    // ⚡ Add 4-second polling fallback in case database level realtime publication is disabled for notifications
+    const pollNotifications = async () => {
+      if (!activeUnitId) return;
+      try {
+        const { data: notifs, error } = await supabase
+          .from('notifications')
+          .select('id, title, message, type, created_at')
+          .eq('unit_id', activeUnitId)
+          .order('created_at', { ascending: false })
+          .limit(10);
+          
+        if (error) {
+          console.error("Error polling notifications:", error);
+          return;
+        }
+
+        if (notifs) {
+          // If first run, just populate cache and skip alerts
+          if (!initialNotifsLoadedRef.current) {
+            notifs.forEach(n => seenNotifIdsRef.current.add(n.id));
+            initialNotifsLoadedRef.current = true;
+            return;
+          }
+
+          let hasNew = false;
+          // Find any notification whose ID has not been seen yet
+          notifs.forEach(n => {
+            if (!seenNotifIdsRef.current.has(n.id)) {
+              seenNotifIdsRef.current.add(n.id);
+              hasNew = true;
+
+              // Display alert banner & play system sound
+              Alert.alert(
+                `🔔 ${n.title}`,
+                n.message,
+                [{ text: "OK", style: "default" }]
+              );
+            }
+          });
+
+          if (hasNew) {
+            refreshBadges();
+            fetchLatestBillInfo();
+          }
+        }
+      } catch (err) {
+        console.error("Exception polling notifications:", err);
+      }
+    };
+
+    pollNotifications();
+    const interval = setInterval(pollNotifications, 4000);
+
     // ⚡ 앱을 켜두고 있을 때 (Foreground) 실시간 알림 팝업 제공 (푸시 알림 시뮬레이션)
     const channelName = `home-parcel-alerts-${Date.now()}`;
     const realtimeNotifier = supabase
@@ -314,6 +374,7 @@ export default function HomeScreen({ navigation }: any) {
 
     return () => {
       supabase.removeChannel(realtimeNotifier);
+      clearInterval(interval);
     };
   }, [activeUnitNumber, activeUnitId, targetCondoId, refreshBadges]);
 

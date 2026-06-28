@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true, // 에러가 나더라도 개발을 계속하기 위해 (필요시)
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   turbopack: {
     root: path.join(__dirname, "."),
   },

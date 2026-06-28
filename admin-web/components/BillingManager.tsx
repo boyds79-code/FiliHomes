@@ -103,6 +103,7 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isLedgerSynced, setIsLedgerSynced] = useState<boolean>(false);
+  const [isExcelSynced, setIsExcelSynced] = useState<boolean>(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -483,9 +484,8 @@ const fetchBillings = async () => {
 
           const result = await response.json();
 
-          if (response.ok && result.success) {
             alert(`🎉 CSV statement data synchronised successfully! Imported ${result.insertedCount} records.`);
-            setExcelFile(null);
+            setIsExcelSynced(true);
             fetchBillings();
           } else {
             throw new Error(result.error || "Failed to upload billings");
@@ -568,9 +568,8 @@ const fetchBillings = async () => {
 
         const result = await response.json();
 
-        if (response.ok && result.success) {
           alert(`🎉 Excel statement data synchronised successfully! Imported ${result.insertedCount} records.`);
-          setExcelFile(null);
+          setIsExcelSynced(true);
           fetchBillings();
         } else {
           throw new Error(result.error || "Failed to upload billings");
@@ -946,9 +945,30 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
           {currentView === 'ISSUANCE' ? (
             <div style={styles.embeddedUploadZone}>
               <form onSubmit={handleExcelUpload} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" onChange={(e) => setExcelFile(e.target.files?.[0] || null)} style={{ display: 'none' }} />
-                <label htmlFor="excel-file-input" style={styles.embeddedFileBtn}>{excelFile ? `📄 ${excelFile.name.substring(0, 14)}...` : '📁 Select Excel Sheet'}</label>
-                <button type="submit" disabled={uploading} style={styles.embeddedSubmitBtn}>{uploading ? 'Syncing...' : 'Sync Data'}</button>
+                <input 
+                  type="file" 
+                  id="excel-file-input" 
+                  accept=".xlsx, .xls, .csv" 
+                  onChange={(e) => {
+                    setExcelFile(e.target.files?.[0] || null);
+                    setIsExcelSynced(false);
+                  }} 
+                  style={{ display: 'none' }} 
+                />
+                <label htmlFor="excel-file-input" style={{ ...styles.embeddedFileBtn, cursor: 'pointer' }}>
+                  {excelFile ? `📄 ${excelFile.name.substring(0, 14)}...` : '📁 Select Excel Sheet'}
+                </label>
+                <button 
+                  type="submit" 
+                  disabled={uploading} 
+                  style={{
+                    ...styles.embeddedSubmitBtn,
+                    backgroundColor: isExcelSynced ? '#059669' : '#10b981',
+                    borderColor: isExcelSynced ? '#047857' : '#059669'
+                  }}
+                >
+                  {uploading ? 'Syncing...' : (isExcelSynced ? '✓ Synced' : 'Sync Data')}
+                </button>
               </form>
             </div>
           ) : (

@@ -854,11 +854,20 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
             const dueDateObj = new Date(bill.due_date);
             const todayObj = new Date();
             const isOverdue = todayObj > dueDateObj && bill.status !== 'PAID';
+            const penaltyRate = condoSettings?.penalty_rate || 0.02; // 기본 2%
             let calculatedPenalty = 0;
             
             if (isOverdue) {
               const delayDays = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
-              calculatedPenalty = (Number(bill.condo_dues || 0) + Number(bill.electricity || 0) + Number(bill.water || 0)) * (0.02 / 30) * delayDays;
+              const baseForPenalty = 
+                Number(bill.condo_dues || 0) + 
+                Number(bill.electricity || 0) + 
+                Number(bill.water || 0) + 
+                Number(bill.parking_fee || 0) + 
+                Number(bill.job_order_fee || 0) + 
+                Number(bill.previous_balance || 0) + 
+                Number(bill.amenity_fee || 0);
+              calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
             }
 
             const computedTotal = 
@@ -974,9 +983,13 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                         <span style={{...styles.cardLabel, color: '#b91c1c'}}>🔄 Previous Balance (Arrears)</span>
                         <div style={{...styles.cardValue, color: '#991b1b'}}>₱{Number(bill.previous_balance || 0).toLocaleString()}</div>
                       </div>
+                      <div style={{...styles.detailCard, backgroundColor: '#f0fdf4', borderColor: '#bbf7d0'}}>
+                        <span style={{...styles.cardLabel, color: '#15803d'}}>🏊 Amenity Booking Fees</span>
+                        <div style={{...styles.cardValue, color: '#166534'}}>₱{Number(bill.amenity_fee || 0).toLocaleString()}</div>
+                      </div>
                       <div style={{...styles.detailCard, backgroundColor: '#fff7ed', borderColor: '#fed7aa'}}>
-                        <span style={{...styles.cardLabel, color: '#c2410c'}}>⚠️ Penalty (2%)</span>
-                        <div style={{...styles.cardValue, color: '#9a3412'}}>₱{Number(bill.penalty_amount || 0).toLocaleString()}</div>
+                        <span style={{...styles.cardLabel, color: '#c2410c'}}>⚠️ Penalty ({(penaltyRate * 100).toFixed(1)}%)</span>
+                        <div style={{...styles.cardValue, color: '#9a3412'}}>₱{Number(Number(bill.penalty_amount || 0) + calculatedPenalty).toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
                       </div>
                     </div>
                   </div>

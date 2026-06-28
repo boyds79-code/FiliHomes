@@ -26,6 +26,7 @@ interface Billing {
   receipts?: any[];
   previous_balance?: number;
   penalty_amount?: number;
+  amenity_fee?: number;
 }
 
 interface BankTransaction {
@@ -524,7 +525,8 @@ const fetchBillings = async () => {
       Number(b.parking_fee || 0) + 
       Number(b.job_order_fee || 0) + 
       Number(b.previous_balance || 0) + 
-      Number(b.penalty_amount || 0)
+      Number(b.penalty_amount || 0) +
+      Number(b.amenity_fee || 0)
     );
   };
 
@@ -867,6 +869,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
               Number(bill.job_order_fee || 0) + 
               Number(bill.previous_balance || 0) + 
               Number(bill.penalty_amount || 0) + 
+              Number(bill.amenity_fee || 0) +
               calculatedPenalty;
             const isExpanded = expandedRowId === bill.id;
             const displayStatus = (isOverdue && bill.status !== 'PARTIAL') ? 'OVERDUE' : bill.status;

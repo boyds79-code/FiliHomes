@@ -533,6 +533,9 @@ export default function DashboardPage() {
     };
     fetchPendingBillingsCount();
 
+    // ⚡ Add 4-second polling fallback in case Supabase Realtime publication is disabled for billings
+    const interval = setInterval(fetchPendingBillingsCount, 4000);
+
     const channel = supabase
       .channel('realtime-billings-count-dashboard')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'billings' }, () => {
@@ -542,6 +545,7 @@ export default function DashboardPage() {
 
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(interval);
     };
   }, []);
 

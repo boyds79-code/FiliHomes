@@ -132,14 +132,46 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
       }
     }
 
-    // Subscribe to live database changes for resident receipt submissions
+    // ⚡ Add 4-second polling interval to bypass lack of Supabase Realtime publication on billings table
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch('/api/billings');
+        const { data, error } = await response.json();
+        if (!error && data) {
+          const paymentCandidates = (data || []).filter((b: Billing) => 
+            ['ISSUED', 'OVERDUE', 'REQUESTED', 'PAID'].includes(b.status?.toUpperCase())
+          );
+          
+          setBills(prevBills => {
+            const hasChanges = prevBills.length !== paymentCandidates.length || 
+              paymentCandidates.some((newBill, idx) => {
+                const oldBill = prevBills[idx];
+                return !oldBill || oldBill.status !== newBill.status || (oldBill.receipts?.length !== newBill.receipts?.length);
+              });
+            
+            if (hasChanges) {
+              // Trigger a toast notification if a bill is newly set to REQUESTED
+              paymentCandidates.forEach(newBill => {
+                const oldBill = prevBills.find(ob => ob.id === newBill.id);
+                if (newBill.status === 'REQUESTED' && (!oldBill || oldBill.status !== 'REQUESTED')) {
+                  showToast(`🔔 Unit ${newBill.unit_number || 'Resident'} submitted a new receipt for June 2026!`);
+                }
+              });
+              return paymentCandidates;
+            }
+            return prevBills;
+          });
+        }
+      } catch (err) {
+        console.error("Failed to poll billings:", err);
+      }
+    }, 4000);
+
+    // Subscribe to live database changes for resident receipt submissions (as hybrid backup)
     const channel = supabase
       .channel('realtime-billing-submissions-manager')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'billings' }, (payload) => {
-        // Trigger fetch Billings to keep list updated
         fetchBillings();
-        
-        // If status changed to REQUESTED (new receipt submitted by resident)
         if (payload.new?.status === 'REQUESTED' && payload.old?.status !== 'REQUESTED') {
           showToast(`🔔 Unit ${payload.new?.unit_number || 'Resident'} submitted a new receipt for June 2026!`);
         }
@@ -148,6 +180,7 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
 
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(interval);
     };
   }, []);
 

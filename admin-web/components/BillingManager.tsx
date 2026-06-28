@@ -102,15 +102,27 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
   const [sendingChat, setSendingChat] = useState<boolean>(false);
 
   useEffect(() => {
-  fetchBillings();
+    fetchBillings();
     fetchCondoSettings();
 
-  // Temporarily disable real-time subscription and use manual refresh for testing.
-  // Primary cause of memory spikes.
-  return () => {
-    // supabase.removeChannel(channel); // 주석 처리
-  };
-}, []);
+    // Load persisted bank feed from localStorage
+    if (typeof window !== 'undefined') {
+      const savedFeed = localStorage.getItem('filicondo_bank_feed');
+      if (savedFeed) {
+        try {
+          setBankFeed(JSON.parse(savedFeed));
+        } catch (e) {
+          console.error("Error loading bank feed from localStorage:", e);
+        }
+      }
+    }
+
+    // Temporarily disable real-time subscription and use manual refresh for testing.
+    // Primary cause of memory spikes.
+    return () => {
+      // supabase.removeChannel(channel); // 주석 처리
+    };
+  }, []);
 
 const fetchCondoSettings = async () => {
   try {
@@ -488,6 +500,7 @@ const fetchBillings = async () => {
       });
         
       setBankFeed(parsedFeed);
+      localStorage.setItem('filicondo_bank_feed', JSON.stringify(parsedFeed));
       setUploading(false);
       alert(`🎉 ${parsedFeed.length} bank transactions imported!`);
     };
@@ -1480,6 +1493,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
         // Move the matched item to the top of bankFeed
         const updatedFeed = [match, ...bankFeed.filter(tx => tx.trans_id !== match.trans_id)];
         setBankFeed(updatedFeed);
+        localStorage.setItem('filicondo_bank_feed', JSON.stringify(updatedFeed));
         setVisionMatchedRef(match.ref_no);
         setConfirmedMatchRef(match.ref_no); // Auto-confirm match on Vision AI success!
         

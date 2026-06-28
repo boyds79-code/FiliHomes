@@ -39,7 +39,7 @@ const calculateDynamicPenalty = (bill: any, rate: number) => {
 
   const today = new Date();
   
-  const isOverdue = (bill.status === 'OVERDUE' || today >= penaltyAccrualDate);
+  const isOverdue = (bill.status === 'OVERDUE' || bill.status === 'REQUESTED' || today >= penaltyAccrualDate) && bill.status !== 'PAID';
   
   if (!isOverdue) return 0;
 

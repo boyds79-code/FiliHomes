@@ -1223,6 +1223,89 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
               </div>
 
               <div style={styles.paneRight}>
+                {(() => {
+                  const dueDateObj = new Date(activeBill.due_date);
+                  const todayObj = new Date();
+                  const isOverdue = todayObj > dueDateObj && activeBill.status !== 'PAID';
+                  const penaltyRate = condoSettings?.penalty_rate || 0.02;
+                  let calculatedPenalty = 0;
+                  
+                  if (isOverdue) {
+                    const delayDays = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+                    const baseForPenalty = 
+                      Number(activeBill.condo_dues || 0) + 
+                      Number(activeBill.electricity || 0) + 
+                      Number(activeBill.water || 0) + 
+                      Number(activeBill.parking_fee || 0) + 
+                      Number(activeBill.job_order_fee || 0) + 
+                      Number(activeBill.previous_balance || 0) + 
+                      Number(activeBill.amenity_fee || 0);
+                    calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+                  }
+
+                  const computedTotal = 
+                    Number(activeBill.condo_dues || 0) + 
+                    Number(activeBill.electricity || 0) + 
+                    Number(activeBill.water || 0) + 
+                    Number(activeBill.parking_fee || 0) + 
+                    Number(activeBill.job_order_fee || 0) + 
+                    Number(activeBill.previous_balance || 0) + 
+                    Number(activeBill.penalty_amount || 0) + 
+                    Number(activeBill.amenity_fee || 0) +
+                    calculatedPenalty;
+
+                  return (
+                    <div style={{
+                      padding: '16px', 
+                      backgroundColor: '#f8fafc', 
+                      borderRadius: '12px', 
+                      border: '1.5px dashed #cbd5e1', 
+                      marginBottom: '20px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#64748b', textTransform: 'uppercase' }}>Target Statement Due</span>
+                        <span style={{ 
+                          fontSize: '11px', 
+                          fontWeight: '800', 
+                          padding: '4px 8px', 
+                          borderRadius: '6px',
+                          backgroundColor: activeBill.status === 'OVERDUE' || isOverdue ? '#fee2e2' : '#eff6ff',
+                          color: activeBill.status === 'OVERDUE' || isOverdue ? '#b91c1c' : '#1e40af'
+                        }}>
+                          {activeBill.status === 'OVERDUE' || isOverdue ? '⚠️ OVERDUE' : '⏳ PENDING'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '4px' }}>
+                        <span style={{ fontSize: '24px', fontWeight: '900', color: '#0f172a' }}>
+                          ₱ {computedTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                        </span>
+                        <span style={{ fontSize: '11px', color: '#64748b' }}>
+                          Period: {activeBill.billing_month}
+                        </span>
+                      </div>
+                      
+                      <div style={{ 
+                        borderTop: '1px solid #e2e8f0', 
+                        paddingTop: '8px', 
+                        marginTop: '4px',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '8px',
+                        fontSize: '11px',
+                        color: '#475569'
+                      }}>
+                        <div>• Base Balance: <strong>₱{Number(activeBill.previous_balance || 0).toLocaleString()}</strong></div>
+                        <div>• Amenity Fee: <strong>₱{Number(activeBill.amenity_fee || 0).toLocaleString()}</strong></div>
+                        <div>• Utilities & Dues: <strong>₱{Number((activeBill.condo_dues || 0) + (activeBill.electricity || 0) + (activeBill.water || 0) + (activeBill.parking_fee || 0) + (activeBill.job_order_fee || 0)).toLocaleString()}</strong></div>
+                        <div>• Late Penalty ({(penaltyRate * 100).toFixed(1)}%): <strong style={{ color: calculatedPenalty > 0 ? '#b91c1c' : '#475569' }}>₱{Number(Number(activeBill.penalty_amount || 0) + calculatedPenalty).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong></div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div style={styles.paneHeadline}>🏢 Live Corporate Bank Ledger Feed (BDO/GCash Corporate)</div>
                 <div style={styles.bankFeedStack}>
                   {bankFeed.map((tx) => {

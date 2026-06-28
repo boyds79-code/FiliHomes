@@ -1477,16 +1477,16 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
       });
 
       if (match) {
-                      // Move the matched item to the top of bankFeed
-                      const updatedFeed = [match, ...bankFeed.filter(tx => tx.trans_id !== match.trans_id)];
-                      setBankFeed(updatedFeed);
-                      setVisionMatchedRef(match.ref_no);
-                      setConfirmedMatchRef(null); // Reset confirmed state on new match
-                      
-                      alert(`🎉 Matching transaction confirmed: ${match.ref_no}.\n\nPlease click '✅ Confirm Match' on the highlighted transaction first.`);
+        // Move the matched item to the top of bankFeed
+        const updatedFeed = [match, ...bankFeed.filter(tx => tx.trans_id !== match.trans_id)];
+        setBankFeed(updatedFeed);
+        setVisionMatchedRef(match.ref_no);
+        setConfirmedMatchRef(match.ref_no); // Auto-confirm match on Vision AI success!
+        
+        alert(`🎉 Matching transaction automatically confirmed: ${match.ref_no}.\n\nYou can now click 'Verify & Stamp Complete Clear' to approve.`);
       } else {
-                      setVisionMatchedRef(null);
-                      setConfirmedMatchRef(null);
+        setVisionMatchedRef(null);
+        setConfirmedMatchRef(null);
         alert(`⚠️ No matching transaction found for: ${refNo}`);
       }
     } catch (e) { 
@@ -1523,7 +1523,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <button 
                     onClick={async () => {
-                      const amountStr = window.prompt("Enter the partial payment amount:");
+                      const amountStr = window.prompt("Enter the partial payment amount:", aiDetectedAmount ? String(aiDetectedAmount) : "");
                       if (!amountStr) return;
                       const partialAmount = parseFloat(amountStr);
                       if (isNaN(partialAmount) || partialAmount <= 0) {
@@ -1531,7 +1531,37 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                         return;
                       }
                       
-                      const totalAmount = Number(activeBill.condo_dues || 0) + Number(activeBill.electricity || 0) + Number(activeBill.water || 0) + Number(activeBill.parking_fee || 0) + Number(activeBill.job_order_fee || 0);
+                      const dueDateObj = new Date(activeBill.due_date);
+                      const todayObj = new Date();
+                      const isOverdue = (activeBill.status === 'OVERDUE' || activeBill.status === 'REQUESTED' || todayObj > dueDateObj) && activeBill.status !== 'PAID';
+                      const penaltyRate = condoSettings?.penalty_rate || 0.02;
+                      let calculatedPenalty = 0;
+                      
+                      if (isOverdue) {
+                        const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+                        const delayDays = Math.max(14, rawDelay);
+                        const baseForPenalty = 
+                          Number(activeBill.condo_dues || 0) + 
+                          Number(activeBill.electricity || 0) + 
+                          Number(activeBill.water || 0) + 
+                          Number(activeBill.parking_fee || 0) + 
+                          Number(activeBill.job_order_fee || 0) + 
+                          Number(activeBill.previous_balance || 0) + 
+                          Number(activeBill.amenity_fee || 0);
+                        calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+                      }
+
+                      const totalAmount = 
+                        Number(activeBill.condo_dues || 0) + 
+                        Number(activeBill.electricity || 0) + 
+                        Number(activeBill.water || 0) + 
+                        Number(activeBill.parking_fee || 0) + 
+                        Number(activeBill.job_order_fee || 0) + 
+                        Number(activeBill.previous_balance || 0) + 
+                        Number(activeBill.penalty_amount || 0) + 
+                        Number(activeBill.amenity_fee || 0) +
+                        calculatedPenalty;
+
                       if (partialAmount >= totalAmount) {
                         alert("Amount is equal or greater than the total. Please use 'Verify & Stamp Complete Clear' instead.");
                         return;
@@ -1601,7 +1631,37 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                     disabled={!confirmedMatchRef}
                     style={{ ...styles.approveActionBtn, backgroundColor: confirmedMatchRef ? '#10b981' : '#cbd5e1', cursor: confirmedMatchRef ? 'pointer' : 'not-allowed' }} 
                     onClick={() => {
-                      const totalAmount = Number(activeBill.condo_dues || 0) + Number(activeBill.electricity || 0) + Number(activeBill.water || 0) + Number(activeBill.parking_fee || 0) + Number(activeBill.job_order_fee || 0);
+                      const dueDateObj = new Date(activeBill.due_date);
+                      const todayObj = new Date();
+                      const isOverdue = (activeBill.status === 'OVERDUE' || activeBill.status === 'REQUESTED' || todayObj > dueDateObj) && activeBill.status !== 'PAID';
+                      const penaltyRate = condoSettings?.penalty_rate || 0.02;
+                      let calculatedPenalty = 0;
+                      
+                      if (isOverdue) {
+                        const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+                        const delayDays = Math.max(14, rawDelay);
+                        const baseForPenalty = 
+                          Number(activeBill.condo_dues || 0) + 
+                          Number(activeBill.electricity || 0) + 
+                          Number(activeBill.water || 0) + 
+                          Number(activeBill.parking_fee || 0) + 
+                          Number(activeBill.job_order_fee || 0) + 
+                          Number(activeBill.previous_balance || 0) + 
+                          Number(activeBill.amenity_fee || 0);
+                        calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+                      }
+
+                      const totalAmount = 
+                        Number(activeBill.condo_dues || 0) + 
+                        Number(activeBill.electricity || 0) + 
+                        Number(activeBill.water || 0) + 
+                        Number(activeBill.parking_fee || 0) + 
+                        Number(activeBill.job_order_fee || 0) + 
+                        Number(activeBill.previous_balance || 0) + 
+                        Number(activeBill.penalty_amount || 0) + 
+                        Number(activeBill.amenity_fee || 0) +
+                        calculatedPenalty;
+
                       handleApprovePayment(activeBill.id, activeBill.unit_id, totalAmount);
                     }}
                   >Verify & Stamp Complete Clear</button>

@@ -31,7 +31,27 @@ export async function POST(req: Request) {
     const penaltyRate = condo?.penalty_rate || 0.02;
 
     if (isPartial) {
-      // Aggregate total amount due (including amenity fee!)
+      // 1. Calculate dynamic late penalty on the backend to match the frontend
+      const dueDateObj = new Date(bill.due_date);
+      const todayObj = new Date();
+      const isOverdue = (bill.status === 'OVERDUE' || bill.status === 'REQUESTED' || todayObj > dueDateObj) && bill.status !== 'PAID';
+      let calculatedPenalty = 0;
+      
+      if (isOverdue) {
+        const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+        const delayDays = Math.max(14, rawDelay);
+        const baseForPenalty = 
+          Number(bill.condo_dues || 0) + 
+          Number(bill.electricity || 0) + 
+          Number(bill.water || 0) + 
+          Number(bill.parking_fee || 0) + 
+          Number(bill.job_order_fee || 0) + 
+          Number(bill.previous_balance || 0) + 
+          Number(bill.amenity_fee || 0);
+        calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+      }
+
+      // Aggregate total amount due including dynamic penalty
       const amountDue = 
         Number(bill.condo_dues || 0) + 
         Number(bill.electricity || 0) + 
@@ -40,7 +60,8 @@ export async function POST(req: Request) {
         Number(bill.job_order_fee || 0) + 
         Number(bill.previous_balance || 0) + 
         Number(bill.penalty_amount || 0) +
-        Number(bill.amenity_fee || 0);
+        Number(bill.amenity_fee || 0) +
+        calculatedPenalty;
 
       const newBalance = amountDue - amount;
 
@@ -50,12 +71,19 @@ export async function POST(req: Request) {
         .replace(/\n\n\[NOTICE: Overdue penalty.*\]/g, '');
       const updatedDesc = `${cleanedDesc}\n\n[NOTICE: Partial payment of ₱${amount.toLocaleString()} processed. Remaining unpaid balance: ₱${newBalance.toFixed(2)}. This balance will be carried forward to next month's billing.]`;
 
+      // Update and consolidate all specific dues into the new previous_balance
       const { error } = await adminClient
         .from('billings')
         .update({
           status: 'PARTIAL',
           previous_balance: newBalance,
           penalty_amount: newBalance * penaltyRate,
+          condo_dues: 0,
+          electricity: 0,
+          water: 0,
+          parking_fee: 0,
+          job_order_fee: 0,
+          amenity_fee: 0,
           payment_method: paymentMethod || 'ONLINE',
           description: updatedDesc
         })

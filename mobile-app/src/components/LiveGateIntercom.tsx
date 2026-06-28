@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, Vibration } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { useUnit } from '../contexts/UnitContext';
@@ -7,12 +7,14 @@ export function LiveGateIntercom() {
   const { currentUnit } = useUnit();
   const [modalVisible, setModalVisible] = useState(false);
   const [visitorName, setVisitorName] = useState('');
+  const channelRef = useRef<any>(null);
 
   useEffect(() => {
     if (!currentUnit) return;
 
     // 1. 해당 유닛 고유 채널 웹소켓 실시간 바인딩 시작
     const channel = supabase.channel(`unit_gate_${currentUnit.unit_id}`);
+    channelRef.current = channel;
 
     channel
       .on('broadcast', { event: 'gate_request' }, (payload: any) => {
@@ -25,25 +27,20 @@ export function LiveGateIntercom() {
 
     return () => {
       supabase.removeChannel(channel);
+      channelRef.current = null;
     };
   }, [currentUnit]);
 
   const handleResponse = async (approved: boolean) => {
-    if (!currentUnit) return;
+    if (!currentUnit || !channelRef.current) return;
 
     // 가드하우스 태블릿이 수신 대기 중인 채널로 입주민의 최종 의사 결정 리턴
-    const channel = supabase.channel(`unit_gate_${currentUnit.unit_id}`);
-    channel.subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        await channel.send({
-          type: 'broadcast',
-          event: 'gate_response',
-          payload: { approved: approved }
-        });
-        setModalVisible(false);
-        supabase.removeChannel(channel);
-      }
+    await channelRef.current.send({
+      type: 'broadcast',
+      event: 'gate_response',
+      payload: { approved: approved }
     });
+    setModalVisible(false);
   };
 
   return (

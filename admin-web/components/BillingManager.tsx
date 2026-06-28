@@ -645,7 +645,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
           {currentView === 'ISSUANCE' ? (
             <div style={styles.embeddedUploadZone}>
               <form onSubmit={handleExcelUpload} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <input type="file" id="excel-file-input" accept=".xlsx, .xls" onChange={(e) => setExcelFile(e.target.files?.[0] || null)} style={{ display: 'none' }} />
+                <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" onChange={(e) => setExcelFile(e.target.files?.[0] || null)} style={{ display: 'none' }} />
                 <label htmlFor="excel-file-input" style={styles.embeddedFileBtn}>{excelFile ? `📄 ${excelFile.name.substring(0, 14)}...` : '📁 Select Excel Sheet'}</label>
                 <button type="submit" disabled={uploading} style={styles.embeddedSubmitBtn}>{uploading ? 'Syncing...' : 'Sync Data'}</button>
               </form>

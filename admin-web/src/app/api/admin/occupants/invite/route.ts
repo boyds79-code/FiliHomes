@@ -199,7 +199,7 @@ export async function POST(req: Request) {
       }
 
       generatedInvitations.push({
-        id: insertedData.id,
+        id: insertedData?.id || null,
         email,
         unitDisplay,
         inviteCode,

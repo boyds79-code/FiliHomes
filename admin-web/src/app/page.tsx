@@ -520,11 +520,9 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchPendingBillingsCount = async () => {
       try {
-        const { count, error } = await supabase
-          .from('billings')
-          .select('*', { count: 'exact', head: true })
-          .eq('status', 'REQUESTED');
-        if (!error && count !== null) {
+        const res = await fetch('/api/billings/pending-count');
+        if (res.ok) {
+          const { count } = await res.json();
           setPendingBillingsCount(count);
         }
       } catch (e) {

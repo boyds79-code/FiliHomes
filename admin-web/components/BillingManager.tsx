@@ -144,8 +144,8 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
           
           setBills(prevBills => {
             const hasChanges = prevBills.length !== paymentCandidates.length || 
-              paymentCandidates.some((newBill, idx) => {
-                const oldBill = prevBills[idx];
+              paymentCandidates.some(newBill => {
+                const oldBill = prevBills.find(ob => ob.id === newBill.id);
                 return !oldBill || oldBill.status !== newBill.status || (oldBill.receipts?.length !== newBill.receipts?.length);
               });
             
@@ -235,10 +235,56 @@ const fetchBillings = async () => {
     
     setBroadcasting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert(`🎉 Broadcaster Dispatch Complete!\n\nStatements successfully synchronized to  tenant terminals.`);
-    } catch (error) { 
+      // 1. Loop through all finalFilteredBills and insert a notification row for each unit!
+      const notifInserts = finalFilteredBills.map(bill => {
+        // Calculate dynamic penalty and total due just to show the correct total in the message!
+        const dueDateObj = new Date(bill.due_date);
+        const todayObj = new Date();
+        const isOverdue = (bill.status === 'OVERDUE' || bill.status === 'REQUESTED' || todayObj > dueDateObj) && bill.status !== 'PAID';
+        const penaltyRate = condoSettings?.penalty_rate || 0.02;
+        let calculatedPenalty = 0;
+        
+        if (isOverdue) {
+          const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+          const delayDays = Math.max(14, rawDelay);
+          const baseForPenalty = 
+            Number(bill.condo_dues || 0) + 
+            Number(bill.electricity || 0) + 
+            Number(bill.water || 0) + 
+            Number(bill.parking_fee || 0) + 
+            Number(bill.job_order_fee || 0) + 
+            Number(bill.previous_balance || 0) + 
+            Number(bill.amenity_fee || 0);
+          calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+        }
+
+        const totalAmount = 
+          Number(bill.condo_dues || 0) + 
+          Number(bill.electricity || 0) + 
+          Number(bill.water || 0) + 
+          Number(bill.parking_fee || 0) + 
+          Number(bill.job_order_fee || 0) + 
+          Number(bill.previous_balance || 0) + 
+          Number(bill.penalty_amount || 0) + 
+          Number(bill.amenity_fee || 0) +
+          calculatedPenalty;
+
+        return {
+          unit_id: bill.unit_id,
+          title: "💰 Digital Billing Statement Issued",
+          message: `Your statement for ${bill.billing_month} has been issued. Total due: ₱${totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}. Due date: ${bill.due_date}.`,
+          type: 'BILLING',
+          data: { billing_id: bill.id, amount: totalAmount }
+        };
+      });
+
+      const { error } = await supabase.from('notifications').insert(notifInserts);
+      if (error) throw error;
+
+      alert(`🎉 Broadcaster Dispatch Complete!\n\nStatements successfully synchronized to ${targetCount} tenant terminals.`);
+    } catch (error: any) { 
       console.error(error); 
+      alert(`Error broadcasting bills: ${error.message || error}`);
     } finally { 
       setBroadcasting(false); 
     }
@@ -260,11 +306,55 @@ const fetchBillings = async () => {
     
     setBroadcasting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const notifInserts = selectedBills.map(bill => {
+        const dueDateObj = new Date(bill.due_date);
+        const todayObj = new Date();
+        const isOverdue = (bill.status === 'OVERDUE' || bill.status === 'REQUESTED' || todayObj > dueDateObj) && bill.status !== 'PAID';
+        const penaltyRate = condoSettings?.penalty_rate || 0.02;
+        let calculatedPenalty = 0;
+        
+        if (isOverdue) {
+          const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+          const delayDays = Math.max(14, rawDelay);
+          const baseForPenalty = 
+            Number(bill.condo_dues || 0) + 
+            Number(bill.electricity || 0) + 
+            Number(bill.water || 0) + 
+            Number(bill.parking_fee || 0) + 
+            Number(bill.job_order_fee || 0) + 
+            Number(bill.previous_balance || 0) + 
+            Number(bill.amenity_fee || 0);
+          calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+        }
+
+        const totalAmount = 
+          Number(bill.condo_dues || 0) + 
+          Number(bill.electricity || 0) + 
+          Number(bill.water || 0) + 
+          Number(bill.parking_fee || 0) + 
+          Number(bill.job_order_fee || 0) + 
+          Number(bill.previous_balance || 0) + 
+          Number(bill.penalty_amount || 0) + 
+          Number(bill.amenity_fee || 0) +
+          calculatedPenalty;
+
+        return {
+          unit_id: bill.unit_id,
+          title: "🚨 Urgent Billing Notice",
+          message: `Your statement for ${bill.billing_month} remains outstanding. Total due: ₱${totalAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}. Please settle immediately to avoid further late penalties.`,
+          type: 'BILLING',
+          data: { billing_id: bill.id, amount: totalAmount }
+        };
+      });
+
+      const { error } = await supabase.from('notifications').insert(notifInserts);
+      if (error) throw error;
+
       alert(`🎉 Push notifications successfully re-transmitted to:\n\n${unitNumbers}`);
       setSelectedBillIds([]);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      alert(`Error resending push notifications: ${error.message || error}`);
     } finally {
       setBroadcasting(false);
     }

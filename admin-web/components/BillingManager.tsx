@@ -484,6 +484,7 @@ const fetchBillings = async () => {
 
           const result = await response.json();
 
+          if (response.ok && result.success) {
             alert(`🎉 CSV statement data synchronised successfully! Imported ${result.insertedCount} records.`);
             setIsExcelSynced(true);
             fetchBillings();
@@ -568,6 +569,7 @@ const fetchBillings = async () => {
 
         const result = await response.json();
 
+        if (response.ok && result.success) {
           alert(`🎉 Excel statement data synchronised successfully! Imported ${result.insertedCount} records.`);
           setIsExcelSynced(true);
           fetchBillings();

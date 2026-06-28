@@ -106,6 +106,22 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
     }
   };
 
+  const handleRevokeInvitation = async (inviteId: string) => {
+    if (!confirm("Are you sure you want to cancel this invitation? This will invalidate the invite code immediately.")) return;
+    try {
+      const { error } = await supabase
+        .from('unit_invitations')
+        .delete()
+        .eq('id', inviteId);
+      
+      if (error) throw error;
+      alert("Invitation cancelled and invalidated successfully!");
+      fetchInvitations();
+    } catch (err: any) {
+      alert("Failed to cancel invitation: " + (err.message || err));
+    }
+  };
+
   const handleSendInvitation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteEmail.trim() || !inviteUnitId) {
@@ -759,18 +775,19 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
                     <th className="py-3 px-4 text-center">Invite Code</th>
                     <th className="py-3 px-4">Status</th>
                     <th className="py-3 px-4">Issued Date</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-700">
                   {loadingInvites ? (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
+                      <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
                         Loading invitations history...
                       </td>
                     </tr>
                   ) : invitations.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
+                      <td colSpan={7} className="py-8 text-center text-slate-400 font-medium">
                         No invitations sent yet for this condo.
                       </td>
                     </tr>
@@ -806,6 +823,16 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
                           </td>
                           <td className="py-4 px-4 text-slate-400 text-xs font-mono">
                             {new Date(invite.created_at).toLocaleDateString()}
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            {!invite.is_used && !isExpired && (
+                              <button
+                                onClick={() => handleRevokeInvitation(invite.id)}
+                                className="text-[11px] font-bold text-red-600 hover:text-red-800 hover:underline border border-red-200 bg-red-50/50 hover:bg-red-50 px-2 py-1 rounded transition"
+                              >
+                                Revoke
+                              </button>
+                            )}
                           </td>
                         </tr>
                       );

@@ -1463,7 +1463,17 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
       
       const match = bankFeed.find(tx => {
         const normalizedBankRef = tx.ref_no.replace(/[^A-Z0-9]/ig, '').toUpperCase();
-        return normalizedBankRef === normalizedDetectedRef;
+        
+        const isExact = normalizedBankRef === normalizedDetectedRef;
+        const isPartial = normalizedBankRef.length >= 6 && normalizedDetectedRef.length >= 6 && 
+                          normalizedBankRef.endsWith(normalizedDetectedRef.slice(-6));
+                          
+        // Numeric fallback to bypass hidden Unicode/string quirks
+        const numBank = parseFloat(normalizedBankRef.replace(/[^0-9]/g, ''));
+        const numDetected = parseFloat(normalizedDetectedRef.replace(/[^0-9]/g, ''));
+        const isNumeric = !isNaN(numBank) && !isNaN(numDetected) && numBank === numDetected;
+        
+        return isExact || isPartial || isNumeric;
       });
 
       if (match) {

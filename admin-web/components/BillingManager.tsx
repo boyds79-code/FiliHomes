@@ -101,6 +101,17 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
   const [chatMessage, setChatMessage] = useState<string>('');
   const [sendingChat, setSendingChat] = useState<boolean>(false);
 
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isLedgerSynced, setIsLedgerSynced] = useState<boolean>(false);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 5000);
+  };
+
   useEffect(() => {
     fetchBillings();
     fetchCondoSettings();
@@ -110,17 +121,33 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
       const savedFeed = localStorage.getItem('filicondo_bank_feed');
       if (savedFeed) {
         try {
-          setBankFeed(JSON.parse(savedFeed));
+          const parsed = JSON.parse(savedFeed);
+          setBankFeed(parsed);
+          if (parsed && parsed.length > 0) {
+            setIsLedgerSynced(true);
+          }
         } catch (e) {
           console.error("Error loading bank feed from localStorage:", e);
         }
       }
     }
 
-    // Temporarily disable real-time subscription and use manual refresh for testing.
-    // Primary cause of memory spikes.
+    // Subscribe to live database changes for resident receipt submissions
+    const channel = supabase
+      .channel('realtime-billing-submissions-manager')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'billings' }, (payload) => {
+        // Trigger fetch Billings to keep list updated
+        fetchBillings();
+        
+        // If status changed to REQUESTED (new receipt submitted by resident)
+        if (payload.new?.status === 'REQUESTED' && payload.old?.status !== 'REQUESTED') {
+          showToast(`🔔 Unit ${payload.new?.unit_number || 'Resident'} submitted a new receipt for June 2026!`);
+        }
+      })
+      .subscribe();
+
     return () => {
-      // supabase.removeChannel(channel); // 주석 처리
+      supabase.removeChannel(channel);
     };
   }, []);
 
@@ -502,6 +529,7 @@ const fetchBillings = async () => {
       setBankFeed(parsedFeed);
       localStorage.setItem('filicondo_bank_feed', JSON.stringify(parsedFeed));
       setUploading(false);
+      setIsLedgerSynced(true);
       alert(`🎉 ${parsedFeed.length} bank transactions imported!`);
     };
     
@@ -754,8 +782,29 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
           <div onClick={() => { setCurrentView('VERIFICATION'); setExpandedRowId(null); }} style={{ ...styles.segmentCard, borderColor: currentView === 'VERIFICATION' ? '#10b981' : '#e2e8f0', backgroundColor: currentView === 'VERIFICATION' ? '#f0fdf4' : '#ffffff' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <div style={{ ...styles.iconBadge, backgroundColor: currentView === 'VERIFICATION' ? '#10b981' : '#94a3b8' }}>🧾</div>
-              <div>
-                <div style={{ ...styles.cardTitleText, color: currentView === 'VERIFICATION' ? '#064e3b' : '#475569' }}>Receipt Audit Ledger</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ ...styles.cardTitleText, color: currentView === 'VERIFICATION' ? '#064e3b' : '#475569' }}>Receipt Audit Ledger</div>
+                  {(() => {
+                    const reqCount = bills.filter(b => b.status === 'REQUESTED').length;
+                    if (reqCount > 0) {
+                      return (
+                        <span style={{
+                          backgroundColor: '#ef4444',
+                          color: '#ffffff',
+                          fontSize: '10px',
+                          fontWeight: '800',
+                          padding: '2px 8px',
+                          borderRadius: '8px',
+                          lineHeight: '1'
+                        }}>
+                          {reqCount}
+                        </span>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
                 <div style={styles.cardDescText}>Cross-check banking transactions & authorize complete clears</div>
               </div>
             </div>
@@ -787,9 +836,30 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
               
               <div style={{ ...styles.embeddedUploadZone, backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }}>
                 <form onSubmit={handleBankStatementUpload} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input type="file" id="bank-file-input" accept=".csv" onChange={(e) => setBankFile(e.target.files?.[0] || null)} style={{ display: 'none' }} />
-                  <label htmlFor="bank-file-input" style={{ ...styles.embeddedFileBtn, color: '#047857' }}>{bankFile ? `🏦 ${bankFile.name.substring(0, 14)}...` : '📁 Import Bank CSV'}</label>
-                  <button type="submit" disabled={uploading} style={{ ...styles.embeddedSubmitBtn, backgroundColor: '#10b981' }}>{uploading ? 'Parsing...' : 'Sync Ledger'}</button>
+                  <input 
+                    type="file" 
+                    id="bank-file-input" 
+                    accept=".csv" 
+                    onChange={(e) => { 
+                      setBankFile(e.target.files?.[0] || null); 
+                      setIsLedgerSynced(false); 
+                    }} 
+                    style={{ display: 'none' }} 
+                  />
+                  <label htmlFor="bank-file-input" style={{ ...styles.embeddedFileBtn, color: '#047857', cursor: 'pointer' }}>
+                    {bankFile ? `🏦 ${bankFile.name.substring(0, 14)}...` : '📁 Import Bank CSV'}
+                  </label>
+                  <button 
+                    type="submit" 
+                    disabled={uploading} 
+                    style={{ 
+                      ...styles.embeddedSubmitBtn, 
+                      backgroundColor: isLedgerSynced ? '#059669' : '#10b981',
+                      borderColor: isLedgerSynced ? '#047857' : '#059669'
+                    }}
+                  >
+                    {uploading ? 'Parsing...' : (isLedgerSynced ? '✓ Synced' : 'Sync Ledger')}
+                  </button>
                 </form>
               </div>
             </div>
@@ -1686,6 +1756,38 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
           </div>
         </div>
       )}
+
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          top: '24px',
+          right: '24px',
+          backgroundColor: '#1e293b',
+          color: '#ffffff',
+          padding: '16px 20px',
+          borderRadius: '12px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          borderLeft: '4px solid #8b5cf6',
+          animation: 'slideIn 0.3s ease-out',
+          maxWidth: '360px'
+        }}>
+          <span style={{ fontSize: '18px' }}>🔔</span>
+          <div>
+            <div style={{ fontWeight: 'bold', fontSize: '13px' }}>Real-time Notice</div>
+            <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '2px', lineHeight: '1.4' }}>{toastMessage}</div>
+          </div>
+        </div>
+      )}
+      <style>{`
+        @keyframes slideIn {
+          from { transform: translateX(120%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }

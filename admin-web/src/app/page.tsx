@@ -327,6 +327,7 @@ export default function DashboardPage() {
   const [newIntercomsCount, setNewIntercomsCount] = useState<number>(0);
   const [newBookingsCount, setNewBookingsCount] = useState<number>(0);
   const [newReportedIssuesCount, setNewReportedIssuesCount] = useState<number>(0);
+  const [pendingBillingsCount, setPendingBillingsCount] = useState<number>(0);
 
   // Refs to store previous badge counts for triggering audio and push alerts
   const prevCountsRef = useRef({
@@ -335,7 +336,8 @@ export default function DashboardPage() {
     newJobs: 0,
     newIntercoms: 0,
     newBookings: 0,
-    newReportedIssues: 0
+    newReportedIssues: 0,
+    pendingBillings: 0
   });
 
   useEffect(() => {
@@ -514,6 +516,35 @@ export default function DashboardPage() {
     };
   }, []);
 
+  // Fetch pending billing receipts (requested audits) in real time
+  useEffect(() => {
+    const fetchPendingBillingsCount = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('billings')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'REQUESTED');
+        if (!error && count !== null) {
+          setPendingBillingsCount(count);
+        }
+      } catch (e) {
+        console.error("Failed to fetch pending billings count:", e);
+      }
+    };
+    fetchPendingBillingsCount();
+
+    const channel = supabase
+      .channel('realtime-billings-count-dashboard')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'billings' }, () => {
+        fetchPendingBillingsCount();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   // Monitor counts and trigger push/sound notifications on increments
   useEffect(() => {
     const prev = prevCountsRef.current;
@@ -522,7 +553,9 @@ export default function DashboardPage() {
     let notifyBody = '';
 
     // Check if any count incremented (ignore initial mount where prev counts are 0)
-    const isInitial = prev.occupantRequests === 0 && prev.overdueParcels === 0 && prev.newJobs === 0 && prev.newIntercoms === 0 && prev.newBookings === 0 && prev.newReportedIssues === 0;
+    const isInitial = prev.occupantRequests === 0 && prev.overdueParcels === 0 && prev.newJobs === 0 && 
+                      prev.newIntercoms === 0 && prev.newBookings === 0 && prev.newReportedIssues === 0 && 
+                      prev.pendingBillings === 0;
 
     if (!isInitial) {
       if (occupantRequestsCount > prev.occupantRequests) {
@@ -549,6 +582,10 @@ export default function DashboardPage() {
         incremented = true;
         notifyTitle = '⚠️ New Platform Issue Reported!';
         notifyBody = `A new system or PMO issue has been filed. (Total open: ${newReportedIssuesCount})`;
+      } else if (pendingBillingsCount > prev.pendingBillings) {
+        incremented = true;
+        notifyTitle = '💰 New Resident Payment Receipt!';
+        notifyBody = `A resident has submitted a new proof of payment. (Total pending: ${pendingBillingsCount})`;
       }
 
       if (incremented) {
@@ -564,7 +601,8 @@ export default function DashboardPage() {
       newJobs: newJobsCount,
       newIntercoms: newIntercomsCount,
       newBookings: newBookingsCount,
-      newReportedIssues: newReportedIssuesCount
+      newReportedIssues: newReportedIssuesCount,
+      pendingBillings: pendingBillingsCount
     };
   }, [
     occupantRequestsCount,
@@ -572,7 +610,8 @@ export default function DashboardPage() {
     newJobsCount,
     newIntercomsCount,
     newBookingsCount,
-    newReportedIssuesCount
+    newReportedIssuesCount,
+    pendingBillingsCount
   ]);
 
   const handleDashboardNavigate = (menu: MenuType, options?: any) => {
@@ -1292,6 +1331,11 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-center lg:justify-start w-full lg:w-auto gap-2">
                   <BillingsIcon />
                   <span className="hidden lg:inline">Billings</span>
+                  {pendingBillingsCount > 0 && (
+                    <span className="bg-red-500 text-white text-[9px] w-4.5 h-4.5 flex items-center justify-center rounded-full font-extrabold leading-none animate-pulse shrink-0">
+                      {pendingBillingsCount}
+                    </span>
+                  )}
                 </div>
                 <ChevronIcon expanded={expandedBillings} />
               </button>
@@ -1310,13 +1354,23 @@ export default function DashboardPage() {
 
                   <button
                     onClick={() => setCurrentMenu('billings-audit')}
-                    className={`w-full text-left lg:px-4 py-2 rounded-lg transition-colors flex justify-center lg:justify-start items-center gap-2 ${
+                    className={`w-full text-left lg:px-4 py-2 rounded-lg transition-colors flex justify-between items-center gap-2 ${
                       currentMenu === 'billings-audit'
                         ? 'bg-emerald-50 text-emerald-700 font-bold'
                         : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 font-medium'
                     }`}
                     title="Audit"
-                  ><span className="w-5 flex items-center justify-center shrink-0"><span className="font-bold text-lg text-slate-400 select-none">•</span></span><span className="hidden lg:inline text-xs lg:text-sm font-semibold">Audit</span></button>
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 flex items-center justify-center shrink-0"><span className="font-bold text-lg text-slate-400 select-none">•</span></span>
+                      <span className="hidden lg:inline text-xs lg:text-sm font-semibold">Audit</span>
+                    </div>
+                    {pendingBillingsCount > 0 && (
+                      <span className="bg-red-500 text-white text-[9px] w-4.5 h-4.5 flex items-center justify-center rounded-full font-bold leading-none shrink-0 mr-2 lg:mr-0">
+                        {pendingBillingsCount}
+                      </span>
+                    )}
+                  </button>
                 </div>
               )}
             </div>

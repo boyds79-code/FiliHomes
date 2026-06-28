@@ -2,12 +2,16 @@ import { getAdminClient } from '../../../lib/supabaseServer';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  const { billingId, unitId, amount, paymentMethod, isPartial } = await req.json();
-  
-  const adminClient = getAdminClient();
+  try {
+    const { billingId, unitId, amount, paymentMethod, isPartial } = await req.json();
+    
+    const adminClient = getAdminClient();
 
-  if (isPartial) {
-    // 1. 기존 빌 정보를 조회해서 전체 금액을 확인
+    if (!billingId) {
+      return NextResponse.json({ success: false, error: 'Billing ID is required' }, { status: 400 });
+    }
+
+    // 1. Fetch current bill info
     const { data: bill, error: fetchError } = await adminClient
       .from('billings')
       .select('*')
@@ -18,49 +22,94 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: fetchError?.message || 'Bill not found' }, { status: 500 });
     }
 
-    // 2. 부분 결제 처리: 누적 결제를 위해 현재 지불해야 할 총액을 정확히 계산합니다.
-    let amountDue;
-    // 이미 부분 결제가 진행된 건(status: 'PARTIAL')이라면, 기존 항목을 다시 더하지 않고 `previous_balance`를 사용합니다.
-    if (bill.status === 'PARTIAL') {
-      amountDue = Number(bill.previous_balance || 0);
-    } else {
-      // 이 청구서에 대한 첫 결제라면 모든 비용 항목을 합산합니다.
-      amountDue = 
+    // 2. Fetch penalty rate from condo settings
+    const { data: condo } = await adminClient
+      .from('condos')
+      .select('penalty_rate')
+      .eq('id', bill.condo_id)
+      .single();
+    const penaltyRate = condo?.penalty_rate || 0.02;
+
+    if (isPartial) {
+      // Aggregate total amount due (including amenity fee!)
+      const amountDue = 
         Number(bill.condo_dues || 0) + 
         Number(bill.electricity || 0) + 
         Number(bill.water || 0) + 
         Number(bill.parking_fee || 0) + 
         Number(bill.job_order_fee || 0) + 
         Number(bill.previous_balance || 0) + 
-        Number(bill.penalty_amount || 0);
+        Number(bill.penalty_amount || 0) +
+        Number(bill.amenity_fee || 0);
+
+      const newBalance = amountDue - amount;
+
+      // Append notice to the bill description so the resident app displays it
+      const cleanedDesc = (bill.description || '')
+        .replace(/\n\n\[NOTICE: Partial payment.*\]/g, '')
+        .replace(/\n\n\[NOTICE: Overdue penalty.*\]/g, '');
+      const updatedDesc = `${cleanedDesc}\n\n[NOTICE: Partial payment of ₱${amount.toLocaleString()} processed. Remaining unpaid balance: ₱${newBalance.toFixed(2)}. This balance will be carried forward to next month's billing.]`;
+
+      const { error } = await adminClient
+        .from('billings')
+        .update({
+          status: 'PARTIAL',
+          previous_balance: newBalance,
+          penalty_amount: newBalance * penaltyRate,
+          payment_method: paymentMethod || 'ONLINE',
+          description: updatedDesc
+        })
+        .eq('id', billingId);
+
+      if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    } else {
+      // Complete Clear Payment
+      const dueDateObj = new Date(bill.due_date);
+      const todayObj = new Date();
+      const isOverdue = todayObj > dueDateObj;
+      
+      // Calculate real-time late penalty to log how much was waived
+      let calculatedPenalty = 0;
+      if (isOverdue) {
+        const delayDays = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+        const baseForPenalty = 
+          Number(bill.condo_dues || 0) + 
+          Number(bill.electricity || 0) + 
+          Number(bill.water || 0) + 
+          Number(bill.parking_fee || 0) + 
+          Number(bill.job_order_fee || 0) + 
+          Number(bill.previous_balance || 0) + 
+          Number(bill.amenity_fee || 0);
+        calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+      }
+
+      const totalPenalty = Number(bill.penalty_amount || 0) + calculatedPenalty;
+
+      // Clean old notices and append waiver notice
+      let updatedDesc = (bill.description || '')
+        .replace(/\n\n\[NOTICE: Partial payment.*\]/g, '')
+        .replace(/\n\n\[NOTICE: Overdue penalty.*\]/g, '');
+      
+      if (totalPenalty > 0) {
+        updatedDesc += `\n\n[NOTICE: Overdue penalty of ₱${totalPenalty.toFixed(2)} was waived/deducted by the administration upon payment approval.]`;
+      }
+
+      const { error } = await adminClient
+        .from('billings')
+        .update({ 
+          status: 'PAID', 
+          paid_at: new Date().toISOString(),
+          payment_method: paymentMethod || 'ONLINE',
+          penalty_amount: 0,
+          description: updatedDesc
+        })
+        .eq('id', billingId);
+        
+      if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    const newBalance = amountDue - amount;
-    
-    const { error } = await adminClient
-      .from('billings')
-      .update({
-        status: 'PARTIAL',
-        previous_balance: newBalance, // 결제 후 남은 잔액을 업데이트
-        penalty_amount: newBalance * 0.02, // 새로운 잔액에 대한 연체료를 다시 계산
-        payment_method: paymentMethod || 'ONLINE'
-      })
-      .eq('id', billingId);
-
-    if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  } else {
-    // 전액 결제 처리: PAID로 변경
-    const { error } = await adminClient
-      .from('billings')
-      .update({ 
-        status: 'PAID', 
-        paid_at: new Date().toISOString(),
-        payment_method: paymentMethod || 'ONLINE'
-      })
-      .eq('id', billingId);
-      
-    if (error) return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
-
-  return NextResponse.json({ success: true });
 }

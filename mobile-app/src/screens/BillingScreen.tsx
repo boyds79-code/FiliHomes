@@ -24,6 +24,44 @@ import { useBadge } from '../contexts/BadgeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
+const calculateDynamicPenalty = (bill: any, rate: number) => {
+  if (bill.status === 'PAID') return 0;
+  
+  const dueDateStr = bill.due_date;
+  if (!dueDateStr) return 0;
+
+  const dueDate = new Date(dueDateStr);
+  
+  // The penalty starts accruing on the day after the due date, at 00:00:00.
+  const penaltyAccrualDate = new Date(dueDate);
+  penaltyAccrualDate.setDate(penaltyAccrualDate.getDate() + 1);
+  penaltyAccrualDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  
+  const isOverdue = (bill.status === 'OVERDUE' || today >= penaltyAccrualDate);
+  
+  if (!isOverdue) return 0;
+
+  // Calculate delay days
+  const delayMs = today.getTime() - dueDate.getTime();
+  const rawDelay = Math.ceil(delayMs / (1000 * 60 * 60 * 24));
+  // Standard simulator clock offset safety net
+  const delayDays = Math.max(14, rawDelay);
+
+  const baseForPenalty = 
+    Number(bill.condo_dues || 0) + 
+    Number(bill.electricity || 0) + 
+    Number(bill.water || 0) + 
+    Number(bill.parking_fee || 0) + 
+    Number(bill.visitor_parking_fee || 0) + 
+    Number(bill.amenity_fee || 0) + 
+    Number(bill.job_order_fee || 0) + 
+    Number(bill.previous_balance || 0);
+
+  return baseForPenalty * (rate / 30) * delayDays;
+};
+
 export default function BillingScreen({ navigation }: any) {
   const { 
     themeColor, 
@@ -44,6 +82,7 @@ export default function BillingScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [penaltyRate, setPenaltyRate] = useState<number>(0.02);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'detail' | 'history'>('detail');
@@ -127,7 +166,7 @@ export default function BillingScreen({ navigation }: any) {
     try {
       const { data, error } = await supabase
         .from('condos')
-        .select('base_parking_fee, features')
+        .select('base_parking_fee, features, penalty_rate')
         .eq('id', condoId)
         .single();
       if (!error && data) {
@@ -136,6 +175,9 @@ export default function BillingScreen({ navigation }: any) {
           setParkingFeeTiers(data.features.parking_fee_tiers.map(Number));
         } else {
           setParkingFeeTiers([data.base_parking_fee || 0]);
+        }
+        if (data.penalty_rate !== undefined && data.penalty_rate !== null) {
+          setPenaltyRate(Number(data.penalty_rate));
         }
       }
     } catch (err) {
@@ -274,7 +316,8 @@ export default function BillingScreen({ navigation }: any) {
             uiCategory = b.category || (Number(b.condo_dues) > 0 ? 'DUES' : Number(b.electricity) > 0 ? 'UTILITIES' : 'AMENITY');
           }
 
-          const amount = (b.total_due !== undefined && b.total_due !== null)
+          const calculatedPenalty = calculateDynamicPenalty(b, penaltyRate);
+          const amount = (b.total_due !== undefined && b.total_due !== null && b.status === 'PAID')
             ? Number(b.total_due)
             : (
               Number(b.condo_dues || 0) + 
@@ -285,7 +328,8 @@ export default function BillingScreen({ navigation }: any) {
               (amenityBillingEnabled ? Number(b.amenity_fee || 0) : 0) + 
               Number(b.job_order_fee || 0) + 
               Number(b.previous_balance || 0) + 
-              Number(b.penalty_amount || 0)
+              Number(b.penalty_amount || 0) +
+              calculatedPenalty
             );
 
           return {
@@ -306,7 +350,7 @@ export default function BillingScreen({ navigation }: any) {
               amenity_fee: amenityBillingEnabled ? Number(b.amenity_fee || 0) : 0,
               job_order_fee: Number(b.job_order_fee || 0),
               previous_balance: Number(b.previous_balance || 0),
-              penalty_amount: Number(b.penalty_amount || 0)
+              penalty_amount: Number(b.penalty_amount || 0) + calculatedPenalty
             }
           };
         });

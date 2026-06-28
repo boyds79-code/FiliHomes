@@ -11,7 +11,43 @@ import { UnitSwitcherBar } from '../components/UnitSwitcherBar';
 import { Ionicons } from '@expo/vector-icons';
 import { useBadge } from '../contexts/BadgeContext';
 
-const { width } = Dimensions.get('window');
+const calculateDynamicPenalty = (bill: any, rate: number) => {
+  if (bill.status === 'PAID') return 0;
+  
+  const dueDateStr = bill.due_date;
+  if (!dueDateStr) return 0;
+
+  const dueDate = new Date(dueDateStr);
+  
+  // The penalty starts accruing on the day after the due date, at 00:00:00.
+  const penaltyAccrualDate = new Date(dueDate);
+  penaltyAccrualDate.setDate(penaltyAccrualDate.getDate() + 1);
+  penaltyAccrualDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  
+  const isOverdue = (bill.status === 'OVERDUE' || today >= penaltyAccrualDate);
+  
+  if (!isOverdue) return 0;
+
+  // Calculate delay days
+  const delayMs = today.getTime() - dueDate.getTime();
+  const rawDelay = Math.ceil(delayMs / (1000 * 60 * 60 * 24));
+  // Standard simulator clock offset safety net
+  const delayDays = Math.max(14, rawDelay);
+
+  const baseForPenalty = 
+    Number(bill.condo_dues || 0) + 
+    Number(bill.electricity || 0) + 
+    Number(bill.water || 0) + 
+    Number(bill.parking_fee || 0) + 
+    Number(bill.visitor_parking_fee || 0) + 
+    Number(bill.amenity_fee || bill.amenities_fee || 0) + 
+    Number(bill.job_order_fee || bill.other_fees || 0) + 
+    Number(bill.previous_balance || 0);
+
+  return baseForPenalty * (rate / 30) * delayDays;
+};
 
 export default function HomeScreen({ navigation }: any) {
   // 🎯 [핵심 수정] 하드코딩된 유닛/콘도 정보 대신, 중앙 Context에서 동적 데이터를 가져옵니다.
@@ -124,6 +160,22 @@ export default function HomeScreen({ navigation }: any) {
 
     // Fetch all billings to extract latest statement and unpaid counts
     if (activeUnitId) {
+      // 1. Fetch penalty rate from database
+      let penaltyRate = 0.02;
+      try {
+        const { data: condoData } = await supabase
+          .from('condos')
+          .select('penalty_rate')
+          .eq('id', targetCondoId)
+          .single();
+        if (condoData && condoData.penalty_rate !== undefined && condoData.penalty_rate !== null) {
+          penaltyRate = Number(condoData.penalty_rate);
+        }
+      } catch (e) {
+        console.error("Failed to fetch penalty rate on HomeScreen:", e);
+      }
+
+      // 2. Fetch billings
       const { data: bData, error: billsError } = await supabase
         .from('billings')
         .select('*')
@@ -132,7 +184,11 @@ export default function HomeScreen({ navigation }: any) {
 
       if (!billsError && bData && bData.length > 0) {
         const latest = bData[0];
-        const latestAmount = (latest.total_due !== undefined && latest.total_due !== null)
+        
+        // Calculate dynamic penalty
+        const calculatedPenalty = calculateDynamicPenalty(latest, penaltyRate);
+        
+        const latestAmount = (latest.total_due !== undefined && latest.total_due !== null && latest.status === 'PAID')
           ? Number(latest.total_due)
           : (
             Number(latest.condo_dues || 0) + 
@@ -140,16 +196,18 @@ export default function HomeScreen({ navigation }: any) {
             Number(latest.water || 0) + 
             Number(latest.parking_fee || 0) + 
             (visitorParkingBillingEnabled ? Number(latest.visitor_parking_fee || 0) : 0) + 
-            (amenityBillingEnabled ? Number(latest.amenities_fee || 0) : 0) + 
-            Number(latest.other_fees || 0) - 
-            Number(latest.adjustments || 0)
+            (amenityBillingEnabled ? Number(latest.amenity_fee || latest.amenities_fee || 0) : 0) + 
+            Number(latest.job_order_fee || latest.other_fees || 0) +
+            Number(latest.previous_balance || 0) + 
+            Number(latest.penalty_amount || 0) +
+            calculatedPenalty
           );
 
         setLatestBillAmount(latestAmount);
         setLatestBillStatus(latest.status);
 
         const yr = latest.billing_month.substring(0, 4);
-        const moVal = latest.billing_month.substring(4, 6);
+        const moVal = latest.billing_month.substring(5, 7); // Handle format YYYY-MM
         const matchMo = monthsList.find(m => m.value === moVal);
         setLatestBillMonthLabel(matchMo ? `${matchMo.label} ${yr}` : latest.billing_month);
       } else {

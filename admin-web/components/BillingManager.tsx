@@ -247,6 +247,97 @@ const fetchBillings = async () => {
     if (!excelFile) { alert("Please choose an Excel file first."); return; }
     setUploading(true);
     
+    // If it's a CSV file, parse it directly without importing the heavy xlsx library!
+    if (excelFile.name.endsWith('.csv')) {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const text = event.target?.result as string;
+          const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+          if (lines.length === 0) {
+            alert("The CSV file is empty.");
+            setUploading(false);
+            return;
+          }
+
+          const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+          const rawRows = lines.slice(1).map(line => {
+            return line.split(',').map(col => col.trim().replace(/^["']|["']$/g, ''));
+          });
+
+          // Map CSV rows to object format
+          const parsedRows = rawRows.map(rowCols => {
+            const rowObj: any = {};
+            headers.forEach((h, idx) => {
+              rowObj[h] = rowCols[idx] || '';
+            });
+            return rowObj;
+          });
+
+          const mappedBillings = parsedRows.map((row: any) => {
+            const getVal = (candidates: string[]) => {
+              const matchedKey = Object.keys(row).find(k => {
+                const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+                return candidates.some(c => c.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanK);
+              });
+              return matchedKey ? row[matchedKey] : undefined;
+            };
+
+            const unit_no = String(getVal(['unit_no', 'unit_number', 'unitno', 'unit', 'room', 'no']) || '').trim();
+            const condo_dues = parseFloat(getVal(['condo_dues', 'association_dues', 'associationdues', 'dues']) || 0);
+            const electricity = parseFloat(getVal(['electricity', 'electricity_bill']) || 0);
+            const water = parseFloat(getVal(['water', 'water_bill']) || 0);
+            const electricity_usage = parseFloat(getVal(['electricity_usage']) || 0);
+            const water_usage = parseFloat(getVal(['water_usage']) || 0);
+            const parking_fee = parseFloat(getVal(['parking_fee', 'parking']) || 0);
+            const job_order_fee = parseFloat(getVal(['job_order_fee']) || 0);
+            const billing_period = getVal(['billing_period', 'billing_month', 'month', 'billingperiod', 'period']) || 'June 2026';
+            const amount = parseFloat(getVal(['amount', 'outstanding_balance', 'balance', 'outstandingbalance']) || 0);
+
+            return {
+              unit_no,
+              condo_dues,
+              electricity,
+              water,
+              electricity_usage,
+              water_usage,
+              parking_fee,
+              job_order_fee,
+              billing_period,
+              amount
+            };
+          });
+
+          const response = await fetch('/api/upload-billings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              condoId: 'c1111111-1111-1111-1111-111111111111',
+              billings: mappedBillings
+            })
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+            alert(`🎉 CSV statement data synchronised successfully! Imported ${result.insertedCount} records.`);
+            setExcelFile(null);
+            fetchBillings();
+          } else {
+            throw new Error(result.error || "Failed to upload billings");
+          }
+        } catch (error: any) {
+          console.error(error);
+          alert(`❌ Failed to import CSV: ${error.message || error}`);
+        } finally {
+          setUploading(false);
+        }
+      };
+      reader.readAsText(excelFile);
+      return;
+    }
+
+    // Default Excel parsing for .xlsx / .xls
     const reader = new FileReader();
     reader.onload = async (event) => {
       try {

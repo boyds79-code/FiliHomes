@@ -90,6 +90,7 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
   // Vision AI Match tracking
   const [visionMatchedRef, setVisionMatchedRef] = useState<string | null>(null);
   const [confirmedMatchRef, setConfirmedMatchRef] = useState<string | null>(null);
+  const [aiDetectedAmount, setAiDetectedAmount] = useState<number | null>(null);
 
   // Condo Settings (for penalty & buildings)
   const [condoSettings, setCondoSettings] = useState<any>(null);
@@ -853,12 +854,13 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
           {finalFilteredBills.map((bill) => {
             const dueDateObj = new Date(bill.due_date);
             const todayObj = new Date();
-            const isOverdue = todayObj > dueDateObj && bill.status !== 'PAID';
+            const isOverdue = (bill.status === 'OVERDUE' || bill.status === 'REQUESTED' || todayObj > dueDateObj) && bill.status !== 'PAID';
             const penaltyRate = condoSettings?.penalty_rate || 0.02; // 기본 2%
             let calculatedPenalty = 0;
             
             if (isOverdue) {
-              const delayDays = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+              const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+              const delayDays = Math.max(14, rawDelay);
               const baseForPenalty = 
                 Number(bill.condo_dues || 0) + 
                 Number(bill.electricity || 0) + 
@@ -946,11 +948,11 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                         )}
                       </div>
                     ) : bill.status !== 'PAID' ? (
-                      <button onClick={() => { setActiveBill(bill); setVisionMatchedRef(null); setConfirmedMatchRef(null); }} style={styles.reviewButton}>
+                      <button onClick={() => { setActiveBill(bill); setVisionMatchedRef(null); setConfirmedMatchRef(null); setAiDetectedAmount(null); }} style={styles.reviewButton}>
                         Review Slips
                       </button>
                     ) : (
-                      <button onClick={() => { setActiveBill(bill); setVisionMatchedRef(null); setConfirmedMatchRef(null); }} style={styles.viewClearedButton}>
+                      <button onClick={() => { setActiveBill(bill); setVisionMatchedRef(null); setConfirmedMatchRef(null); setAiDetectedAmount(null); }} style={styles.viewClearedButton}>
                         🔍 View Cleared Slip
                       </button>
                     )}
@@ -1226,12 +1228,13 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                 {(() => {
                   const dueDateObj = new Date(activeBill.due_date);
                   const todayObj = new Date();
-                  const isOverdue = todayObj > dueDateObj && activeBill.status !== 'PAID';
+                  const isOverdue = (activeBill.status === 'OVERDUE' || activeBill.status === 'REQUESTED' || todayObj > dueDateObj) && activeBill.status !== 'PAID';
                   const penaltyRate = condoSettings?.penalty_rate || 0.02;
                   let calculatedPenalty = 0;
                   
                   if (isOverdue) {
-                    const delayDays = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+                    const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
+                    const delayDays = Math.max(14, rawDelay);
                     const baseForPenalty = 
                       Number(activeBill.condo_dues || 0) + 
                       Number(activeBill.electricity || 0) + 
@@ -1302,6 +1305,94 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                         <div>• Utilities & Dues: <strong>₱{Number((activeBill.condo_dues || 0) + (activeBill.electricity || 0) + (activeBill.water || 0) + (activeBill.parking_fee || 0) + (activeBill.job_order_fee || 0)).toLocaleString()}</strong></div>
                         <div>• Late Penalty ({(penaltyRate * 100).toFixed(1)}%): <strong style={{ color: calculatedPenalty > 0 ? '#b91c1c' : '#475569' }}>₱{Number(Number(activeBill.penalty_amount || 0) + calculatedPenalty).toLocaleString(undefined, {minimumFractionDigits: 2})}</strong></div>
                       </div>
+
+                      {/* AI Cross-Check Verification Card */}
+                      {aiDetectedAmount !== null && (
+                        <div style={{
+                          padding: '12px',
+                          backgroundColor: '#f5f3ff',
+                          borderRadius: '10px',
+                          border: '1.5px solid #ddd6fe',
+                          marginTop: '12px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px'
+                        }}>
+                          <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#6d28d9', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span>🤖 AI Receipt Cross-Analysis</span>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#4c1d95' }}>
+                            <span>Detected Receipt Amount:</span>
+                            <strong>₱{aiDetectedAmount.toLocaleString(undefined, {minimumFractionDigits: 2})}</strong>
+                          </div>
+                          {(() => {
+                            const diff = computedTotal - aiDetectedAmount;
+                            if (Math.abs(diff) < 0.01) {
+                              return (
+                                <div style={{ fontSize: '11px', color: '#15803d', fontWeight: 'bold', marginTop: '2px' }}>
+                                  ✨ Perfect match with Statement Due!
+                                </div>
+                              );
+                            } else if (diff > 0) {
+                              return (
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2px' }}>
+                                  <span style={{ fontSize: '11px', color: '#b91c1c', fontWeight: 'bold' }}>
+                                    ⚠️ Unpaid Discrepancy: ₱{diff.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                                  </span>
+                                  <button 
+                                    onClick={async () => {
+                                      if (!window.confirm(`Process this automatically as a Partial Payment of ₱${aiDetectedAmount}?`)) return;
+                                      setUploading(true);
+                                      try {
+                                        const res = await fetch('/api/approve-payment', {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ 
+                                            billingId: activeBill.id, 
+                                            unitId: activeBill.unit_id, 
+                                            amount: aiDetectedAmount,
+                                            isPartial: true
+                                          })
+                                        });
+                                        const resJson = await res.json();
+                                        if (resJson.success) {
+                                          alert(`🎉 Logged partial payment of ₱${aiDetectedAmount} successfully!`);
+                                          fetchBillings();
+                                          setActiveBill(null);
+                                        } else {
+                                          throw new Error(resJson.error);
+                                        }
+                                      } catch (err: any) {
+                                        alert(`Error: ${err.message}`);
+                                      } finally {
+                                        setUploading(false);
+                                      }
+                                    }}
+                                    style={{
+                                      backgroundColor: '#d97706',
+                                      color: '#fff',
+                                      border: 'none',
+                                      padding: '4px 8px',
+                                      borderRadius: '6px',
+                                      fontSize: '10px',
+                                      fontWeight: 'bold',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Apply Partial
+                                  </button>
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <div style={{ fontSize: '11px', color: '#6d28d9', fontWeight: 'bold', marginTop: '2px' }}>
+                                  💰 Overpayment Credit: ₱{(-diff).toLocaleString(undefined, {minimumFractionDigits: 2})}
+                                </div>
+                              );
+                            }
+                          })()}
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
@@ -1356,11 +1447,15 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
         method: 'POST', 
         body: JSON.stringify({ imageUrl: activeBill.receipts?.[0].receipt_image_url }) 
       });
-      const { refNo } = await res.json();
+      const { refNo, amount } = await res.json();
       
       if (!refNo) {
         alert("⚠️ No reference number detected.");
         return;
+      }
+
+      if (amount) {
+        setAiDetectedAmount(amount);
       }
 
       // 2. Strict matching logic (enforce exact match on normalized alphanumeric characters)

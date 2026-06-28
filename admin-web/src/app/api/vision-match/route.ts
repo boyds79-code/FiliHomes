@@ -100,28 +100,41 @@ export async function POST(req: Request) {
     } else {
       const prompt = `
         You are an AI receipt analyzer.
-        Identify the Reference Number / Ref No / Transaction No from this receipt image.
-        Please look at the number very closely.
+        Identify the Reference Number / Transaction No and the total amount paid (in PHP/Pesos) from this receipt image.
+        Please look at the image very closely.
         - Transcribe the reference number carefully digit-by-digit.
-        - Be extremely precise with repeating numbers (e.g. check if there are two or three 9s).
-        - Return ONLY the exact digits of the reference number with no spaces, characters, or other text.
-        - If no reference number is found, return "null".
+        - Transcribe the payment/transfer amount paid (excluding any currency symbols).
+        - Return the results as a raw JSON object, for example: {"refNo": "1234567890", "amount": 4300}
+        - If no reference number is found, set "refNo" to null.
+        - If no amount is found, set "amount" to null.
+        - Provide ONLY the raw JSON object (do not wrap in markdown like \`\`\`json).
+        - Do not output any conversational text or other keys.
       `;
 
       console.log("Vision API (Gemini): Sending receipt image to model...");
       const aiResult = await model.generateContent([prompt, imagePart]);
-      let refNo = aiResult.response.text().trim();
-      console.log("Vision API (Gemini) Response:", refNo);
+      const rawText = aiResult.response.text().trim();
+      console.log("Vision API (Gemini) Response:", rawText);
 
-      if (refNo.toLowerCase() === "null") refNo = "";
-      
-      // Clean up any extra text or formatting from the response (just digits)
-      refNo = refNo.replace(/[^0-9]/g, '');
+      let refNo = null;
+      let amount = null;
+      try {
+        const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+        const parsed = JSON.parse(cleaned);
+        refNo = parsed.refNo ? String(parsed.refNo).replace(/[^0-9]/g, '') : null;
+        amount = parsed.amount ? parseFloat(String(parsed.amount).replace(/[^0-9.]/g, '')) : null;
+      } catch (err) {
+        console.error("JSON parse error for receipt analysis:", err);
+        // regex fallback
+        const matches = rawText.match(/\b\d{10,15}\b/);
+        refNo = matches ? matches[0] : null;
+      }
 
       return NextResponse.json({ 
         success: true, 
         refNo: refNo || null,
-        fullText: refNo 
+        amount: amount || null,
+        fullText: rawText 
       });
     }
   } catch (error: any) {

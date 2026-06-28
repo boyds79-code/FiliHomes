@@ -1,4 +1,4 @@
-﻿"Unit Number","Billing Month","Outstanding Balance","Resident Name","Email"
+﻿"unit_no","billing_month","amount","resident_name","email"
 "1206","June 2026","4300","Juan Dela Cruz","juan.guard@gmail.com"
 "1207","June 2026","2800","Maria Santos","maria.santos@demo.com"
 "1208","June 2026","3500","Pedro Penduko","pedro.penduko@demo.com"

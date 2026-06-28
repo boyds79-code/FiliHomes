@@ -267,18 +267,40 @@ const fetchBillings = async () => {
           return;
         }
 
-        const mappedBillings = rawRows.map((row: any) => ({
-          unit_no: row.unit_no || row.UnitNo || row.unit || row.Unit || '',
-          condo_dues: parseFloat(row.condo_dues || row.AssociationDues || row.association_dues || 0),
-          electricity: parseFloat(row.electricity || row.Electricity || 0),
-          water: parseFloat(row.water || row.Water || 0),
-          electricity_usage: parseFloat(row.electricity_usage || 0),
-          water_usage: parseFloat(row.water_usage || 0),
-          parking_fee: parseFloat(row.parking_fee || 0),
-          job_order_fee: parseFloat(row.job_order_fee || 0),
-          billing_period: row.billing_period || row.BillingPeriod || row.billing_month || row.month || 'June 2026',
-          amount: parseFloat(row.amount || row.Amount || row.outstanding_balance || row.balance || 0)
-        }));
+        const mappedBillings = rawRows.map((row: any) => {
+          // Robust key extraction ignoring casing, spaces, and special characters
+          const getVal = (candidates: string[]) => {
+            const matchedKey = Object.keys(row).find(k => {
+              const cleanK = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+              return candidates.some(c => c.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanK);
+            });
+            return matchedKey ? row[matchedKey] : undefined;
+          };
+
+          const unit_no = String(getVal(['unit_no', 'unit_number', 'unitno', 'unit', 'room', 'no']) || '').trim();
+          const condo_dues = parseFloat(getVal(['condo_dues', 'association_dues', 'associationdues', 'dues']) || 0);
+          const electricity = parseFloat(getVal(['electricity', 'electricity_bill']) || 0);
+          const water = parseFloat(getVal(['water', 'water_bill']) || 0);
+          const electricity_usage = parseFloat(getVal(['electricity_usage']) || 0);
+          const water_usage = parseFloat(getVal(['water_usage']) || 0);
+          const parking_fee = parseFloat(getVal(['parking_fee', 'parking']) || 0);
+          const job_order_fee = parseFloat(getVal(['job_order_fee']) || 0);
+          const billing_period = getVal(['billing_period', 'billing_month', 'month', 'billingperiod', 'period']) || 'June 2026';
+          const amount = parseFloat(getVal(['amount', 'outstanding_balance', 'balance', 'outstandingbalance']) || 0);
+
+          return {
+            unit_no,
+            condo_dues,
+            electricity,
+            water,
+            electricity_usage,
+            water_usage,
+            parking_fee,
+            job_order_fee,
+            billing_period,
+            amount
+          };
+        });
 
         const response = await fetch('/api/upload-billings', {
           method: 'POST',

@@ -135,7 +135,7 @@ export default function GuardConsole() {
     <div style={styles.dashboardContainer}>
       {/* Top Console Status Bar */}
       <div style={styles.statusBar}>
-        <h2 style={styles.title}>🛡️ PhiliCondo Guard Gatehouse Terminal</h2>
+        <h2 style={styles.title}>🛡️ FiliCondo Guard Gatehouse Terminal</h2>
         <span style={styles.onlineIndicator}>● SYSTEM ACTIVE (REALTIME)</span>
       </div>
 

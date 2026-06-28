@@ -72,7 +72,23 @@ export function AppGuardInterceptor({ children }: { children: React.ReactNode })
     );
   }
 
-  // 3. 정상 계정인 경우 하위 메인 앱 화면(HomeScreen 등) 그대로 통과
+  // 3. 입주 서류 검토 중인 대기 계정 차단 UI
+  if (unitStatus === 'pending') {
+    return (
+      <View style={[styles.blockContainer, { backgroundColor: '#f0f9ff' }]}>
+        <Text style={styles.lockIcon}>⏳</Text>
+        <Text style={[styles.blockTitle, { color: '#0369a1' }]}>Verification Pending</Text>
+        <Text style={styles.blockMessage}>
+          Your residency registration request is currently under review by the Property Management Office. We are verifying your uploaded proof documents. You will be granted access as soon as the PMO approves your request.
+        </Text>
+        <TouchableOpacity style={[styles.refreshButton, { backgroundColor: '#0369a1' }]} onPress={checkCurrentUnitAuthorization}>
+          <Text style={styles.refreshText}>Check Verification Status</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // 4. 정상 계정인 경우 하위 메인 앱 화면(HomeScreen 등) 그대로 통과
   return <>{children}</>;
 }
 

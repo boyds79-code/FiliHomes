@@ -39,7 +39,7 @@ export default function HomeScreen({ navigation }: any) {
 
   // ⚡ 거주자용 원터치 초고속 하이패스 QR 모달 제어 상태 변수
   const [quickPassVisible, setQuickPassVisible] = useState(false);
-  const residentToken = `PHILICONDO-RESIDENT-UNIT${activeUnitNumber}-SECURE-2026`; 
+  const residentToken = `FILICONDO-RESIDENT-UNIT${activeUnitNumber}-SECURE-2026`; 
 
   const activeLayout: 'dashboard' | 'concierge' | 'classic' = 'dashboard';
   const colorTheme: 'phili-flag' | 'teal' | 'charcoal' = 'phili-flag';

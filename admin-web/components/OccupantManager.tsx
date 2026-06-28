@@ -33,7 +33,7 @@ interface Occupant {
 
 interface OccupantManagerProps {
   condoId: string;
-  initialTab?: 'DIRECTORY' | 'REGISTER' | 'REQUESTS';
+  initialTab?: 'DIRECTORY' | 'REGISTER' | 'REQUESTS' | 'INVITATIONS';
 }
 
 export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: OccupantManagerProps) {
@@ -41,7 +41,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
   const [units, setUnits] = useState<Unit[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'DIRECTORY' | 'REGISTER' | 'REQUESTS'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'DIRECTORY' | 'REGISTER' | 'REQUESTS' | 'INVITATIONS'>(initialTab);
   
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,6 +83,70 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
   // Registration requests state
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
 
+  // Invitation states
+  const [invitations, setInvitations] = useState<any[]>([]);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteUnitId, setInviteUnitId] = useState('');
+  const [inviteRole, setInviteRole] = useState<'owner' | 'co_owner' | 'family_member' | 'tenant' | 'short_term_renter'>('tenant');
+  const [inviting, setInviting] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [loadingInvites, setLoadingInvites] = useState(false);
+
+  const fetchInvitations = async () => {
+    try {
+      setLoadingInvites(true);
+      const response = await fetch(`/api/admin/occupants/invite?condoId=${condoId}`);
+      if (!response.ok) throw new Error("Failed to fetch invitations");
+      const data = await response.json();
+      setInvitations(data || []);
+    } catch (err) {
+      console.error("Error fetching invitations:", err);
+    } finally {
+      setLoadingInvites(false);
+    }
+  };
+
+  const handleSendInvitation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim() || !inviteUnitId) {
+      setInviteMsg({ type: 'error', text: 'Email and target unit are required.' });
+      return;
+    }
+    setInviteMsg(null);
+    setInviting(true);
+
+    try {
+      const response = await fetch('/api/admin/occupants/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          condoId,
+          invitations: [
+            {
+              email: inviteEmail.trim(),
+              unitId: inviteUnitId,
+              role: inviteRole
+            }
+          ]
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send invitation');
+      }
+
+      setInviteMsg({ type: 'success', text: `Invitation sent successfully to ${inviteEmail}!` });
+      setInviteEmail('');
+      setInviteUnitId('');
+      fetchInvitations();
+    } catch (err: any) {
+      setInviteMsg({ type: 'error', text: err.message || 'Invitation failed.' });
+    } finally {
+      setInviting(false);
+    }
+  };
+
   const fetchModificationRequests = async () => {
     setModLoading(true);
     try {
@@ -105,13 +169,15 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
   useEffect(() => {
     if (activeTab === 'REQUESTS') {
       fetchModificationRequests();
+    } else if (activeTab === 'INVITATIONS') {
+      fetchInvitations();
     }
   }, [activeTab]);
 
   // Load and sync pending requests
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = window.localStorage.getItem('philicondo_occupant_requests');
+      const stored = window.localStorage.getItem('filicondo_occupant_requests');
       if (stored) {
         setPendingRequests(JSON.parse(stored));
       } else {
@@ -153,7 +219,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
             created_at: new Date(Date.now() - 7200000).toISOString()
           }
         ];
-        window.localStorage.setItem('philicondo_occupant_requests', JSON.stringify(defaults));
+        window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(defaults));
         setPendingRequests(defaults);
         // Dispatch event for dashboard to count it
         window.dispatchEvent(new Event('occupantRequestsUpdated'));
@@ -185,7 +251,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
               towerName: matchedUnit?.tower_name || req.towerName
             };
           });
-          window.localStorage.setItem('philicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
+          window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
           return updated;
         });
       }
@@ -228,7 +294,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
           documentUrl: occ.document_url || null
         }));
 
-      const stored = window.localStorage.getItem('philicondo_occupant_requests');
+      const stored = window.localStorage.getItem('filicondo_occupant_requests');
       const localRequests = stored ? JSON.parse(stored) : [];
       // Keep only mock requests from local storage
       const mockRequests = localRequests.filter((r: any) => r.id.startsWith('req-'));
@@ -236,7 +302,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
       const combined = [...dbPending, ...mockRequests.filter((mr: any) => !dbPending.some((db: any) => db.email.toLowerCase() === mr.email.toLowerCase()))];
       
       setPendingRequests(combined);
-      window.localStorage.setItem('philicondo_occupant_requests', JSON.stringify(combined));
+      window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(combined));
       window.dispatchEvent(new Event('occupantRequestsUpdated'));
     } catch (err) {
       console.error("Error fetching occupants:", err);
@@ -368,7 +434,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
       
       const updated = pendingRequests.filter(r => r.id !== req.id);
       setPendingRequests(updated);
-      window.localStorage.setItem('philicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
+      window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
       
       // Dispatch custom event to notify components (like Dashboard)
       window.dispatchEvent(new Event('occupantRequestsUpdated'));
@@ -395,7 +461,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
       }
       const updated = pendingRequests.filter(r => r.id !== reqId);
       setPendingRequests(updated);
-      window.localStorage.setItem('philicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
+      window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
       window.dispatchEvent(new Event('occupantRequestsUpdated'));
       fetchOccupants();
     } catch (err: any) {
@@ -454,7 +520,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
     setSavingRowId(mappingId);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const requestedBy = user?.email || 'admin@philicondo.com';
+      const requestedBy = user?.email || 'admin@filicondo.com';
 
       const response = await fetch('/api/admin/occupants/modify-requests', {
         method: 'POST',
@@ -517,7 +583,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
   const handleApproveModification = async (requestId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const approvedBy = user?.email || 'admin@philicondo.com';
+      const approvedBy = user?.email || 'admin@filicondo.com';
 
       const response = await fetch('/api/admin/occupants/modify-requests/action', {
         method: 'POST',
@@ -546,7 +612,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
     if (!confirm("Are you sure you want to reject this modification request?")) return;
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const approvedBy = user?.email || 'admin@philicondo.com';
+      const approvedBy = user?.email || 'admin@filicondo.com';
 
       const response = await fetch('/api/admin/occupants/modify-requests/action', {
         method: 'POST',
@@ -604,6 +670,154 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
 
   return (
     <div className="space-y-6">
+      {activeTab === 'INVITATIONS' && (
+        <div className="w-full space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-800">✉️ Invite Resident</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Send a unique 6-digit registration code to a resident's email.
+            </p>
+
+            <form onSubmit={handleSendInvitation} className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Email Address</label>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="resident@email.com"
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 font-sans"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Target Unit</label>
+                <select
+                  value={inviteUnitId}
+                  onChange={(e) => setInviteUnitId(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                  required
+                >
+                  <option value="">Select Unit...</option>
+                  {units.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.tower_name ? `${u.tower_name} - ` : ''}Unit {u.unit_number}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Role Type</label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value as any)}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                >
+                  <option value="owner">Home Owner</option>
+                  <option value="co_owner">Co-Owner</option>
+                  <option value="family_member">Family Member</option>
+                  <option value="tenant">Tenant</option>
+                  <option value="short_term_renter">Short-term Renter</option>
+                </select>
+              </div>
+
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  disabled={inviting}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-2 px-4 rounded-lg transition-colors disabled:bg-blue-300 h-[38px] flex items-center justify-center cursor-pointer"
+                >
+                  {inviting ? "Sending..." : "Send Invitation"}
+                </button>
+              </div>
+            </form>
+
+            {inviteMsg && (
+              <div className={`mt-4 p-3 rounded-lg text-sm font-semibold ${
+                inviteMsg.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+              }`}>
+                {inviteMsg.text}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h3 className="text-lg font-bold text-slate-800">📋 Invitation History</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              List of sent invitation codes and their registration status.
+            </p>
+
+            <div className="overflow-x-auto mt-6">
+              <table className="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr className="border-b border-slate-100 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                    <th className="py-3 px-4">Recipient</th>
+                    <th className="py-3 px-4">Assigned Unit</th>
+                    <th className="py-3 px-4">Role</th>
+                    <th className="py-3 px-4 text-center">Invite Code</th>
+                    <th className="py-3 px-4">Status</th>
+                    <th className="py-3 px-4">Issued Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
+                  {loadingInvites ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
+                        Loading invitations history...
+                      </td>
+                    </tr>
+                  ) : invitations.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-400 font-medium">
+                        No invitations sent yet for this condo.
+                      </td>
+                    </tr>
+                  ) : (
+                    invitations.map((invite) => {
+                      const isExpired = new Date(invite.expired_at) < new Date();
+                      return (
+                        <tr key={invite.id} className="hover:bg-slate-50/50">
+                          <td className="py-4 px-4 font-semibold text-slate-800">{invite.email}</td>
+                          <td className="py-4 px-4">
+                            {invite.units?.building_no ? `${invite.units.building_no} - ` : ''}Unit {invite.units?.unit_number}
+                          </td>
+                          <td className="py-4 px-4 capitalize font-medium">{invite.role.replace('_', ' ')}</td>
+                          <td className="py-4 px-4 text-center">
+                            <span className="font-mono font-bold text-blue-600 bg-blue-50/50 rounded px-2.5 py-1">
+                              {invite.invite_code}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">
+                            {invite.is_used ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-50 text-green-700 border border-green-200">
+                                Used
+                              </span>
+                            ) : isExpired ? (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200">
+                                Expired
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
+                                Active
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-4 text-slate-400 text-xs font-mono">
+                            {new Date(invite.created_at).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeTab === 'REGISTER' && (
         <div className="max-w-2xl mx-auto w-full">
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">

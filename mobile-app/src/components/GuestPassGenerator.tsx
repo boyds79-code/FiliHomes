@@ -41,7 +41,7 @@ export function GuestPassGenerator() {
 
       // 3. 게스트가 앱 설치 없이 브라우저로 볼 수 있는 PWA 웹 딥링크 조합
       // TODO: 실제 배포할 PWA 웹 도메인 주소로 교체해야 합니다.
-      const pwaWebUrl = `https://pass.philicondo.com/view/${data.pass_code}`;
+      const pwaWebUrl = `https://filicondo.hey-driver.com/view/${data.pass_code}`;
 
       // 4. 네이티브 공유 API 호출 (WhatsApp, 카카오톡 등 전송)
       await Share.share({

@@ -41,7 +41,7 @@ export default function AuthScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <TouchableOpacity activeOpacity={1} onPress={handleTriggerSecretDoor} style={{ paddingVertical: 10 }}>
-        <Text style={styles.title}>PhiliCondo Login</Text>
+        <Text style={styles.title}>FiliCondo Login</Text>
       </TouchableOpacity>
 
       <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -55,16 +55,25 @@ export default function AuthScreen({ navigation }: any) {
           {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Sign In</Text>}
         </TouchableOpacity>
       </View>
+
+      <View style={[styles.verticallySpaced, styles.mt10]}>
+        <TouchableOpacity style={styles.signUpBtn} onPress={() => navigation.navigate('SignUpScreen')}>
+          <Text style={styles.signUpBtnText}>Sign Up & Link Unit</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { padding: 20, flex: 1, justifyContent: 'center', backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 40, color: '#0056b3' },
+  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 40, color: '#0038a8' },
   verticallySpaced: { paddingTop: 4, paddingBottom: 4, alignSelf: 'stretch' },
   mt20: { marginTop: 20 },
+  mt10: { marginTop: 10 },
   input: { height: 50, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, paddingHorizontal: 15, fontSize: 16, backgroundColor: '#f9f9f9' },
-  button: { backgroundColor: '#0056b3', height: 50, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  button: { backgroundColor: '#0038a8', height: 50, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
   buttonText: { color: '#fff', fontSize: 18, fontWeight: '600' },
+  signUpBtn: { height: 50, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#0038a8', backgroundColor: '#fff' },
+  signUpBtnText: { color: '#0038a8', fontSize: 16, fontWeight: '600' },
 });

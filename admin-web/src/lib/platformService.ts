@@ -101,9 +101,9 @@ export async function reportIssue(issue: Omit<PlatformIssue, 'id' | 'status' | '
     console.warn("DB write error for platform_issues, falling back to LocalStorage:", e);
   }
 
-  const issues = getLocalStorage<PlatformIssue[]>('philicondo_platform_issues', []);
+  const issues = getLocalStorage<PlatformIssue[]>('filicondo_platform_issues', []);
   issues.push(newIssue);
-  setLocalStorage('philicondo_platform_issues', issues);
+  setLocalStorage('filicondo_platform_issues', issues);
   return newIssue;
 }
 
@@ -128,7 +128,7 @@ export async function getIssues(condoId?: string): Promise<PlatformIssue[]> {
   }
 
   // Fallback
-  let issues = getLocalStorage<PlatformIssue[]>('philicondo_platform_issues', []);
+  let issues = getLocalStorage<PlatformIssue[]>('filicondo_platform_issues', []);
   if (condoId) {
     issues = issues.filter(i => i.condo_id === condoId);
   }
@@ -149,11 +149,11 @@ export async function updateIssueStatus(issueId: string, status: PlatformIssue['
     console.warn("DB update error for platform_issues, falling back to LocalStorage:", e);
   }
 
-  const issues = getLocalStorage<PlatformIssue[]>('philicondo_platform_issues', []);
+  const issues = getLocalStorage<PlatformIssue[]>('filicondo_platform_issues', []);
   const idx = issues.findIndex(i => i.id === issueId);
   if (idx !== -1) {
     issues[idx].status = status;
-    setLocalStorage('philicondo_platform_issues', issues);
+    setLocalStorage('filicondo_platform_issues', issues);
     return true;
   }
   return false;
@@ -183,7 +183,7 @@ export async function getAds(condoId?: string): Promise<AdCampaign[]> {
   }
 
   // Fallback
-  let ads = getLocalStorage<AdCampaign[]>('philicondo_ad_campaigns', []);
+  let ads = getLocalStorage<AdCampaign[]>('filicondo_ad_campaigns', []);
   if (condoId) {
     ads = ads.filter(ad => ad.target_type === 'GLOBAL' || ad.condo_id === condoId);
   }
@@ -213,9 +213,9 @@ export async function createAd(ad: Omit<AdCampaign, 'id' | 'status' | 'created_a
     console.warn("DB write error for ad_campaigns, falling back to LocalStorage:", e);
   }
 
-  const ads = getLocalStorage<AdCampaign[]>('philicondo_ad_campaigns', []);
+  const ads = getLocalStorage<AdCampaign[]>('filicondo_ad_campaigns', []);
   ads.push(newAd);
-  setLocalStorage('philicondo_ad_campaigns', ads);
+  setLocalStorage('filicondo_ad_campaigns', ads);
   return newAd;
 }
 
@@ -227,9 +227,9 @@ export async function deleteAd(adId: string): Promise<boolean> {
     console.warn("DB delete error for ad_campaigns, falling back to LocalStorage:", e);
   }
 
-  const ads = getLocalStorage<AdCampaign[]>('philicondo_ad_campaigns', []);
+  const ads = getLocalStorage<AdCampaign[]>('filicondo_ad_campaigns', []);
   const filtered = ads.filter(ad => ad.id !== adId);
-  setLocalStorage('philicondo_ad_campaigns', filtered);
+  setLocalStorage('filicondo_ad_campaigns', filtered);
   return true;
 }
 
@@ -362,9 +362,9 @@ export async function uploadReceipt(payment: Omit<SubscriptionPayment, 'id' | 's
     console.warn("DB write error for subscription_payments, falling back to LocalStorage:", e);
   }
 
-  const payments = getLocalStorage<SubscriptionPayment[]>('philicondo_subscription_payments', []);
+  const payments = getLocalStorage<SubscriptionPayment[]>('filicondo_subscription_payments', []);
   payments.push(newPayment);
-  setLocalStorage('philicondo_subscription_payments', payments);
+  setLocalStorage('filicondo_subscription_payments', payments);
   return newPayment;
 }
 
@@ -388,7 +388,7 @@ export async function getSubscriptionPayments(condoId?: string): Promise<Subscri
   }
 
   // Fallback
-  let payments = getLocalStorage<SubscriptionPayment[]>('philicondo_subscription_payments', []);
+  let payments = getLocalStorage<SubscriptionPayment[]>('filicondo_subscription_payments', []);
   
   // Seed initial mock subscription bills if local storage empty
   if (payments.length === 0) {
@@ -424,7 +424,7 @@ export async function getSubscriptionPayments(condoId?: string): Promise<Subscri
         created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
       }
     ];
-    setLocalStorage('philicondo_subscription_payments', payments);
+    setLocalStorage('filicondo_subscription_payments', payments);
   }
 
   if (condoId) {
@@ -446,11 +446,11 @@ export async function verifySubscriptionPayment(paymentId: string, status: Subsc
     console.warn("DB update error for subscription_payments, falling back to LocalStorage:", e);
   }
 
-  const payments = getLocalStorage<SubscriptionPayment[]>('philicondo_subscription_payments', []);
+  const payments = getLocalStorage<SubscriptionPayment[]>('filicondo_subscription_payments', []);
   const idx = payments.findIndex(p => p.id === paymentId);
   if (idx !== -1) {
     payments[idx].status = status;
-    setLocalStorage('philicondo_subscription_payments', payments);
+    setLocalStorage('filicondo_subscription_payments', payments);
     return true;
   }
   return false;
@@ -489,9 +489,9 @@ export async function recordAdPayment(payment: Omit<AdPayment, 'id' | 'created_a
     console.warn("DB write error for ad_payments, falling back to LocalStorage:", e);
   }
 
-  const payments = getLocalStorage<AdPayment[]>('philicondo_ad_payments', []);
+  const payments = getLocalStorage<AdPayment[]>('filicondo_ad_payments', []);
   payments.push(newPayment);
-  setLocalStorage('philicondo_ad_payments', payments);
+  setLocalStorage('filicondo_ad_payments', payments);
   return newPayment;
 }
 
@@ -511,7 +511,7 @@ export async function getAdPayments(): Promise<AdPayment[]> {
   }
 
   // Fallback
-  let payments = getLocalStorage<AdPayment[]>('philicondo_ad_payments', []);
+  let payments = getLocalStorage<AdPayment[]>('filicondo_ad_payments', []);
   if (payments.length === 0) {
     payments = [
       {
@@ -551,7 +551,7 @@ export async function getAdPayments(): Promise<AdPayment[]> {
         created_at: new Date().toISOString()
       }
     ];
-    setLocalStorage('philicondo_ad_payments', payments);
+    setLocalStorage('filicondo_ad_payments', payments);
   }
 
   return payments
@@ -570,11 +570,11 @@ export async function verifyAdPayment(paymentId: string, status: AdPayment['stat
     console.warn("DB update error for ad_payments, falling back to LocalStorage:", e);
   }
 
-  const payments = getLocalStorage<AdPayment[]>('philicondo_ad_payments', []);
+  const payments = getLocalStorage<AdPayment[]>('filicondo_ad_payments', []);
   const idx = payments.findIndex(p => p.id === paymentId);
   if (idx !== -1) {
     payments[idx].status = status;
-    setLocalStorage('philicondo_ad_payments', payments);
+    setLocalStorage('filicondo_ad_payments', payments);
     return true;
   }
   return false;
@@ -655,7 +655,7 @@ export async function getSubscriptionContracts(): Promise<SubscriptionContract[]
     console.warn("DB fetch error for subscription_contracts, falling back to LocalStorage:", e);
   }
 
-  let contracts = getLocalStorage<SubscriptionContract[]>('philicondo_subscription_contracts', []);
+  let contracts = getLocalStorage<SubscriptionContract[]>('filicondo_subscription_contracts', []);
   if (contracts.length === 0) {
     contracts = [
       {
@@ -679,7 +679,7 @@ export async function getSubscriptionContracts(): Promise<SubscriptionContract[]
         created_at: new Date().toISOString()
       }
     ];
-    setLocalStorage('philicondo_subscription_contracts', contracts);
+    setLocalStorage('filicondo_subscription_contracts', contracts);
   }
 
   return contracts.map(item => ({
@@ -704,9 +704,9 @@ export async function createSubscriptionContract(contract: Omit<SubscriptionCont
     console.warn("DB write error for subscription_contracts, falling back to LocalStorage:", e);
   }
 
-  const contracts = getLocalStorage<SubscriptionContract[]>('philicondo_subscription_contracts', []);
+  const contracts = getLocalStorage<SubscriptionContract[]>('filicondo_subscription_contracts', []);
   contracts.push(newContract);
-  setLocalStorage('philicondo_subscription_contracts', contracts);
+  setLocalStorage('filicondo_subscription_contracts', contracts);
   return newContract;
 }
 
@@ -721,7 +721,7 @@ export async function getHQStaffList(): Promise<HQStaff[]> {
     console.warn("DB fetch error for hq_staff, falling back to LocalStorage:", e);
   }
 
-  let staff = getLocalStorage<HQStaff[]>('philicondo_hq_staff', []);
+  let staff = getLocalStorage<HQStaff[]>('filicondo_hq_staff', []);
   if (staff.length === 0) {
     staff = [
       {
@@ -752,7 +752,7 @@ export async function getHQStaffList(): Promise<HQStaff[]> {
         created_at: new Date().toISOString()
       }
     ];
-    setLocalStorage('philicondo_hq_staff', staff);
+    setLocalStorage('filicondo_hq_staff', staff);
   }
   return staff;
 }
@@ -773,9 +773,9 @@ export async function createHQStaff(staff: Omit<HQStaff, 'id' | 'created_at'>): 
     console.warn("DB write error for hq_staff, falling back to LocalStorage:", e);
   }
 
-  const staffList = getLocalStorage<HQStaff[]>('philicondo_hq_staff', []);
+  const staffList = getLocalStorage<HQStaff[]>('filicondo_hq_staff', []);
   staffList.push(newStaff);
-  setLocalStorage('philicondo_hq_staff', staffList);
+  setLocalStorage('filicondo_hq_staff', staffList);
   return newStaff;
 }
 
@@ -787,7 +787,7 @@ export async function updateHQStaff(staffId: string, updates: Partial<HQStaff>):
     console.warn("DB update error for hq_staff, falling back to LocalStorage:", e);
   }
 
-  const staffList = getLocalStorage<HQStaff[]>('philicondo_hq_staff', []);
+  const staffList = getLocalStorage<HQStaff[]>('filicondo_hq_staff', []);
   const idx = staffList.findIndex(s => s.id === staffId);
   if (idx !== -1) {
     staffList[idx] = {
@@ -798,7 +798,7 @@ export async function updateHQStaff(staffId: string, updates: Partial<HQStaff>):
         ...(updates.permissions || {})
       }
     };
-    setLocalStorage('philicondo_hq_staff', staffList);
+    setLocalStorage('filicondo_hq_staff', staffList);
     return true;
   }
   return false;
@@ -823,7 +823,7 @@ export async function getHQAttendance(staffId?: string): Promise<HQAttendance[]>
     console.warn("DB fetch error for hq_attendance, falling back to LocalStorage:", e);
   }
 
-  let attendance = getLocalStorage<HQAttendance[]>('philicondo_hq_attendance', []);
+  let attendance = getLocalStorage<HQAttendance[]>('filicondo_hq_attendance', []);
   if (attendance.length === 0) {
     attendance = [
       {
@@ -859,7 +859,7 @@ export async function getHQAttendance(staffId?: string): Promise<HQAttendance[]>
         created_at: new Date().toISOString()
       }
     ];
-    setLocalStorage('philicondo_hq_attendance', attendance);
+    setLocalStorage('filicondo_hq_attendance', attendance);
   }
 
   if (staffId) {
@@ -888,9 +888,9 @@ export async function recordHQAttendance(attendance: Omit<HQAttendance, 'id' | '
     console.warn("DB write error for hq_attendance, falling back to LocalStorage:", e);
   }
 
-  const attendanceLogs = getLocalStorage<HQAttendance[]>('philicondo_hq_attendance', []);
+  const attendanceLogs = getLocalStorage<HQAttendance[]>('filicondo_hq_attendance', []);
   attendanceLogs.push(newAttendance);
-  setLocalStorage('philicondo_hq_attendance', attendanceLogs);
+  setLocalStorage('filicondo_hq_attendance', attendanceLogs);
   return newAttendance;
 }
 
@@ -909,7 +909,7 @@ export async function getHQPayroll(): Promise<HQPayroll[]> {
     console.warn("DB fetch error for hq_payroll, falling back to LocalStorage:", e);
   }
 
-  let payroll = getLocalStorage<HQPayroll[]>('philicondo_hq_payroll', []);
+  let payroll = getLocalStorage<HQPayroll[]>('filicondo_hq_payroll', []);
   if (payroll.length === 0) {
     payroll = [
       {
@@ -937,7 +937,7 @@ export async function getHQPayroll(): Promise<HQPayroll[]> {
         created_at: new Date().toISOString()
       }
     ];
-    setLocalStorage('philicondo_hq_payroll', payroll);
+    setLocalStorage('filicondo_hq_payroll', payroll);
   }
 
   return payroll.map(item => ({
@@ -962,9 +962,9 @@ export async function processHQPayroll(payroll: Omit<HQPayroll, 'id' | 'created_
     console.warn("DB write error for hq_payroll, falling back to LocalStorage:", e);
   }
 
-  const payrollLedger = getLocalStorage<HQPayroll[]>('philicondo_hq_payroll', []);
+  const payrollLedger = getLocalStorage<HQPayroll[]>('filicondo_hq_payroll', []);
   payrollLedger.push(newPayroll);
-  setLocalStorage('philicondo_hq_payroll', payrollLedger);
+  setLocalStorage('filicondo_hq_payroll', payrollLedger);
   return newPayroll;
 }
 

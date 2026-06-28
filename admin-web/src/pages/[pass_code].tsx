@@ -90,7 +90,7 @@ export default function GuestWebPass() {
         <p style={styles.notice}>Present this screen to the security guard house upon arrival.</p>
       </div>
 
-      {/* 🚀 Tourist Monetization Anchors (HeyDriver & PhiliSpa Integrated) */}
+      {/* 🚀 Tourist Monetization Anchors (HeyDriver & FiliSpa Integrated) */}
       <h4 style={styles.adHeading}>Exclusive Guest Services 🌴</h4>
       
       {/* HeyDriver Ad */}
@@ -102,8 +102,8 @@ export default function GuestWebPass() {
         </div>
       </a>
 
-      {/* PhiliSpa Ad */}
-      <a href="https://philispa.com/call" target="_blank" rel="noreferrer" style={styles.adLinkCard}>
+      {/* FiliSpa Ad */}
+      <a href="https://filispa.com/call" target="_blank" rel="noreferrer" style={styles.adLinkCard}>
         <div style={styles.adEmoji}>💆</div>
         <div>
           <div style={styles.adTitle}>24/7 Hotel-Grade In-Room Massage</div>

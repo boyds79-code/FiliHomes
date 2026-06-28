@@ -12,6 +12,7 @@ import * as Notifications from 'expo-notifications';
 
 // Screens Registry
 import AuthScreen from './src/screens/AuthScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import BillingScreen from './src/screens/BillingScreen';
 import NoticeList from './src/screens/NoticeList'; 
@@ -135,14 +136,14 @@ async function registerForPushNotificationsAsync() {
   
   try {
     const token = (await Notifications.getExpoPushTokenAsync({
-      projectId: 'f5a14c1a-8d8e-4f6b-bc17-29b697b3bdb2' // 🎯 app.json 또는 app.config.js의 projectId 필수 입력!
+      projectId: 'f5a14c1a-8d8e-4f6b-bc17-29b697b3bdb2' // 🎯 app.json projectId input
     })).data;
     
-    console.log("✅ 푸시 토큰 생성됨:", token);
-    return token; // 🎯 여기서 저장하지 않고 토큰 값만 리턴합니다.
+    console.log("✅ Push token created:", token);
+    return token; // 🎯 Return token only, do not save here
     
   } catch (error) {
-    console.error("Push token registration error:", error);
+    console.warn("Push token registration warning (expected on simulators):", error);
     return null;
   }
 }
@@ -558,6 +559,7 @@ export default function App() {
             ) : (
               <>
                 <Stack.Screen name="AuthScreen" component={AuthScreen as React.ComponentType<any>} />
+                <Stack.Screen name="SignUpScreen" component={SignUpScreen as React.ComponentType<any>} />
                 <Stack.Screen name="FiliStaffSecretDoor" component={FiliStaffSecretDoor as React.ComponentType<any>} options={{ gestureEnabled: false }} />
               </>
             )}

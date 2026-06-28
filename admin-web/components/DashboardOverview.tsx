@@ -58,7 +58,7 @@ export default function DashboardOverview({ onNavigate, overdueParcelCount, newJ
       }
 
       // 2. Fetch pending homeowner requests from localstorage
-      const storedRequests = window.localStorage.getItem('philicondo_occupant_requests');
+      const storedRequests = window.localStorage.getItem('filicondo_occupant_requests');
       if (storedRequests) {
         const requests = JSON.parse(storedRequests);
         setNewHomeownersCount(requests.length);
@@ -80,7 +80,7 @@ export default function DashboardOverview({ onNavigate, overdueParcelCount, newJ
       setActiveReportsCount(reportCount || 0);
 
       // 5. Fetch platform issue reports and search for HQ replies
-      const storedIssues = window.localStorage.getItem('philicondo_platform_issues');
+      const storedIssues = window.localStorage.getItem('filicondo_platform_issues');
       if (storedIssues) {
         const issues = JSON.parse(storedIssues);
         // Let's filter issues that have status as RESOLVED or IN_PROGRESS and mock a reply from HQ
@@ -117,7 +117,7 @@ export default function DashboardOverview({ onNavigate, overdueParcelCount, newJ
 
     // Listen to custom occupant registration updates
     const handleRequestsUpdate = () => {
-      const stored = window.localStorage.getItem('philicondo_occupant_requests');
+      const stored = window.localStorage.getItem('filicondo_occupant_requests');
       if (stored) {
         const reqs = JSON.parse(stored);
         setNewHomeownersCount(reqs.length);

@@ -220,7 +220,7 @@ export default function DataMigrator({ condoId, onSyncComplete }: { condoId: str
         <div style={styles.mappingCard}>
           <h3 style={styles.mappingCardTitle}>🔧 CSV Column Mapping Wizard</h3>
           <p style={styles.mappingCardDesc}>
-            Map your CSV file's headers to PhiliCondo's system parameters.
+            Map your CSV file's headers to FiliCondo's system parameters.
           </p>
 
           <div style={styles.mappingGrid}>

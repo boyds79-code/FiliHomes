@@ -53,15 +53,7 @@ const PHILIPPINE_HOLIDAYS: Holiday[] = [
   { date: '12-31', name: "Last Day of Year", type: 'special' },
 ];
 
-const getHoliday = (year: number, month: number, day: number) => {
-  const dateStr = `${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  if (year === 2026) {
-    if (month === 3 && day === 2) return { name: "Maundy Thursday", type: 'regular' };
-    if (month === 3 && day === 3) return { name: "Good Friday", type: 'regular' };
-    if (month === 3 && day === 4) return { name: "Black Saturday", type: 'special' };
-  }
-  return PHILIPPINE_HOLIDAYS.find(h => h.date === dateStr);
-};
+
 
 interface AttendanceRecord {
   id: number;
@@ -119,8 +111,57 @@ export default function AdminStaffManager({
   const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>([]);
   const [isSyncingPayroll, setIsSyncingPayroll] = useState(false);
 
+  // Condo settings for default multipliers
+  const [condoSettings, setCondoSettings] = useState<any>(null);
+  // Philippine Holidays list loaded from DB
+  const [dbHolidays, setDbHolidays] = useState<any[]>([]);
+
+  const getHoliday = (year: number, month: number, day: number) => {
+    const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const match = dbHolidays.find(h => h.holiday_date === formattedDate);
+    if (match) return match;
+    
+    const mmDd = `${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    if (year === 2026) {
+      if (month === 3 && day === 2) return { name: "Maundy Thursday", type: 'regular' };
+      if (month === 3 && day === 3) return { name: "Good Friday", type: 'regular' };
+      if (month === 3 && day === 4) return { name: "Black Saturday", type: 'special' };
+    }
+    return PHILIPPINE_HOLIDAYS.find(h => h.date === mmDd);
+  };
+
+  const fetchCondoSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('condo_settings')
+        .select('*')
+        .eq('condo_id', condoId)
+        .maybeSingle();
+      if (!error && data) {
+        setCondoSettings(data);
+      }
+    } catch (e) {
+      console.error("Error fetching condo settings in StaffManager:", e);
+    }
+  };
+
+  const fetchHolidays = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('philippine_holidays')
+        .select('*');
+      if (!error && data) {
+        setDbHolidays(data);
+      }
+    } catch (e) {
+      console.error("Error fetching holidays in StaffManager:", e);
+    }
+  };
+
   useEffect(() => {
     fetchStaff();
+    fetchCondoSettings();
+    fetchHolidays();
   }, []);
 
   useEffect(() => {
@@ -333,9 +374,9 @@ export default function AdminStaffManager({
     setBaseRate(staff.payroll_settings?.base_rate || 80);
     setBaseRateType(staff.payroll_settings?.base_rate_type || 'hourly');
     setAdditionsList(staff.payroll_settings?.additions || []);
-    setOtMultiplier(staff.payroll_settings?.ot_multiplier ?? 1.25);
-    setRegHolidayMultiplier(staff.payroll_settings?.regular_holiday_multiplier ?? 2.0);
-    setSpecHolidayMultiplier(staff.payroll_settings?.special_holiday_multiplier ?? 1.3);
+    setOtMultiplier(staff.payroll_settings?.ot_multiplier ?? condoSettings?.default_ot_multiplier ?? 1.25);
+    setRegHolidayMultiplier(staff.payroll_settings?.regular_holiday_multiplier ?? condoSettings?.default_regular_holiday_multiplier ?? 2.0);
+    setSpecHolidayMultiplier(staff.payroll_settings?.special_holiday_multiplier ?? condoSettings?.default_special_holiday_multiplier ?? 1.3);
   };
 
   const handleAddCustomAddition = (e: React.FormEvent) => {
@@ -365,9 +406,9 @@ export default function AdminStaffManager({
       const updatedSettings = {
         base_rate_type: baseRateType,
         base_rate: baseRate === '' ? 80 : Number(baseRate),
-        ot_multiplier: otMultiplier === '' ? 1.25 : Number(otMultiplier),
-        regular_holiday_multiplier: regHolidayMultiplier === '' ? 2.0 : Number(regHolidayMultiplier),
-        special_holiday_multiplier: specHolidayMultiplier === '' ? 1.3 : Number(specHolidayMultiplier),
+        ot_multiplier: otMultiplier === '' ? (condoSettings?.default_ot_multiplier ?? 1.25) : Number(otMultiplier),
+        regular_holiday_multiplier: regHolidayMultiplier === '' ? (condoSettings?.default_regular_holiday_multiplier ?? 2.0) : Number(regHolidayMultiplier),
+        special_holiday_multiplier: specHolidayMultiplier === '' ? (condoSettings?.default_special_holiday_multiplier ?? 1.3) : Number(specHolidayMultiplier),
         additions: additionsList,
         is_billing_manager: selectedStaff.payroll_settings?.is_billing_manager,
         permissions: selectedStaff.payroll_settings?.permissions
@@ -484,9 +525,9 @@ export default function AdminStaffManager({
     let normalOtPay = 0;
     let holidayPaySum = 0;
     
-    const otMult = otMultiplier === '' ? 1.25 : Number(otMultiplier);
-    const regHolMult = regHolidayMultiplier === '' ? 2.0 : Number(regHolidayMultiplier);
-    const specHolMult = specHolidayMultiplier === '' ? 1.3 : Number(specHolidayMultiplier);
+    const otMult = otMultiplier === '' ? (condoSettings?.default_ot_multiplier ?? 1.25) : Number(otMultiplier);
+    const regHolMult = regHolidayMultiplier === '' ? (condoSettings?.default_regular_holiday_multiplier ?? 2.0) : Number(regHolidayMultiplier);
+    const specHolMult = specHolidayMultiplier === '' ? (condoSettings?.default_special_holiday_multiplier ?? 1.3) : Number(specHolidayMultiplier);
     const baseRateNum = baseRate === '' ? 0 : Number(baseRate);
     
     let hourlyRate = 80;
@@ -716,7 +757,7 @@ export default function AdminStaffManager({
                   <label style={styles.formLabel}>Email Address</label>
                   <input 
                     type="email" 
-                    placeholder="e.g., juan@philicondo.com" 
+                    placeholder="e.g., juan@filicondo.com" 
                     value={newEmail} 
                     onChange={(e) => setNewEmail(e.target.value)} 
                     style={styles.textInput}
@@ -928,6 +969,7 @@ export default function AdminStaffManager({
                       step="0.05"
                       value={otMultiplier} 
                       onChange={(e) => { const v = e.target.value; setOtMultiplier(v === '' ? '' : Number(v)); }} 
+                      placeholder={condoSettings?.default_ot_multiplier?.toString() || '1.25'}
                       style={styles.textInput} 
                     />
                   </div>
@@ -938,6 +980,7 @@ export default function AdminStaffManager({
                       step="0.05"
                       value={regHolidayMultiplier} 
                       onChange={(e) => { const v = e.target.value; setRegHolidayMultiplier(v === '' ? '' : Number(v)); }} 
+                      placeholder={condoSettings?.default_regular_holiday_multiplier?.toString() || '2.0'}
                       style={styles.textInput} 
                     />
                   </div>
@@ -948,6 +991,7 @@ export default function AdminStaffManager({
                       step="0.05"
                       value={specHolidayMultiplier} 
                       onChange={(e) => { const v = e.target.value; setSpecHolidayMultiplier(v === '' ? '' : Number(v)); }} 
+                      placeholder={condoSettings?.default_special_holiday_multiplier?.toString() || '1.3'}
                       style={styles.textInput} 
                     />
                   </div>

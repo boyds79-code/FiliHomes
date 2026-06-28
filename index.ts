@@ -58,8 +58,8 @@ serve(async (req) => {
           description: `Maintenance Dues & Water - Month: ${billing.billing_month}`,
           currency: 'PHP',
           reminder_time: 1,
-          success_redirect_url: `https://philicondo.com/payment-success`,
-          failure_redirect_url: `https://philicondo.com/payment-failed`
+          success_redirect_url: `https://filicondo.hey-driver.com/payment-success`,
+          failure_redirect_url: `https://filicondo.hey-driver.com/payment-failed`
         })
       })
 

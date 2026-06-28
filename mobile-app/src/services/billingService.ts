@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 
 // 캐시 키 정의
-const BILLING_CACHE_KEY = '@philicondo_billing_cache_';
+const BILLING_CACHE_KEY = '@filicondo_billing_cache_';
 
 export interface BillingRecord {
   id: string;

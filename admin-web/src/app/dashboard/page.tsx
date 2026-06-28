@@ -65,7 +65,7 @@ export default function DashboardPage() {
             ...(isMobile ? { position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 50, overflowY: 'auto' } : {}) 
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-              <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a', margin: 0 }}>🏢 PhiliCondo</h1>
+              <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a', margin: 0 }}>🏢 FiliCondo</h1>
               {isMobile && (
                 <button onClick={() => setIsSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
               )}
@@ -125,7 +125,7 @@ export default function DashboardPage() {
           {activeTab === 'BILLINGS' && <BillingManager />}
           {activeTab === 'PARCELS' && <ParcelManager condoId={DEMO_CONDO_ID} />}
           {activeTab === 'JOB_ORDERS' && <MaintenanceJobOrderManager condoId={DEMO_CONDO_ID} />}
-          {activeTab === 'SETTINGS' && <CondoSettings />}
+          {activeTab === 'SETTINGS' && <CondoSettings showTabs={true} />}
           {activeTab === 'VISITOR_LOG' && <VisitorLogManager condoId={DEMO_CONDO_ID} />}
           {activeTab === 'VEHICLES' && <VehicleRegistryManager condoId={DEMO_CONDO_ID} />}
           {activeTab === 'NOTICES' && <NoticeManager condoId={DEMO_CONDO_ID} />}

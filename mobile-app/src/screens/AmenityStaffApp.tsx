@@ -30,6 +30,14 @@ interface AmenityBooking {
 }
 
 export default function AmenityStaffApp({ navigation }: any) {
+  // Helper to get local date string YYYY-MM-DD
+  const getLocalDateStr = (d = new Date()) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   type TabName = 'HOME' | 'BOOKINGS' | 'RADIO' | 'MYPAGE';
   const [activeTab, setActiveTab] = useState<TabName>('HOME');
   const scrollViewRef = useRef<ScrollView>(null);
@@ -212,7 +220,7 @@ export default function AmenityStaffApp({ navigation }: any) {
   const [unreadRadioCount, setUnreadRadioCount] = useState(0);
   const [pendingBookingsCount, setPendingBookingsCount] = useState(0);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateStr();
   
   const prevCountsRef = useRef({ unreadRadio: 0, pendingBookings: 0 });
   const isFirstLoad = useRef(true);
@@ -603,7 +611,7 @@ export default function AmenityStaffApp({ navigation }: any) {
 
       const yesterdayDate = new Date();
       yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-      const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+      const yesterdayStr = getLocalDateStr(yesterdayDate);
 
       const now = new Date();
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);

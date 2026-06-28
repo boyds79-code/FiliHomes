@@ -31,6 +31,13 @@ interface Parcel {
 }
 
 export default function FiliStaffGuardMain({ navigation }: any) {
+  // Helper to get local date string YYYY-MM-DD
+  const getLocalDateStr = (d = new Date()) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const [pass, setPass] = useState<VisitorPass | null>(null);
   
@@ -80,7 +87,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
   // Camera Modal States
   const [isCameraLive, setIsCameraLive] = useState(false);
-  const [cameraTarget, setCameraTarget] = useState<'GATE' | 'PARCEL' | 'PLATE'>('GATE');
+  const [cameraTarget, setCameraTarget] = useState<'GATE' | 'PARCEL' | 'PLATE' | 'PARCEL_RELEASE'>('GATE');
   const [permission, requestPermission] = useCameraPermissions();
 
   // Meal Break Tracker
@@ -216,7 +223,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           .eq('unit_number', unitNo)
           .maybeSingle();
 
-        const securePass = `DIRECT-${unitNo}-${new Date().toISOString().split('T')[0].replace(/-/g, '')}`;
+        const securePass = `DIRECT-${unitNo}-${getLocalDateStr().replace(/-/g, '')}`;
 
         // Insert parcel record
         await supabase.from('parcels').insert([{
@@ -948,7 +955,13 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
   const fetchWalkInPasses = async () => {
     try {
-      const todayStr = new Date().toISOString().split('T')[0];
+      // Calculate local date string to handle timezone shifts correctly
+      const localDate = new Date();
+      const year = localDate.getFullYear();
+      const month = String(localDate.getMonth() + 1).padStart(2, '0');
+      const day = String(localDate.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
+
       const { data, error } = await supabase
         .from('visitor_passes')
         .select(`
@@ -961,10 +974,9 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           created_at,
           qr_code_value
         `)
-        .eq('visit_date', todayStr)
         .or('status.eq.PENDING,status.eq.APPROVED,status.eq.USED')
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(50);
 
       if (error) {
         console.error("Error fetching walk in passes:", error);
@@ -992,6 +1004,9 @@ export default function FiliStaffGuardMain({ navigation }: any) {
               }
               // 2. Range validation: must be within active date range
               if (todayStr < fromStr || todayStr > toStr) {
+                if (pass.status === 'PENDING') {
+                  return true;
+                }
                 return false;
               }
             }
@@ -1277,7 +1292,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
     setLoading(true);
     try {
       const targetUnit = scanUnit.trim();
-      const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+      const dateStr = getLocalDateStr().replace(/-/g, '');
       const securePass = `PASS-${targetUnit}-${dateStr}`; 
 
       let uploadedImageUrl = null;
@@ -1518,7 +1533,12 @@ export default function FiliStaffGuardMain({ navigation }: any) {
     }
 
     const actualUnitId = foundUnit.id;
-    const today = new Date().toISOString().split('T')[0];
+    // Calculate local date string to handle timezone shifts correctly
+    const localDate = new Date();
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    const today = `${year}-${month}-${day}`;
 
     // Create a visitor pass with PENDING status for the vehicle
     const { data: passData, error: passError } = await supabase
@@ -1595,10 +1615,12 @@ export default function FiliStaffGuardMain({ navigation }: any) {
   };
 
   const handleVisitorEntry = async () => {
-    if (!manualTargetUnit || !manualVisitorName) {
-      Alert.alert("Input Error ⚠️", "Please enter both Target Unit and Visitor Info.");
+    if (!manualTargetUnit) {
+      Alert.alert("Input Error ⚠️", "Please enter the Target Unit.");
       return;
     }
+
+    const visitorName = manualVisitorName.trim() || manualVisitorType.trim() || 'Walk-in Guest';
 
     // 🎯 Fix Condo ID as a variable and include it in search conditions!
     const CORRECT_CONDO_ID = 'c1111111-1111-1111-1111-111111111111';
@@ -1616,7 +1638,12 @@ export default function FiliStaffGuardMain({ navigation }: any) {
     }
 
     const actualUnitId = foundUnit.id; // Obtain the actual UUID here
-    const today = new Date().toISOString().split('T')[0]; // 🎯 Auto-generate visit date (today)
+    // Calculate local date string to handle timezone shifts correctly
+    const localDate = new Date();
+    const year = localDate.getFullYear();
+    const month = String(localDate.getMonth() + 1).padStart(2, '0');
+    const day = String(localDate.getDate()).padStart(2, '0');
+    const today = `${year}-${month}-${day}`; // 🎯 Auto-generate visit date (today)
 
     if (condoPolicy.approval_required) {
       // 1) Insert into visitor_passes with PENDING status (to expose to resident app's approval queue)
@@ -1624,7 +1651,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         .from('visitor_passes')
         .insert([{
           unit_id: actualUnitId,
-          visitor_name: manualVisitorName,
+          visitor_name: visitorName,
           visit_type: 'WALK_IN', // 🎯 Set to WALK_IN since it's walk-in manual entry
           status: 'PENDING',
           purpose: manualVisitorType, // 🎯 Put guard's input (Grab Food, etc.) here!
@@ -1643,7 +1670,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
       await supabase.from('notifications').insert([{
         unit_id: actualUnitId,
         title: "🔑 Visitor Approval Required",
-        message: `${manualVisitorName} is at the gate requesting entry. Please approve.`,
+        message: `${visitorName} is at the gate requesting entry. Please approve.`,
         type: 'VISITOR',
         data: { pass_id: passData.id }
       }]);
@@ -1664,7 +1691,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
             to: token,
             sound: 'default',
             title: 'Visitor Approval Required',
-            body: `${manualVisitorName} is at the gate. Please approve.`,
+            body: `${visitorName} is at the gate. Please approve.`,
             data: { type: 'VISITOR_APPROVAL', passId: passData.id },
             badge: 1,
             channelId: 'default',
@@ -1689,14 +1716,14 @@ export default function FiliStaffGuardMain({ navigation }: any) {
       }
 
       Alert.alert("Push Dispatch ✅", `Request sent to Unit ${manualTargetUnit}.`);
-      startApprovalTimeoutTracker(passData.id, actualUnitId, manualTargetUnit.trim(), manualVisitorName, 'WALK_IN');
+      startApprovalTimeoutTracker(passData.id, actualUnitId, manualTargetUnit.trim(), visitorName, 'WALK_IN');
     } else {
       // 3) Approval not required: create visitor_passes with ENTERED status immediately and log
       const { data: passData, error: passError } = await supabase
         .from('visitor_passes')
         .insert([{
           unit_id: actualUnitId,
-          visitor_name: manualVisitorName,
+          visitor_name: visitorName,
           visit_type: 'WALK_IN', // 🎯 Set to WALK_IN since it's walk-in manual entry
           status: 'USED', // 🎯 Guard verified, so set to USED immediately
           purpose: manualVisitorType,
@@ -1720,7 +1747,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         console.error("Supabase Insert Error (visitor_logs):", error);
         Alert.alert("Error", `Failed: ${error.message}`);
       } else {
-        logGuardActivity("GATE_ENTRY_CONFIRMED", `Manual visitor ${manualVisitorName} entered (Unit ${manualTargetUnit}).`);
+        logGuardActivity("GATE_ENTRY_CONFIRMED", `Manual visitor ${visitorName} entered (Unit ${manualTargetUnit}).`);
         Alert.alert("Access Granted 🟢", "Visitor logged.");
       }
     }
@@ -1986,8 +2013,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           text: "Scan QR", 
           onPress: () => {
             // Activate QR scan mode (using existing camera feature)
-            // Note: Changed from 'PARCEL' to 'GATE' to trigger handleQrVerification correctly
-            setCameraTarget('GATE'); 
+            setCameraTarget('PARCEL_RELEASE'); 
             isProcessingScan.current = false;
             setIsCameraLive(true);
           } 
@@ -2032,6 +2058,9 @@ export default function FiliStaffGuardMain({ navigation }: any) {
       targetIds.includes(parcel.id) ? { ...parcel, status: 'COLLECTED', released_by: guardName } : parcel
     ));
     
+    // Log the handover activity
+    logGuardActivity("PARCEL_RELEASED", `Unit ${selectedUnit} parcel(s) released to ${claimantName} (${claimantRelationship}) with signature verification.`);
+
     setIsSignatureModalOpen(false);
     Alert.alert(
       "Handover Completed 🔐",
@@ -2143,44 +2172,85 @@ export default function FiliStaffGuardMain({ navigation }: any) {
     setResidentChatRooms(prev => prev.map(room => room.unit === unit ? { ...room, unread: false, currentHandler: `${guardName} (You)` } : room));
   };
 
-  const handleQrVerification = async (scannedData: string) => {
+  const handleParcelReleaseScan = async (scannedData: string) => {
     try {
-      // 1. Check if QR data is JSON (Data generated from resident app)
+      let code = scannedData;
       if (scannedData.startsWith('{')) {
-        const { code } = JSON.parse(scannedData);
-        
-        // 2. Immediate update without signature/name input
-        const { data: updatedParcels, error } = await supabase
-          .from('parcels')
-          .update({ 
-            status: 'COLLECTED', 
-            released_by: guardName,
-            collected_at: new Date().toISOString()
-          })
-          .eq('secure_pass_code', code)
-          .eq('status', 'ARRIVED') // Safely process only when status is 'ARRIVED'
-          .select();
+        const parsed = JSON.parse(scannedData);
+        code = parsed.code || scannedData;
+      }
 
-        if (error || !updatedParcels || updatedParcels.length === 0) {
-          Alert.alert("Verification Failed ❌", "QR code is invalid or item already collected.", [
-            { text: "OK", onPress: () => {
-              setIsCameraLive(false);
-              isProcessingScan.current = false;
-            } }
-          ]);
-          return;
-        }
+      // Query database for parcels with this secure_pass_code that are ARRIVED or HOLDING
+      const { data: parcels, error } = await supabase
+        .from('parcels')
+        .select('*')
+        .eq('secure_pass_code', code)
+        .in('status', ['ARRIVED', 'HOLDING']);
 
-        // 2. Also record in Guard App's activity log (accessLogs)
-        logGuardActivity("PARCEL_COLLECTED", `Unit ${updatedParcels[0].unit_no} parcel collected via QR Scan.`);
-
-        Alert.alert("Handover Confirmed ✅", "Parcel successfully released.", [
+      if (error || !parcels || parcels.length === 0) {
+        Alert.alert("Verification Failed ❌", "No pending parcels found matching this QR code.", [
           { text: "OK", onPress: () => {
             setIsCameraLive(false);
             isProcessingScan.current = false;
           } }
         ]);
-        fetchParcelsFromDB(); // Refresh list immediately
+        return;
+      }
+
+      // Found matching parcels!
+      const targetUnit = parcels[0].unit_no || 'Unknown';
+      const recipientName = parcels[0].recipient_name || 'Resident';
+
+      // Load building info if available
+      let buildingNo = 'Tower A';
+      const { data: unitData } = await supabase
+        .from('units')
+        .select('building_no')
+        .eq('unit_number', targetUnit)
+        .maybeSingle();
+      if (unitData) {
+        buildingNo = unitData.building_no || 'Tower A';
+      }
+
+      // Load into modal states
+      setSelectedUnit(targetUnit);
+      setSelectedUnitParcels(parcels.map(p => ({
+        id: p.id.toString(),
+        unit: p.unit_no || 'Unknown',
+        tracking: p.tracking_number || 'Unknown',
+        registered_by: p.registered_by || 'Unknown',
+        status: p.status,
+        secure_pass_code: p.secure_pass_code || '',
+        recipient_name: p.recipient_name || 'Resident',
+        building_no: buildingNo,
+        created_at: p.created_at || new Date().toISOString()
+      })));
+
+      setClaimantName(recipientName); // Pre-fill claimant name
+      setClaimantRelationship('TENANT_OWNER');
+      setEnteredPassCode(code); // Pre-fill code
+
+      // Turn off camera and open signature modal
+      setIsCameraLive(false);
+      setIsSignatureDrawn(false);
+      setIsSignatureModalOpen(true);
+      isProcessingScan.current = false;
+    } catch (err) {
+      console.error("Parcel release scan processing error:", err);
+      Alert.alert("Scan Error ⚠️", "Failed to parse parcel QR data.", [
+        { text: "OK", onPress: () => {
+          setIsCameraLive(false);
+          isProcessingScan.current = false;
+        } }
+      ]);
+    }
+  };
+
+  const handleQrVerification = async (scannedData: string) => {
+    try {
+      // 1. Check if QR data is JSON (Data generated from resident app)
+      if (scannedData.startsWith('{')) {
+        await handleParcelReleaseScan(scannedData);
         return;
       }
 
@@ -2195,7 +2265,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
       if (error) {
         console.error("DB Query Error:", error);
-        Alert.alert("Error", "Failed to retrieve data.", [
+        Alert.alert("Error", `Failed to retrieve data: ${error.message}`, [
           { text: "OK", onPress: () => {
             setIsCameraLive(false);
             isProcessingScan.current = false;
@@ -2265,7 +2335,12 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         const fromStr = tokenData['FROM'];
         const toStr = tokenData['TO'];
         const expStr = tokenData['EXP'];
-        const todayStr = new Date().toISOString().split('T')[0];
+        // Calculate local date string to handle timezone shifts correctly
+        const localDate = new Date();
+        const year = localDate.getFullYear();
+        const month = String(localDate.getMonth() + 1).padStart(2, '0');
+        const day = String(localDate.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
         
         if (fromStr && todayStr < fromStr) {
           Alert.alert("Access Denied ❌", `This pass is not active yet (Valid starting: ${fromStr}).`, [
@@ -2474,6 +2549,9 @@ export default function FiliStaffGuardMain({ navigation }: any) {
       const targetUnitNo = unitsMap[passData.unit_id]?.unit_number || 'N/A';
       const targetBuilding = unitsMap[passData.unit_id]?.building_no || '';
       
+      // Close camera modal first to prevent accidental touch/press propagation during scan transition
+      setIsCameraLive(false);
+
       Alert.alert(
         "Visitor Access QR Verified ✅",
         `Visitor Name: ${passData.visitor_name}\nTarget Unit: ${targetUnitNo} ${targetBuilding ? `(${targetBuilding})` : ''}\nPurpose: ${passData.purpose || 'Walk-in'}\nType: ${passData.visit_type || 'PERSON'}${passData.plate_number ? `\nPlate Number: ${passData.plate_number}` : ''}`,
@@ -2482,7 +2560,6 @@ export default function FiliStaffGuardMain({ navigation }: any) {
             text: "Cancel",
             style: "cancel",
             onPress: () => {
-              setIsCameraLive(false);
               isProcessingScan.current = false;
             }
           },
@@ -3539,6 +3616,17 @@ const takeAddressPhoto = async () => {
                   >
                     {/* Premium Tower Dropdown & Unit input cards */}
                     <View style={[styles.card, { backgroundColor: themeColors.cardBg, borderColor: themeColors.cardBorder }]}>
+                      <TouchableOpacity 
+                        style={[styles.scanBtn, { backgroundColor: '#0038a8', borderColor: '#0038a8', marginBottom: 15 }]} 
+                        onPress={() => { 
+                          setCameraTarget('PARCEL_RELEASE'); 
+                          isProcessingScan.current = false; 
+                          setIsCameraLive(true); 
+                        }}
+                      >
+                        <Text style={[styles.scanBtnText, { color: '#ffffff' }]}>📸 Scan Resident QR Code</Text>
+                      </TouchableOpacity>
+
                       <Text style={[styles.modalInputLabelMeta, { color: themeColors.mutedText, marginBottom: 6 }]}>1. Filter by Tower</Text>
                       <TouchableOpacity 
                         style={[styles.modalInternalInput, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]} 
@@ -3859,6 +3947,10 @@ const takeAddressPhoto = async () => {
                     `}
                   />
                 </View>
+                
+                <Text style={{ color: '#94a3b8', fontSize: 11, textAlign: 'center', marginTop: 8, fontStyle: 'italic', fontWeight: 'bold' }}>
+                  * Please write your name inside the signature box.
+                </Text>
 
                 <TouchableOpacity 
                   style={[styles.bulkSubmitBtn, { backgroundColor: '#10b981' }]} 
@@ -3882,7 +3974,7 @@ const takeAddressPhoto = async () => {
         <SafeAreaView style={styles.container}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0f172a', paddingHorizontal: 20 }}>
             <Text style={{ color: '#fff', fontSize: 20, fontWeight: '800', marginBottom: 30 }}>
-              {cameraTarget === 'PARCEL' ? 'Scan Parcel Barcode' : cameraTarget === 'PLATE' ? 'Scan License Plate' : 'Scan Guest QR Pass'}
+              {cameraTarget === 'PARCEL' ? 'Scan Parcel Barcode' : cameraTarget === 'PLATE' ? 'Scan License Plate' : cameraTarget === 'PARCEL_RELEASE' ? 'Scan Resident Parcel QR' : 'Scan Guest QR Pass'}
             </Text>
             
             {permission?.granted ? (
@@ -3899,7 +3991,7 @@ const takeAddressPhoto = async () => {
                   style={{ flex: 1 }}
                   facing="back"
                   onBarcodeScanned={cameraTarget === 'PLATE' ? undefined : async ({ data }) => {
-                    if (isProcessingScan.current) return;
+                    if (isProcessingScan.current || !isCameraLive) return;
                     isProcessingScan.current = true;
 
                     if (cameraTarget === 'PARCEL') {
@@ -3921,6 +4013,8 @@ const takeAddressPhoto = async () => {
                       } catch (e) {
                         // Silently pass for manual input if mapping fails
                       }
+                    } else if (cameraTarget === 'PARCEL_RELEASE') {
+                      await handleParcelReleaseScan(data);
                     } else {
                       await handleQrVerification(data);
                       // isProcessingScan.current is intentionally left as true here and will be reset to false in the Alert's OK button press to lock further camera scans until dismissed.

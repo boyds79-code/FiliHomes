@@ -2247,7 +2247,7 @@ export default function SuperAdminManager({ activeTab = 'analytics', setActiveTa
                         type="email"
                         value={hqStaffEmail}
                         onChange={(e) => setHqStaffEmail(e.target.value)}
-                        placeholder="e.g. maria@philicondo.com"
+                        placeholder="e.g. maria@filicondo.com"
                         className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition"
                         required
                       />

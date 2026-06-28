@@ -32,7 +32,16 @@ const getAmenityIcon = (name: string) => {
 
 export default function AmenityScreen({ navigation }: any) {
   const { themeColor } = useCondoConfig();
-  const todayStr = new Date().toISOString().split('T')[0];
+  
+  // Helper to get local date string YYYY-MM-DD
+  const getLocalDateStr = (d = new Date()) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayStr = getLocalDateStr();
   
   const [activeTab, setActiveTab] = useState<'BOOK' | 'MY_BOOKINGS'>('BOOK');
   const scrollViewRef = useRef<ScrollView>(null);
@@ -275,7 +284,7 @@ export default function AmenityScreen({ navigation }: any) {
 
       if (!profile?.unit_id) return;
 
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = getLocalDateStr();
 
       const { data, error } = await supabase
         .from('amenity_bookings')

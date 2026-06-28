@@ -67,6 +67,12 @@ export default function MyPageScreen({ navigation }: any) {
   const [deleteAccountModalVisible, setDeleteAccountModalVisible] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
 
+  // Password Change States
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [updatingPassword, setUpdatingPassword] = useState(false);
+
   useEffect(() => {
     fetchResidentProfileData();
     fetchTenantInfo();
@@ -329,14 +335,14 @@ export default function MyPageScreen({ navigation }: any) {
           name: pData.full_name || 'Resident Member',
           email: session.user.email || '',
           unit_number: pData.unit_number || '1204',
-          condo_name: pData.condo_name || 'Phili-One Condominium'
+          condo_name: pData.condo_name || 'Fili-One Condominium'
         });
       } else {
         setProfile({
           name: 'Chris',
           email: session.user.email || 'developer@filicondo.com',
           unit_number: '1204',
-          condo_name: condoName || 'Phili-One Condominium'
+          condo_name: condoName || 'Fili-One Condominium'
         });
       }
 
@@ -507,6 +513,39 @@ export default function MyPageScreen({ navigation }: any) {
     ]);
   };
 
+  const handleChangePassword = async () => {
+    if (!newPassword.trim() || !confirmPassword.trim()) {
+      Alert.alert('Notice', 'Please fill in all fields.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      Alert.alert('Weak Password', 'Password must be at least 6 characters long.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Mismatch', 'Passwords do not match.');
+      return;
+    }
+
+    try {
+      setUpdatingPassword(true);
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      Alert.alert('Success 🎉', 'Your password has been changed successfully.');
+      setPasswordModalVisible(false);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (e: any) {
+      Alert.alert('Error', e.message || 'Failed to update password.');
+    } finally {
+      setUpdatingPassword(false);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -662,6 +701,12 @@ export default function MyPageScreen({ navigation }: any) {
             <Text style={[styles.settingStatusText, isFaceIdEnabled ? { color: themeColor || '#0038a8', fontWeight: 'bold' } : { color: '#94a3b8' }]}>
               {isFaceIdEnabled ? 'Enabled ✓' : 'Disabled'}
             </Text>
+          </TouchableOpacity>
+          
+          <View style={styles.settingRowDivider} />
+          <TouchableOpacity style={styles.settingRowItem} onPress={() => setPasswordModalVisible(true)} activeOpacity={0.7}>
+            <Text style={styles.settingItemLabel}>• Change Password</Text>
+            <Text style={styles.settingToggleArrow}>❯</Text>
           </TouchableOpacity>
           
           <View style={styles.settingRowDivider} />
@@ -1116,6 +1161,60 @@ export default function MyPageScreen({ navigation }: any) {
             >
               <Text style={{ fontWeight: 'bold', color: '#475569', fontSize: 14 }}>Close</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Change Password Modal */}
+      <Modal visible={passwordModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCardWindow}>
+            <Text style={styles.modalHeaderTitle}>Change Password</Text>
+            <Text style={{ fontSize: 12, color: '#64748b', textAlign: 'center', marginBottom: 16 }}>
+              Enter a new secure password.
+            </Text>
+
+            <TextInput
+              style={styles.formInput}
+              placeholder="New Password (min 6 chars)"
+              secureTextEntry={true}
+              onChangeText={setNewPassword}
+              value={newPassword}
+              autoCapitalize="none"
+            />
+            
+            <TextInput
+              style={styles.formInput}
+              placeholder="Confirm New Password"
+              secureTextEntry={true}
+              onChangeText={setConfirmPassword}
+              value={confirmPassword}
+              autoCapitalize="none"
+            />
+
+            <View style={styles.modalBtnRow}>
+              <TouchableOpacity 
+                style={styles.modalCancelBtn} 
+                onPress={() => {
+                  setPasswordModalVisible(false);
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+              >
+                <Text style={{ fontWeight: 'bold', color: '#475569', fontSize: 13 }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.modalSubmitBtn, { backgroundColor: themeColor || '#0038a8' }]} 
+                onPress={handleChangePassword}
+                disabled={updatingPassword}
+              >
+                {updatingPassword ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.submitBtnText}>Update Password</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>

@@ -1,4 +1,4 @@
-# 🏢 PhiliCondo Project Development History
+# 🏢 FiliCondo Project Development History
 
 ## 📌 Project Overview
 - **목표:** 필리핀 현지 콘도(아파트)의 다중 소유/임대 구조를 지원하고, 유지보수, 수납, 보안, 제휴 비즈니스를 통합하는 "초연결 PropTech 슈퍼 앱" 구축.

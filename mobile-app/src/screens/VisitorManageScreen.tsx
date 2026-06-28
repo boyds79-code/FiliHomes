@@ -16,6 +16,14 @@ export default function VisitorManageScreen({ navigation }: any) {
   const { currentUnit, unitLoading } = useUnit();
   const { refreshBadges } = useBadge();
   
+  // Helper to get local date string YYYY-MM-DD
+  const getLocalDateStr = (d = new Date()) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const [activeTab, setActiveTab] = useState<'REGISTRATION' | 'HISTORY'>('REGISTRATION');
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -30,12 +38,13 @@ export default function VisitorManageScreen({ navigation }: any) {
   const [pendingCount, setPendingCount] = useState(0);
 
   // Input form state variables
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateStr();
   const [visitorName, setVisitorName] = useState('');
   const [purpose, setPurpose] = useState('');         
   const [startDate, setStartDate] = useState(todayStr); 
   const [endDate, setEndDate] = useState(todayStr); // Defaults to same as startDate
   const [isMultiUser, setIsMultiUser] = useState(false);
+  const [salt, setSalt] = useState(Date.now().toString());
 
   // Loading and transaction variables
   const [submitting, setSubmitting] = useState(false);
@@ -84,11 +93,11 @@ export default function VisitorManageScreen({ navigation }: any) {
         if (error || !activePasses) return;
         
         const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
+        const todayStr = getLocalDateStr(today);
         
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        const tomorrowStr = getLocalDateStr(tomorrow);
         
         for (const pass of activePasses) {
           const qr = pass.qr_code_value;
@@ -204,11 +213,11 @@ export default function VisitorManageScreen({ navigation }: any) {
   const calculateExpiryDate = (startStr: string) => {
     try {
       const date = new Date(startStr);
-      if (isNaN(date.getTime())) return new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+      if (isNaN(date.getTime())) return getLocalDateStr(new Date(Date.now() + 30*24*60*60*1000));
       date.setDate(date.getDate() + 30);
-      return date.toISOString().split('T')[0];
+      return getLocalDateStr(date);
     } catch (e) {
-      return new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+      return getLocalDateStr(new Date(Date.now() + 30*24*60*60*1000));
     }
   };
 
@@ -220,9 +229,9 @@ export default function VisitorManageScreen({ navigation }: any) {
     const multiEntryStr = isMultiUser ? '|MULTI_ENTRY:TRUE' : '';
     const calculatedEnd = isReusable ? calculateExpiryDate(startDate) : endDate.trim();
     
-    setQrToken(`FILICONDO-VMS|TYPE:WALK_IN|NAME:${sanitizedName}|PLATE:${sanitizedPlate}${reusableStr}${multiEntryStr}|FROM:${startDate}|TO:${calculatedEnd}`);
+    setQrToken(`FILICONDO-VMS|TYPE:WALK_IN|NAME:${sanitizedName}|PLATE:${sanitizedPlate}${reusableStr}${multiEntryStr}|FROM:${startDate}|TO:${calculatedEnd}|SALT:${salt}`);
     setIsRegistered(false);
-  }, [visitorName, startDate, endDate, isMultiUser]);
+  }, [visitorName, startDate, endDate, isMultiUser, salt]);
 
   console.log("🔍 Current unitId:", currentUnit?.unit_id);
 
@@ -298,13 +307,14 @@ export default function VisitorManageScreen({ navigation }: any) {
   };
 
   const handleResetForm = () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateStr();
     setVisitorName('');
     setPurpose('');
     setStartDate(today);
     setEndDate(today);
     setIsMultiUser(false);
     setIsRegistered(false);
+    setSalt(Date.now().toString());
   };
 
   // Calendar utility helpers

@@ -30,6 +30,7 @@ type MenuType =
   | 'occupants-directory'
   | 'occupants-register'
   | 'occupants-requests'
+  | 'occupants-invitations'
   | 'occupants-vehicles'
   | 'parcels-dormant'
   | 'parcels-holding'
@@ -67,6 +68,7 @@ const menuLabels: Record<MenuType, string> = {
   'occupants-directory': 'Occupants Directory',
   'occupants-register': 'Pre-Approve Residents',
   'occupants-requests': 'Homeowner Requests',
+  'occupants-invitations': 'App Invitations',
   'occupants-vehicles': 'Vehicle Registry',
   'parcels-dormant': 'Unclaimed Cargo',
   'parcels-holding': 'Holdings',
@@ -112,6 +114,8 @@ const getBreadcrumbPath = (menu: MenuType): string[] => {
       return ["Command Center", "Occupants", "Pre-Approve Residents"];
     case 'occupants-requests':
       return ["Command Center", "Occupants", "Homeowner Requests"];
+    case 'occupants-invitations':
+      return ["Command Center", "Occupants", "App Invitations"];
     case 'occupants-vehicles':
       return ["Command Center", "Occupants", "Vehicle Registry"];
     case 'parcels-dormant':
@@ -337,7 +341,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkRequests = async () => {
       // 1. Get mock requests from localStorage
-      const stored = window.localStorage.getItem('philicondo_occupant_requests');
+      const stored = window.localStorage.getItem('filicondo_occupant_requests');
       let localRequestsCount = 0;
       let mockEmails: string[] = [];
       if (stored) {
@@ -467,7 +471,7 @@ export default function DashboardPage() {
     const fetchIssuesCount = async () => {
       let localCount = 0;
       if (typeof window !== 'undefined') {
-        const stored = window.localStorage.getItem('philicondo_platform_issues');
+        const stored = window.localStorage.getItem('filicondo_platform_issues');
         if (stored) {
           try {
             const parsed = JSON.parse(stored);
@@ -1144,7 +1148,7 @@ export default function DashboardPage() {
         <aside className="hidden md:flex flex-col h-screen sticky top-0 bg-white border-r border-slate-200 p-4 lg:p-6 transition-all duration-300 w-20 lg:w-64 shrink-0 overflow-y-auto">
           
           <div className="mb-10 text-center lg:text-left">
-            <h1 className="hidden lg:block font-black text-xl text-blue-700 tracking-tight">🏢 PhiliCondo Admin</h1>
+            <h1 className="hidden lg:block font-black text-xl text-blue-700 tracking-tight">🏢 FiliCondo Admin</h1>
             <h1 className="block lg:hidden font-black text-xl text-blue-700">🏢</h1>
           </div>
           
@@ -1169,7 +1173,7 @@ export default function DashboardPage() {
               <button 
                 onClick={toggleOccupants} 
                 className={`w-full text-left lg:px-4 py-2.5 rounded-lg transition-colors flex items-center justify-between ${
-                  currentMenu === 'occupants-directory' || currentMenu === 'occupants-register' || currentMenu === 'occupants-requests' || currentMenu === 'occupants-vehicles'
+                  currentMenu === 'occupants-directory' || currentMenu === 'occupants-register' || currentMenu === 'occupants-requests' || currentMenu === 'occupants-invitations' || currentMenu === 'occupants-vehicles'
                     ? 'bg-blue-50 text-blue-700 font-bold'
                     : 'text-slate-600 hover:bg-slate-100 font-medium'
                 }`}
@@ -1240,6 +1244,23 @@ export default function DashboardPage() {
                         {occupantRequestsCount}
                       </span>
                     )}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setCurrentMenu('occupants-invitations');
+                    }}
+                    className={`w-full text-left lg:px-4 py-2 rounded-lg transition-colors flex justify-center lg:justify-start items-center gap-2 ${
+                      currentMenu === 'occupants-invitations'
+                        ? 'bg-blue-50 text-blue-700 font-bold'
+                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 font-medium'
+                    }`}
+                    title="App Invitations"
+                  >
+                    <span className="w-5 flex items-center justify-center shrink-0">
+                      <span className="font-bold text-lg text-slate-400 select-none">•</span>
+                    </span>
+                    <span className="hidden lg:inline text-xs lg:text-sm font-semibold">App Invitations</span>
                   </button>
 
                   {visitorParkingEnabled && (
@@ -1740,6 +1761,7 @@ export default function DashboardPage() {
           {currentMenu === 'occupants-directory' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab={occupantsTab} />}
           {currentMenu === 'occupants-register' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab="REGISTER" />}
           {currentMenu === 'occupants-requests' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab="REQUESTS" />}
+          {currentMenu === 'occupants-invitations' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab="INVITATIONS" />}
           {currentMenu === 'occupants-vehicles' && <VehicleRegistryManager condoId="solea-residences" />}
           
           {currentMenu === 'parcels-dormant' && <ParcelManager condoId="solea-residences" initialView="DORMANT" />}

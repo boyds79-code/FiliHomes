@@ -86,7 +86,7 @@ export default function RealtimeIntercomMatrix({ condoId }: { condoId: string })
       if (!session) {
         console.log("Logging in admin client to Supabase auth for RLS access...");
         await supabase.auth.signInWithPassword({
-          email: 'solea.admin@philicondo.com',
+          email: 'solea.admin@filicondo.com',
           password: 'password123'
         });
       }

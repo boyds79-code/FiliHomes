@@ -58,7 +58,7 @@ export default function PermissionScreen({ navigation }: any) {
 
       Alert.alert(
         'Setup Complete 🎉',
-        'FiliCondo has customized your secure hardware setup for Phili-One Condominium.',
+        'FiliCondo has customized your secure hardware setup for Fili-One Condominium.',
         [
           { 
             text: 'Let\'s Start', 

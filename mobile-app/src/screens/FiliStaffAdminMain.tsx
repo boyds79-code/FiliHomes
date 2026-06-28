@@ -26,7 +26,15 @@ export default function FiliStaffAdminMain() {
   const [bookingsLoading, setBookingsLoading] = useState(false);
   const [checkingInId, setCheckingInId] = useState<string | null>(null);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  // Helper to get local date string YYYY-MM-DD
+  const getLocalDateStr = (d = new Date()) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayStr = getLocalDateStr();
 
   const fetchTodayBookings = async () => {
     try {

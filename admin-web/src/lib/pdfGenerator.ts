@@ -235,7 +235,7 @@ export const generateOfficialReceipt = async (bill: any, condoInfo: any = {}) =>
   // 1) PMO 회사 정보 헤더 (우측 상단 배치)
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  const condoName = condoInfo.business_name || condoInfo.businessName || "Phili-One Condominium Management Corp.";
+  const condoName = condoInfo.business_name || condoInfo.businessName || "Fili-One Condominium Management Corp.";
   doc.text(condoName, 280, 16, { align: "right" });
   
   doc.setFont("helvetica", "normal");
@@ -278,7 +278,7 @@ export const generateOfficialReceipt = async (bill: any, condoInfo: any = {}) =>
 
   // Address ...
   doc.text("and address at", 98, 70);
-  doc.text(`${unitText}, Phili-One Condominium, ${address}`, 125, 70);
+  doc.text(`${unitText}, Fili-One Condominium, ${address}`, 125, 70);
   doc.line(124, 71, 252, 71);
   doc.text("engaged in", 255, 70);
 

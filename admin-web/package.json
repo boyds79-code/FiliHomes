@@ -18,9 +18,11 @@
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "next": "16.2.6",
+    "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-qr-code": "^2.0.21",
+    "resend": "^6.16.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

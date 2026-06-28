@@ -32,7 +32,7 @@ export default function BazaarDetail({ route, navigation }: any) {
     image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=400", // Flower image banner
     url: "https://shopee.ph/search?keyword=flower%20pot%20and%20plants" // Shopee search link for flowers
   } : {
-    title: "✨ PhiliSpa Luxury Massage Delivery",
+    title: "✨ FiliSpa Luxury Massage Delivery",
     sub: "20% Off for Solea Residents! Pure relaxation at your unit.",
     image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=400",
     url: "https://shopee.ph/search?keyword=massage%20oil" 

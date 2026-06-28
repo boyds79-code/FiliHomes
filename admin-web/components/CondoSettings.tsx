@@ -6,10 +6,12 @@ import { supabase } from '../src/lib/supabaseClient';
 
 export default function CondoSettings({ 
   initialSubTab = 'property',
-  currentUserRole = 'PMO_MANAGER'
+  currentUserRole = 'PMO_MANAGER',
+  showTabs = false
 }: { 
   initialSubTab?: 'property' | 'app' | 'staff';
   currentUserRole?: string;
+  showTabs?: boolean;
 }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -68,6 +70,17 @@ export default function CondoSettings({
   const [amenityBookingRequired, setAmenityBookingRequired] = useState<boolean>(true);
   const [pmoStart, setPmoStart] = useState<string>('09:00');
   const [pmoEnd, setPmoEnd] = useState<string>('18:00');
+
+  // Holiday & Payroll Multipliers
+  const [defaultRegHolidayMultiplier, setDefaultRegHolidayMultiplier] = useState<number | ''>(2.0);
+  const [defaultSpecHolidayMultiplier, setDefaultSpecHolidayMultiplier] = useState<number | ''>(1.3);
+  const [defaultOtMultiplier, setDefaultOtMultiplier] = useState<number | ''>(1.25);
+  
+  // Philippine Holidays list
+  const [holidays, setHolidays] = useState<any[]>([]);
+  const [newHolidayName, setNewHolidayName] = useState('');
+  const [newHolidayDate, setNewHolidayDate] = useState('');
+  const [newHolidayType, setNewHolidayType] = useState<'regular' | 'special'>('regular');
   const [visitorParkingEnabled, setVisitorParkingEnabled] = useState<boolean>(true);
   const [amenityBookingEnabled, setAmenityBookingEnabled] = useState<boolean>(true);
   const [amenityBillingEnabled, setAmenityBillingEnabled] = useState<boolean>(true);
@@ -146,9 +159,22 @@ export default function CondoSettings({
     setAmenitySettings(updated);
   };
 
+  const fetchHolidays = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('philippine_holidays')
+        .select('*')
+        .order('holiday_date', { ascending: true });
+      if (!error && data) setHolidays(data);
+    } catch (e) {
+      console.error("Error fetching holidays list:", e);
+    }
+  };
+
   useEffect(() => {
     fetchCondoSettings();
     fetchUnitsList();
+    fetchHolidays();
   }, []);
 
   const fetchUnitsList = async () => {
@@ -196,7 +222,9 @@ export default function CondoSettings({
           Pool: { enabled: true, max_capacity: 15 }
         });
         
-
+        setDefaultRegHolidayMultiplier(settingsData.default_regular_holiday_multiplier ?? 2.0);
+        setDefaultSpecHolidayMultiplier(settingsData.default_special_holiday_multiplier ?? 1.3);
+        setDefaultOtMultiplier(settingsData.default_ot_multiplier ?? 1.25);
       } else {
         setParkingMode('MANUAL');
         setVisitorParkingBilling(true);
@@ -217,6 +245,9 @@ export default function CondoSettings({
           Spa: { enabled: true, max_capacity: 5 },
           Pool: { enabled: true, max_capacity: 15 }
         });
+        setDefaultRegHolidayMultiplier(2.0);
+        setDefaultSpecHolidayMultiplier(1.3);
+        setDefaultOtMultiplier(1.25);
 
       }
 
@@ -313,7 +344,10 @@ export default function CondoSettings({
               fee: setting.fee === '' ? 0 : (setting.fee === undefined ? undefined : Number(setting.fee))
             };
             return acc;
-          }, {})
+          }, {}),
+          default_regular_holiday_multiplier: defaultRegHolidayMultiplier === '' ? 2.0 : Number(defaultRegHolidayMultiplier),
+          default_special_holiday_multiplier: defaultSpecHolidayMultiplier === '' ? 1.3 : Number(defaultSpecHolidayMultiplier),
+          default_ot_multiplier: defaultOtMultiplier === '' ? 1.25 : Number(defaultOtMultiplier)
         });
         
       if (settingsError) throw settingsError;
@@ -527,6 +561,43 @@ export default function CondoSettings({
 
   return (
     <div style={styles.viewWrapper}>
+      {showTabs && (
+        <div style={styles.tabHeader}>
+          <button
+            type="button"
+            onClick={() => setSubTab('property')}
+            style={{
+              ...styles.tabButton,
+              color: subTab === 'property' ? '#6b21a8' : '#64748b',
+              borderBottom: subTab === 'property' ? '2px solid #6b21a8' : '2px solid transparent',
+            }}
+          >
+            🏢 Property Settings
+          </button>
+          <button
+            type="button"
+            onClick={() => setSubTab('app')}
+            style={{
+              ...styles.tabButton,
+              color: subTab === 'app' ? '#6b21a8' : '#64748b',
+              borderBottom: subTab === 'app' ? '2px solid #6b21a8' : '2px solid transparent',
+            }}
+          >
+            ⚙️ App Settings
+          </button>
+          <button
+            type="button"
+            onClick={() => setSubTab('staff')}
+            style={{
+              ...styles.tabButton,
+              color: subTab === 'staff' ? '#6b21a8' : '#64748b',
+              borderBottom: subTab === 'staff' ? '2px solid #6b21a8' : '2px solid transparent',
+            }}
+          >
+            👥 Staff Management
+          </button>
+        </div>
+      )}
 
       {subTab === 'property' && (
         <form onSubmit={handleSaveSettings} style={styles.formGrid}>
@@ -1102,6 +1173,182 @@ export default function CondoSettings({
                 </div>
                 <div style={styles.configRight}>
                   Set the operational hours of the Property Management Office (PMO) to accept and handle video/audio intercom calls from units or guard gate stations.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 7. Holiday & Payroll Settings */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <h3 style={styles.sectionHeading}>📅 Holiday & Payroll Settings</h3>
+            <div style={styles.settingsCard}>
+              <div style={styles.configRow}>
+                <div style={styles.configLeft}>
+                  <label style={styles.inputLabel}>Default Regular Holiday Multiplier</label>
+                  <input
+                    type="number"
+                    step="0.05"
+                    value={defaultRegHolidayMultiplier}
+                    onChange={(e) => { const v = e.target.value; setDefaultRegHolidayMultiplier(v === '' ? '' : Number(v)); }}
+                    style={styles.textInput}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div style={styles.configRight}>
+                  Default salary multiplier applied for regular holidays if no individual staff override is set (default: 2.0).
+                </div>
+              </div>
+
+              <div style={styles.configRow}>
+                <div style={styles.configLeft}>
+                  <label style={styles.inputLabel}>Default Special Holiday Multiplier</label>
+                  <input
+                    type="number"
+                    step="0.05"
+                    value={defaultSpecHolidayMultiplier}
+                    onChange={(e) => { const v = e.target.value; setDefaultSpecHolidayMultiplier(v === '' ? '' : Number(v)); }}
+                    style={styles.textInput}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div style={styles.configRight}>
+                  Default salary multiplier applied for special holidays if no individual staff override is set (default: 1.3).
+                </div>
+              </div>
+
+              <div style={styles.configRow}>
+                <div style={styles.configLeft}>
+                  <label style={styles.inputLabel}>Default Overtime Multiplier</label>
+                  <input
+                    type="number"
+                    step="0.05"
+                    value={defaultOtMultiplier}
+                    onChange={(e) => { const v = e.target.value; setDefaultOtMultiplier(v === '' ? '' : Number(v)); }}
+                    style={styles.textInput}
+                    disabled={!isEditing}
+                  />
+                </div>
+                <div style={styles.configRight}>
+                  Default overtime pay multiplier if no individual staff override is set (default: 1.25).
+                </div>
+              </div>
+
+              {/* Philippine Holidays Manager */}
+              <div style={{ ...styles.configRow, borderBottom: 'none', paddingBottom: 0 }}>
+                <div style={{ ...styles.configLeft, width: '100%' }}>
+                  <label style={styles.inputLabel}>Philippine Holidays Registry</label>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px', width: '100%' }}>
+                    <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '8px' }}>
+                      {holidays.length === 0 ? (
+                        <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>No holidays registered.</p>
+                      ) : (
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                          <thead>
+                            <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left', color: '#64748b' }}>
+                              <th style={{ padding: '4px' }}>Date</th>
+                              <th style={{ padding: '4px' }}>Name</th>
+                              <th style={{ padding: '4px' }}>Type</th>
+                              {isEditing && <th style={{ padding: '4px', textAlign: 'right' }}>Actions</th>}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {holidays.map(h => (
+                              <tr key={h.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                <td style={{ padding: '4px', fontWeight: 'bold' }}>{h.holiday_date}</td>
+                                <td style={{ padding: '4px' }}>{h.name}</td>
+                                <td style={{ padding: '4px', textTransform: 'capitalize' }}>
+                                  <span style={{ 
+                                    padding: '2px 6px', 
+                                    borderRadius: '4px', 
+                                    fontSize: '10px', 
+                                    fontWeight: 'bold',
+                                    backgroundColor: h.type === 'regular' ? '#fee2e2' : '#fef3c7',
+                                    color: h.type === 'regular' ? '#ef4444' : '#d97706'
+                                  }}>
+                                    {h.type}
+                                  </span>
+                                </td>
+                                {isEditing && (
+                                  <td style={{ padding: '4px', textAlign: 'right' }}>
+                                    <button 
+                                      type="button" 
+                                      onClick={async () => {
+                                        const { error } = await supabase.from('philippine_holidays').delete().eq('id', h.id);
+                                        if (!error) {
+                                          fetchHolidays();
+                                        } else {
+                                          alert("Failed to delete holiday: " + error.message);
+                                        }
+                                      }}
+                                      style={{ color: '#ef4444', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '11px' }}
+                                    >
+                                      Delete
+                                    </button>
+                                  </td>
+                                )}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                    
+                    {isEditing && (
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: '8px', padding: '10px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                        <div style={{ flex: 1, minWidth: '120px' }}>
+                          <input 
+                            type="date" 
+                            value={newHolidayDate} 
+                            onChange={(e) => setNewHolidayDate(e.target.value)} 
+                            style={{ ...styles.textInput, height: '32px', padding: '4px 8px' }} 
+                          />
+                        </div>
+                        <div style={{ flex: 2, minWidth: '150px' }}>
+                          <input 
+                            type="text" 
+                            placeholder="Holiday Name" 
+                            value={newHolidayName} 
+                            onChange={(e) => setNewHolidayName(e.target.value)} 
+                            style={{ ...styles.textInput, height: '32px', padding: '4px 8px' }} 
+                          />
+                        </div>
+                        <div>
+                          <select 
+                            value={newHolidayType} 
+                            onChange={(e: any) => setNewHolidayType(e.target.value)} 
+                            style={{ ...styles.selectInput, height: '32px', padding: '2px 8px', fontSize: '12px' }}
+                          >
+                            <option value="regular">Regular</option>
+                            <option value="special">Special</option>
+                          </select>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={async () => {
+                            if (!newHolidayDate || !newHolidayName) {
+                              alert("Please fill in both Date and Name for the new holiday.");
+                              return;
+                            }
+                            const { error } = await supabase.from('philippine_holidays').insert([{
+                              holiday_date: newHolidayDate,
+                              name: newHolidayName,
+                              type: newHolidayType
+                            }]);
+                            if (!error) {
+                              setNewHolidayDate('');
+                              setNewHolidayName('');
+                              fetchHolidays();
+                            } else {
+                              alert("Failed to add holiday: " + error.message);
+                            }
+                          }}
+                          style={{ ...styles.saveActionButton, padding: '4px 12px', fontSize: '11px', height: '32px', backgroundColor: '#0f172a' }}
+                        >
+                          + Add Holiday
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

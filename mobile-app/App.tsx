@@ -436,28 +436,29 @@ export default function App() {
           }
         }
 
-        // 💾 Register push token for any active user (staff or resident)
+        // 💾 Register push token for any active user (staff or resident) in the background without blocking the UI
         if (foundProfile) {
-          try {
-            const token = await registerForPushNotificationsAsync();
-            if (token) {
-              const { data: prof } = await supabase
-                .from('profiles')
-                .select('expo_push_token')
-                .eq('id', loggedInUserId)
-                .maybeSingle();
-
-              if (prof && token !== prof.expo_push_token) {
-                await supabase
+          registerForPushNotificationsAsync()
+            .then(async (token) => {
+              if (token) {
+                const { data: prof } = await supabase
                   .from('profiles')
-                  .update({ expo_push_token: token })
-                  .eq('id', loggedInUserId);
-                console.log("💾 토큰 DB 저장 완료!");
+                  .select('expo_push_token')
+                  .eq('id', loggedInUserId)
+                  .maybeSingle();
+
+                if (prof && token !== prof.expo_push_token) {
+                  await supabase
+                    .from('profiles')
+                    .update({ expo_push_token: token })
+                    .eq('id', loggedInUserId);
+                  console.log("💾 토큰 DB 저장 완료!");
+                }
               }
-            }
-          } catch (tokenErr) {
-            console.error("❌ 토큰 등록 중 에러:", tokenErr);
-          }
+            })
+            .catch((tokenErr) => {
+              console.error("❌ 토큰 등록 중 에러:", tokenErr);
+            });
         }
       } catch (err) {
         console.error("세션 초기화 데이터 로드 실패", err);

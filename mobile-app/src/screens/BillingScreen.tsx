@@ -617,6 +617,7 @@ export default function BillingScreen({ navigation }: any) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PAID': return '#16a34a';
+      case 'PARTIAL': return '#d97706';
       case 'PENDING_APPROVAL': return '#ea580c';
       case 'REQUESTED': return '#ea580c';
       default: return '#dc2626';
@@ -626,6 +627,7 @@ export default function BillingScreen({ navigation }: any) {
   const getStatusBg = (status: string) => {
     switch (status) {
       case 'PAID': return '#f0fdf4';
+      case 'PARTIAL': return '#fef3c7';
       case 'PENDING_APPROVAL': return '#fff7ed';
       case 'REQUESTED': return '#fff7ed';
       default: return '#fef2f2';
@@ -786,8 +788,17 @@ export default function BillingScreen({ navigation }: any) {
               </Text>
             </View>
 
+            {activeMonthBill && activeMonthBill.status === 'PARTIAL' && (
+              <View style={{ backgroundColor: '#fffbeb', borderColor: '#fef3c7', borderWidth: 1, padding: 12, borderRadius: 8, marginTop: 14, gap: 4 }}>
+                <Text style={{ fontSize: 13, fontWeight: 'bold', color: '#b45309' }}>⚠️ Partial Payment Processed</Text>
+                <Text style={{ fontSize: 11, color: '#d97706', lineHeight: 15 }}>
+                  A partial payment has been recorded for this statement. The remaining balance (shown above in Arrears & Penalties) has been carried forward. Please upload proof of payment for the remaining balance.
+                </Text>
+              </View>
+            )}
+
             {/* Action Buttons inside/under the Banner */}
-            {activeMonthBill && ['PENDING', 'ISSUED', 'OVERDUE', 'UNPAID'].includes(activeMonthBill.status) && (
+            {activeMonthBill && ['PENDING', 'ISSUED', 'OVERDUE', 'UNPAID', 'PARTIAL'].includes(activeMonthBill.status) && (
               <TouchableOpacity 
                 style={[styles.bannerUploadButton, { backgroundColor: themeColor || '#0038a8' }]} 
                 onPress={() => uploadReceipt(activeMonthBill.id)} 

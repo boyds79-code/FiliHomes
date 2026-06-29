@@ -1138,8 +1138,9 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                   </div>
                   
                   <div style={{ flex: '3 1 240px', display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '14px', color: '#1e293b', fontWeight: '600' }}>
-                      {isExpanded ? '▼ ' : '▶ '} Monthly Utility Assessment
+                    <span style={{ fontSize: '14px', color: bill.status === 'PARTIAL' ? '#d97706' : '#1e293b', fontWeight: '600' }}>
+                      {isExpanded ? '▼ ' : '▶ '} 
+                      {bill.status === 'PARTIAL' ? '⚠️ Remaining Balance (Partial Paid)' : 'Monthly Utility Assessment'}
                       {bill.receipts && bill.receipts.length > 0 && (
                         <span style={{ marginLeft: '10px', fontSize: '12px', color: '#10b981' }}>
                           📷 Receipt Attached
@@ -1222,6 +1223,11 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                         <div style={{...styles.cardValue, color: '#9a3412'}}>₱{Number(Number(bill.penalty_amount || 0) + calculatedPenalty).toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
                       </div>
                     </div>
+                    {bill.description && (
+                      <div style={{ marginTop: '14px', padding: '12px', borderRadius: '8px', backgroundColor: '#fffbeb', border: '1px solid #fef3c7', color: '#b45309', fontSize: '12px', fontWeight: 'bold' }}>
+                        📢 Statement Note: {bill.description.replace(/\n\n/g, ' ')}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

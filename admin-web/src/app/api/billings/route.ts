@@ -4,13 +4,23 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const condoId = searchParams.get('condoId');
   const supabaseAdmin = getAdminClient();
 
   // 1. Fetch billings, units, receipts, and condos in parallel
+  let billingsQuery = supabaseAdmin.from('billings').select('*');
+  let unitsQuery = supabaseAdmin.from('units').select('id, unit_number, building_no');
+
+  if (condoId) {
+    billingsQuery = billingsQuery.eq('condo_id', condoId);
+    unitsQuery = unitsQuery.eq('condo_id', condoId);
+  }
+
   const [billingsRes, unitsRes, receiptsRes, condosRes] = await Promise.all([
-    supabaseAdmin.from('billings').select('*'),
-    supabaseAdmin.from('units').select('id, unit_number, building_no'),
+    billingsQuery,
+    unitsQuery,
     supabaseAdmin.from('receipts').select('*'),
     supabaseAdmin.from('condos').select('id, penalty_rate')
   ]);

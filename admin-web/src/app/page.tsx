@@ -648,6 +648,22 @@ export default function DashboardPage() {
   const [visitorParkingEnabled, setVisitorParkingEnabled] = useState(true);
   const [amenityBookingEnabled, setAmenityBookingEnabled] = useState(true);
 
+  // Authentication & Dynamic Condo States
+  const [session, setSession] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState<boolean>(true);
+  const [authMode, setAuthMode] = useState<'LOGIN' | 'REGISTER'>('LOGIN');
+  const [activeCondoId, setActiveCondoId] = useState<string>('c1111111-1111-1111-1111-111111111111');
+  const [condoList, setCondoList] = useState<any[]>([]);
+
+  // Auth Forms Inputs
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [fullNameInput, setFullNameInput] = useState('');
+  const [condoNameInput, setCondoNameInput] = useState('');
+  const [selectedCondoId, setSelectedCondoId] = useState('');
+  const [isNewCondo, setIsNewCondo] = useState(true);
+  const [authError, setAuthError] = useState('');
+
   // Authorization and role simulation states
   const [staffList, setStaffList] = useState<any[]>([]);
   const [hqStaffList, setHqStaffList] = useState<HQStaff[]>([]);
@@ -682,10 +698,201 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchCondos = async () => {
+    try {
+      const { data, error } = await supabase.from('condos').select('id, name');
+      if (!error && data) {
+        setCondoList(data);
+        if (data.length > 0 && !selectedCondoId) {
+          setSelectedCondoId(data[0].id);
+        }
+      }
+    } catch (e) {
+      console.error("Error fetching condos:", e);
+    }
+  };
+
+  const loadUserProfile = async (userId: string) => {
+    try {
+      setAuthLoading(true);
+      const { data: staffData } = await supabase
+        .from('staff_profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (staffData) {
+        setCurrentUser(userId);
+        setCurrentUserRole(staffData.role || 'PMO_MANAGER');
+        setIsBillingManager(!!staffData.payroll_settings?.is_billing_manager);
+        if (staffData.condo_id) {
+          setActiveCondoId(staffData.condo_id);
+        }
+        const perms = staffData.payroll_settings?.permissions || { create: true, read: true, update: true, delete: true };
+        setUserPermissions({
+          create: !!perms.create,
+          read: !!perms.read,
+          update: !!perms.update,
+          delete: !!perms.delete
+        });
+      } else {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (profileData) {
+          setCurrentUser(userId);
+          setCurrentUserRole('SUPER_ADMIN');
+          setIsBillingManager(true);
+          setUserPermissions({ create: true, read: true, update: true, delete: true });
+        } else {
+          setCurrentUser(userId);
+          setCurrentUserRole('PMO_MANAGER');
+        }
+      }
+    } catch (e) {
+      console.error("Error loading user profile:", e);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
   useEffect(() => {
+    fetchCondos();
     fetchStaffForDropdown();
     fetchHQStaffList();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        loadUserProfile(session.user.id);
+      } else {
+        setAuthLoading(false);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        loadUserProfile(session.user.id);
+      } else {
+        setAuthLoading(false);
+        setCurrentUser('master-admin');
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: emailInput,
+        password: passwordInput,
+      });
+      if (error) throw error;
+      if (data.session) {
+        setSession(data.session);
+        await loadUserProfile(data.session.user.id);
+      }
+    } catch (err: any) {
+      setAuthError(err.message || 'Login failed');
+      setAuthLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError('');
+    setAuthLoading(true);
+    try {
+      let condoIdToLink = selectedCondoId;
+
+      if (isNewCondo) {
+        if (!condoNameInput) throw new Error('Please enter a condo name');
+        
+        const { data: newCondo, error: condoErr } = await supabase
+          .from('condos')
+          .insert([{ name: condoNameInput }])
+          .select()
+          .single();
+
+        if (condoErr) throw condoErr;
+        condoIdToLink = newCondo.id;
+
+        const { error: settingsErr } = await supabase
+          .from('condo_settings')
+          .insert([{ 
+            condo_id: condoIdToLink,
+            visitor_parking_enabled: true,
+            amenity_booking_enabled: true,
+            amenity_settings: {}
+          }]);
+        if (settingsErr) console.error("Error creating condo_settings:", settingsErr);
+      }
+
+      if (!condoIdToLink) throw new Error('Please select or create a condo');
+
+      const { data: authData, error: authErr } = await supabase.auth.signUp({
+        email: emailInput,
+        password: passwordInput,
+        options: {
+          data: {
+            full_name: fullNameInput
+          }
+        }
+      });
+
+      if (authErr) throw authErr;
+      if (!authData.user) throw new Error('Sign up failed');
+
+      const { error: staffErr } = await supabase
+        .from('staff_profiles')
+        .insert([{
+          id: authData.user.id,
+          full_name: fullNameInput,
+          role: 'PMO_MANAGER',
+          condo_id: condoIdToLink,
+          payroll_settings: {
+            is_billing_manager: true,
+            permissions: { create: true, read: true, update: true, delete: true }
+          }
+        }]);
+
+      if (staffErr) throw staffErr;
+
+      alert('🎉 Registration complete! Checking your session...');
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (sessionData?.session) {
+        setSession(sessionData.session);
+        await loadUserProfile(sessionData.session.user.id);
+      } else {
+        setAuthMode('LOGIN');
+        setAuthLoading(false);
+      }
+    } catch (err: any) {
+      setAuthError(err.message || 'Registration failed');
+      setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      setAuthLoading(true);
+      await supabase.auth.signOut();
+      setSession(null);
+      setCurrentUser('master-admin');
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setAuthLoading(false);
+    }
+  };
 
   // Real-time synchronization of staff permissions
   useEffect(() => {
@@ -770,13 +977,12 @@ export default function DashboardPage() {
 
   // 0. Fetch condo settings and listen for changes in real time
   useEffect(() => {
-    const condoId = 'c1111111-1111-1111-1111-111111111111';
     const fetchSettings = async () => {
       try {
         const { data } = await supabase
           .from('condo_settings')
           .select('visitor_parking_enabled, amenity_booking_enabled')
-          .eq('condo_id', condoId)
+          .eq('condo_id', activeCondoId)
           .maybeSingle();
         if (data) {
           setVisitorParkingEnabled(data.visitor_parking_enabled !== false);
@@ -794,7 +1000,7 @@ export default function DashboardPage() {
         event: '*', 
         schema: 'public', 
         table: 'condo_settings', 
-        filter: `condo_id=eq.${condoId}` 
+        filter: `condo_id=eq.${activeCondoId}` 
       }, (payload: any) => {
         if (payload.new) {
           setVisitorParkingEnabled(payload.new.visitor_parking_enabled !== false);
@@ -806,7 +1012,7 @@ export default function DashboardPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [activeCondoId]);
 
   // 1. Fetch overdue parcel count in real time
   useEffect(() => {
@@ -815,6 +1021,7 @@ export default function DashboardPage() {
         const { count, error } = await supabase
           .from('parcels')
           .select('*', { count: 'exact', head: true })
+          .eq('condo_id', activeCondoId)
           .eq('status', 'ARRIVED')
           .eq('is_overdue', true);
         if (!error && count !== null) {
@@ -836,17 +1043,16 @@ export default function DashboardPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [activeCondoId]);
 
   // 2. Fetch pending/new job requests count in real time
   useEffect(() => {
     const fetchJobsCount = async () => {
       try {
-        const actualCondoId = 'c1111111-1111-1111-1111-111111111111';
         const { count, error } = await supabase
           .from('job_orders')
           .select('*', { count: 'exact', head: true })
-          .eq('condo_id', actualCondoId)
+          .eq('condo_id', activeCondoId)
           .eq('status', 'REQUESTED');
         if (!error && count !== null) {
           setNewJobsCount(count);
@@ -950,6 +1156,179 @@ export default function DashboardPage() {
     setExpandedSettings(false);
     setExpandedStaffRadio(false);
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="font-bold text-slate-400">Loading FiliCondo Admin...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 font-sans relative overflow-hidden">
+        {/* Background gradient flares */}
+        <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-blue-900/20 blur-[120px] rounded-full"></div>
+        <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-purple-900/20 blur-[120px] rounded-full"></div>
+
+        <div className="w-full max-w-md p-8 rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 shadow-2xl relative z-10 mx-4">
+          <div className="text-center mb-8">
+            <span className="text-4xl">🏢</span>
+            <h1 className="text-2xl font-black text-white mt-4 tracking-tight">FiliCondo PMO Portal</h1>
+            <p className="text-xs text-slate-400 mt-1">Enterprise Resources & Property Management Hub</p>
+          </div>
+
+          <div className="flex bg-white/5 p-1 rounded-lg border border-white/5 mb-6">
+            <button 
+              onClick={() => { setAuthMode('LOGIN'); setAuthError(''); }}
+              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${authMode === 'LOGIN' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
+            >
+              Sign In
+            </button>
+            <button 
+              onClick={() => { setAuthMode('REGISTER'); setAuthError(''); }}
+              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${authMode === 'REGISTER' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
+            >
+              Register Condo
+            </button>
+          </div>
+
+          {authError && (
+            <div className="mb-4 p-3 bg-red-950/50 border border-red-500/30 rounded-lg text-xs font-semibold text-red-400">
+              ⚠️ {authError}
+            </div>
+          )}
+
+          {authMode === 'LOGIN' ? (
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Email Address</label>
+                <input 
+                  type="email" 
+                  value={emailInput} 
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  required 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" 
+                  placeholder="admin@condo.com"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+                <input 
+                  type="password" 
+                  value={passwordInput} 
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  required 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" 
+                  placeholder="••••••••"
+                />
+              </div>
+              <button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3 rounded-lg mt-6 transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]"
+              >
+                Sign In to Admin
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div>
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Full Name</label>
+                <input 
+                  type="text" 
+                  value={fullNameInput} 
+                  onChange={(e) => setFullNameInput(e.target.value)}
+                  required 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" 
+                  placeholder="Juan Dela Cruz"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Email Address</label>
+                <input 
+                  type="email" 
+                  value={emailInput} 
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  required 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" 
+                  placeholder="admin@condo.com"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+                <input 
+                  type="password" 
+                  value={passwordInput} 
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  required 
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" 
+                  placeholder="Min 6 characters"
+                />
+              </div>
+              
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <div className="flex bg-white/5 p-0.5 rounded-lg mb-3">
+                  <button 
+                    type="button" 
+                    onClick={() => setIsNewCondo(true)}
+                    className={`flex-1 py-1.5 text-[10px] font-bold rounded-md transition-all ${isNewCondo ? 'bg-blue-600 text-white' : 'text-slate-400'}`}
+                  >
+                    New Condo
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsNewCondo(false)}
+                    className={`flex-1 py-1.5 text-[10px] font-bold rounded-md transition-all ${!isNewCondo ? 'bg-blue-600 text-white' : 'text-slate-400'}`}
+                  >
+                    Existing Condo
+                  </button>
+                </div>
+
+                {isNewCondo ? (
+                  <div>
+                    <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Condo Branch Name</label>
+                    <input 
+                      type="text" 
+                      value={condoNameInput} 
+                      onChange={(e) => setCondoNameInput(e.target.value)}
+                      required={isNewCondo}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition" 
+                      placeholder="BSA Tower Makati"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1.5">Select Condo Branch</label>
+                    <select
+                      value={selectedCondoId}
+                      onChange={(e) => setSelectedCondoId(e.target.value)}
+                      required={!isNewCondo}
+                      className="w-full bg-slate-900 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                    >
+                      {condoList.map(c => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              <button 
+                type="submit" 
+                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3 rounded-lg mt-6 transition-all shadow-lg shadow-blue-500/20 active:scale-[0.98]"
+              >
+                Create Account & Join PMO
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   if (currentUser.startsWith('advertiser-')) {
     return (
@@ -1765,6 +2144,20 @@ export default function DashboardPage() {
             ))}
           </span>
           <div className="flex items-center gap-4">
+            {/* Condo Selector (Admin/PMO can switch or see active) */}
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-semibold text-slate-500">Active Condo:</span>
+              <select 
+                value={activeCondoId} 
+                onChange={(e) => setActiveCondoId(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded px-2.5 py-1 font-semibold text-slate-700 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                {condoList.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex items-center gap-2 text-xs">
               <span className="font-semibold text-slate-500">Act As:</span>
               <select 
@@ -1800,7 +2193,7 @@ export default function DashboardPage() {
                 </optgroup>
               </select>
             </div>
-            <button className="bg-slate-800 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700 transition">Logout</button>
+            <button onClick={handleLogout} className="bg-slate-800 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-700 transition">Logout</button>
           </div>
         </header>
         
@@ -1812,29 +2205,29 @@ export default function DashboardPage() {
               newJobsCount={newJobsCount} 
             />
           )}
-          {currentMenu === 'billings-issuance' && <BillingManager initialView="ISSUANCE" />}
-          {currentMenu === 'billings-audit' && <BillingManager initialView="VERIFICATION" />}
-          {currentMenu === 'occupants-directory' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab={occupantsTab} />}
-          {currentMenu === 'occupants-register' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab="REGISTER" />}
-          {currentMenu === 'occupants-requests' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab="REQUESTS" />}
-          {currentMenu === 'occupants-invitations' && <OccupantManager condoId="c1111111-1111-1111-1111-111111111111" initialTab="INVITATIONS" />}
-          {currentMenu === 'occupants-vehicles' && <VehicleRegistryManager condoId="solea-residences" />}
+          {currentMenu === 'billings-issuance' && <BillingManager initialView="ISSUANCE" condoId={activeCondoId} />}
+          {currentMenu === 'billings-audit' && <BillingManager initialView="VERIFICATION" condoId={activeCondoId} />}
+          {currentMenu === 'occupants-directory' && <OccupantManager condoId={activeCondoId} initialTab={occupantsTab} />}
+          {currentMenu === 'occupants-register' && <OccupantManager condoId={activeCondoId} initialTab="REGISTER" />}
+          {currentMenu === 'occupants-requests' && <OccupantManager condoId={activeCondoId} initialTab="REQUESTS" />}
+          {currentMenu === 'occupants-invitations' && <OccupantManager condoId={activeCondoId} initialTab="INVITATIONS" />}
+          {currentMenu === 'occupants-vehicles' && <VehicleRegistryManager condoId={activeCondoId} />}
           
-          {currentMenu === 'parcels-dormant' && <ParcelManager condoId="solea-residences" initialView="DORMANT" />}
-          {currentMenu === 'parcels-holding' && <ParcelManager condoId="solea-residences" initialView="HOLDING" />}
-          {currentMenu === 'parcels-blackbox' && <ParcelManager condoId="solea-residences" initialView="BLACKBOX" />}
+          {currentMenu === 'parcels-dormant' && <ParcelManager condoId={activeCondoId} initialView="DORMANT" />}
+          {currentMenu === 'parcels-holding' && <ParcelManager condoId={activeCondoId} initialView="HOLDING" />}
+          {currentMenu === 'parcels-blackbox' && <ParcelManager condoId={activeCondoId} initialView="BLACKBOX" />}
           
-          {currentMenu === 'jobs-new' && <MaintenanceJobOrderManager condoId="solea-residences" initialView="NEW_REQUESTS" />}
-          {currentMenu === 'jobs-active' && <MaintenanceJobOrderManager condoId="solea-residences" initialView="ACTIVE_JOBS" />}
+          {currentMenu === 'jobs-new' && <MaintenanceJobOrderManager condoId={activeCondoId} initialView="NEW_REQUESTS" />}
+          {currentMenu === 'jobs-active' && <MaintenanceJobOrderManager condoId={activeCondoId} initialView="ACTIVE_JOBS" />}
           
-          {currentMenu === 'intercom' && <RealtimeIntercomMatrix condoId="solea-residences" />}
-          {currentMenu === 'staff-radio-security' && <StaffRadioMatrix condoId="solea-residences" department="SECURITY" />}
-          {currentMenu === 'staff-radio-maintenance' && <StaffRadioMatrix condoId="solea-residences" department="MAINTENANCE" />}
-          {currentMenu === 'staff-radio-amenity' && <StaffRadioMatrix condoId="solea-residences" department="AMENITY" />}
-          {currentMenu === 'security' && <SecuritySanctionManager condoId="solea-residences" />}
+          {currentMenu === 'intercom' && <RealtimeIntercomMatrix condoId={activeCondoId} />}
+          {currentMenu === 'staff-radio-security' && <StaffRadioMatrix condoId={activeCondoId} department="SECURITY" />}
+          {currentMenu === 'staff-radio-maintenance' && <StaffRadioMatrix condoId={activeCondoId} department="MAINTENANCE" />}
+          {currentMenu === 'staff-radio-amenity' && <StaffRadioMatrix condoId={activeCondoId} department="AMENITY" />}
+          {currentMenu === 'security' && <SecuritySanctionManager condoId={activeCondoId} />}
           {currentMenu === 'staff-payroll' && (
             isBillingManager ? (
-              <AdminStaffManager condoId="c1111111-1111-1111-1111-111111111111" viewMode="payroll" currentUserPermissions={userPermissions} currentUserRole={currentUserRole} />
+              <AdminStaffManager condoId={activeCondoId} viewMode="payroll" currentUserPermissions={userPermissions} currentUserRole={currentUserRole} />
             ) : (
               <div className="bg-white border border-slate-200 rounded-xl p-8 text-center max-w-md mx-auto my-12 shadow-sm">
                 <span className="text-4xl">🔑</span>
@@ -1843,11 +2236,11 @@ export default function DashboardPage() {
               </div>
             )
           )}
-          {currentMenu === 'settings-property' && <CondoSettings initialSubTab="property" currentUserRole={currentUserRole} />}
-          {currentMenu === 'settings-app' && <CondoSettings initialSubTab="app" currentUserRole={currentUserRole} />}
-          {currentMenu === 'settings-staff' && <CondoSettings initialSubTab="staff" currentUserRole={currentUserRole} />}
-          {currentMenu === 'settings-report' && <ReportIssueManager condoId="c1111111-1111-1111-1111-111111111111" />}
-          {currentMenu === 'settings-subscription' && <SubscriptionBillingManager condoId="c1111111-1111-1111-1111-111111111111" />}
+          {currentMenu === 'settings-property' && <CondoSettings initialSubTab="property" currentUserRole={currentUserRole} condoId={activeCondoId} />}
+          {currentMenu === 'settings-app' && <CondoSettings initialSubTab="app" currentUserRole={currentUserRole} condoId={activeCondoId} />}
+          {currentMenu === 'settings-staff' && <CondoSettings initialSubTab="staff" currentUserRole={currentUserRole} condoId={activeCondoId} />}
+          {currentMenu === 'settings-report' && <ReportIssueManager condoId={activeCondoId} />}
+          {currentMenu === 'settings-subscription' && <SubscriptionBillingManager condoId={activeCondoId} />}
           {currentMenu.startsWith('hq-') && (
             <SuperAdminManager 
               activeTab={
@@ -1874,10 +2267,10 @@ export default function DashboardPage() {
               hqStaffList={hqStaffList}
             />
           )}
-          {currentMenu === 'notices' && <NoticeManager condoId="c1111111-1111-1111-1111-111111111111" />}
-          {currentMenu === 'amenity-bookings' && <AmenityBookingManager condoId="c1111111-1111-1111-1111-111111111111" />}
-           {currentMenu === 'visitor-control' && <VisitorLogManager condoId="c1111111-1111-1111-1111-111111111111" />}
-          {currentMenu === 'system-logs' && <SystemLogManager condoId="c1111111-1111-1111-1111-111111111111" />}
+          {currentMenu === 'notices' && <NoticeManager condoId={activeCondoId} />}
+          {currentMenu === 'amenity-bookings' && <AmenityBookingManager condoId={activeCondoId} />}
+           {currentMenu === 'visitor-control' && <VisitorLogManager condoId={activeCondoId} />}
+          {currentMenu === 'system-logs' && <SystemLogManager condoId={activeCondoId} />}
         </main>
       </div>
     </div>

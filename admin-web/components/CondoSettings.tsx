@@ -7,11 +7,13 @@ import { supabase } from '../src/lib/supabaseClient';
 export default function CondoSettings({ 
   initialSubTab = 'property',
   currentUserRole = 'PMO_MANAGER',
-  showTabs = false
+  showTabs = false,
+  condoId
 }: { 
   initialSubTab?: 'property' | 'app' | 'staff';
   currentUserRole?: string;
   showTabs?: boolean;
+  condoId?: string;
 }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -26,7 +28,7 @@ export default function CondoSettings({
   }, [initialSubTab]);
   
   // Target Condo ID
-  const currentCondoId = 'c1111111-1111-1111-1111-111111111111';
+  const currentCondoId = condoId || 'c1111111-1111-1111-1111-111111111111';
 
   // State definitions
   const [condoName, setCondoName] = useState('');

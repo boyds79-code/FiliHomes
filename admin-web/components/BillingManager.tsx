@@ -39,7 +39,8 @@ interface BankTransaction {
 
 type SubView = 'ISSUANCE' | 'VERIFICATION';
 
-export default function BillingManager({ initialView }: { initialView?: 'ISSUANCE' | 'VERIFICATION' }) {
+export default function BillingManager({ initialView, condoId }: { initialView?: 'ISSUANCE' | 'VERIFICATION'; condoId?: string }) {
+  const currentCondoId = condoId || 'c1111111-1111-1111-1111-111111111111';
   const [bills, setBills] = useState<Billing[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState<SubView>(initialView || 'ISSUANCE');
@@ -187,7 +188,7 @@ export default function BillingManager({ initialView }: { initialView?: 'ISSUANC
 
 const fetchCondoSettings = async () => {
   try {
-    const { data } = await supabase.from('condos').select('*').eq('id', 'c1111111-1111-1111-1111-111111111111').maybeSingle();
+    const { data } = await supabase.from('condos').select('*').eq('id', currentCondoId).maybeSingle();
     if (data) setCondoSettings(data);
   } catch (error) {
     console.error('Failed to load condo settings:', error);
@@ -203,7 +204,7 @@ const fetchBillings = async () => {
   setLoading(true);
   try {
     // 🎯 Call API Route instead of direct client fetch
-    const response = await fetch('/api/billings');
+    const response = await fetch('/api/billings?condoId=' + currentCondoId);
     const { data, error } = await response.json();
     
     console.log("Final merged data:", data);
@@ -477,7 +478,7 @@ const fetchBillings = async () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              condoId: 'c1111111-1111-1111-1111-111111111111',
+              condoId: currentCondoId,
               billings: mappedBillings
             })
           });
@@ -562,7 +563,7 @@ const fetchBillings = async () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            condoId: 'c1111111-1111-1111-1111-111111111111',
+            condoId: currentCondoId,
             billings: mappedBillings
           })
         });

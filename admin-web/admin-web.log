@@ -397,3 +397,33 @@ Dispatched push notifications for new notice to 1 devices.
  GET /api/billings 200 in 153ms (next.js: 2ms, application-code: 151ms)
  GET /api/billings 200 in 976ms (next.js: 3ms, application-code: 973ms)
  GET /api/billings 200 in 234ms (next.js: 3ms, application-code: 231ms)
+ HEAD / 200 in 170ms (next.js: 41ms, application-code: 129ms)
+Vision API (Gemini): Fetching image from URL: http://localhost:3000/Users/chriskim/Downloads/Gemini_Generated_Image_acyct9acyct9acyc.jpeg
+Failed to fetch image from URL, attempting local file path fallback: Error: Failed to fetch image from URL: 404 Not Found
+    at POST (src/app/api/vision-match/route.ts:37:15)
+  35 |       const imageResponse = await fetch(finalUrl);
+  36 |       if (!imageResponse.ok) {
+> 37 |         throw new Error(`Failed to fetch image from URL: ${imageResponse.status} ${imageRe...
+     |               ^
+  38 |       }
+  39 |       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+  40 |       const mimeType = imageResponse.headers.get("content-type") || "image/jpeg";
+Vision API (Gemini): Sending receipt image to model...
+ GET /Users/chriskim/Downloads/Gemini_Generated_Image_acyct9acyct9acyc.jpeg 404 in 598ms (next.js: 513ms, application-code: 86ms)
+Vision API (Gemini) Response: 502932729933
+ POST /api/vision-match 200 in 4.5s (next.js: 34ms, application-code: 4.4s)
+Vision API (Gemini): Fetching image from URL: http://localhost:3000/Users/chriskim/Downloads/Gemini_Generated_Image_acyct9acyct9acyc.jpeg
+Failed to fetch image from URL, attempting local file path fallback: Error: Failed to fetch image from URL: 404 Not Found
+    at POST (src/app/api/vision-match/route.ts:37:15)
+  35 |       const imageResponse = await fetch(finalUrl);
+  36 |       if (!imageResponse.ok) {
+> 37 |         throw new Error(`Failed to fetch image from URL: ${imageResponse.status} ${imageRe...
+     |               ^
+  38 |       }
+  39 |       const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+  40 |       const mimeType = imageResponse.headers.get("content-type") || "image/jpeg";
+Vision API (Gemini): Sending receipt image to model...
+ GET /Users/chriskim/Downloads/Gemini_Generated_Image_acyct9acyct9acyc.jpeg 404 in 71ms (next.js: 1831µs, application-code: 69ms)
+Vision API (Gemini) Response: 5029327299933
+ POST /api/vision-match 200 in 4.8s (next.js: 3ms, application-code: 4.8s)
+[?25h

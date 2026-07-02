@@ -239,6 +239,36 @@ export default function HomeScreen({ navigation }: any) {
     seenNotifIdsRef.current = new Set();
     initialNotifsLoadedRef.current = false;
 
+    const translateNotification = (title: string, message: string) => {
+      let cleanTitle = title || '';
+      let cleanMessage = message || '';
+
+      const isVisitorApproval = cleanTitle.includes("방문객 승인 요청");
+      const isVisitorArrival = cleanTitle.includes("방문객 도착 알림");
+      const isEmergencyRepair = cleanTitle.includes("긴급 야간 수리 요청");
+
+      if (isVisitorApproval) {
+        cleanTitle = "🔑 Visitor Approval Required";
+        if (cleanMessage.includes("님이 방문했습니다.")) {
+          const name = cleanMessage.replace("님이 방문했습니다.", "").trim();
+          cleanMessage = `${name} is at the gate requesting entry. Please approve.`;
+        }
+      } else if (isVisitorArrival) {
+        cleanTitle = "Visitor Arrived 🚶";
+        if (cleanMessage.includes("님이 단지 정문에 도착했습니다.")) {
+          const name = cleanMessage.replace("님이 단지 정문에 도착했습니다.", "").trim();
+          cleanMessage = `${name} has entered the premises.`;
+        }
+      } else if (isEmergencyRepair) {
+        cleanTitle = "Urgent Night Repair Request 🚨";
+        if (cleanMessage.includes("야간 수리 요청이 접수되었습니다. 확인 바랍니다.")) {
+          cleanMessage = "A night repair request has been received. Please verify.";
+        }
+      }
+
+      return { title: cleanTitle, message: cleanMessage };
+    };
+
     // ⚡ Add 4-second polling fallback in case database level realtime publication is disabled for notifications
     const pollNotifications = async () => {
       if (!activeUnitId) return;
@@ -270,12 +300,31 @@ export default function HomeScreen({ navigation }: any) {
               seenNotifIdsRef.current.add(n.id);
               hasNew = true;
 
-              // Display alert banner & play system sound
-              Alert.alert(
-                `🔔 ${n.title}`,
-                n.message,
-                [{ text: "OK", style: "default" }]
-              );
+              const { title, message } = translateNotification(n.title, n.message);
+              const isApprovalReq = title.includes("Approval Required") || message.includes("approve") || n.type === 'VISITOR_APPROVAL';
+
+              if (isApprovalReq) {
+                Alert.alert(
+                  `🔔 ${title}`,
+                  message,
+                  [
+                    { text: "Later", style: "cancel" },
+                    { 
+                      text: "Go to Approvals", 
+                      onPress: () => {
+                        navigation.navigate('VisitorManage');
+                      } 
+                    }
+                  ]
+                );
+              } else {
+                // Display alert banner & play system sound
+                Alert.alert(
+                  `🔔 ${title}`,
+                  message,
+                  [{ text: "OK", style: "default" }]
+                );
+              }
             }
           });
 
@@ -316,13 +365,21 @@ export default function HomeScreen({ navigation }: any) {
       }, (payload) => {
         refreshBadges();
         fetchLatestBillInfo();
-        if (payload.new.type === 'VISITOR') {
-          const isApprovalReq = payload.new.title?.includes("Approval Required") || payload.new.message?.includes("approve");
+        
+        // Add to seen notifications to prevent duplicate alerts from polling fallback
+        if (payload.new?.id) {
+          seenNotifIdsRef.current.add(payload.new.id);
+        }
+
+        const nType = payload.new.type;
+        if (nType === 'VISITOR' || nType === 'VISITOR_APPROVAL') {
+          const { title, message } = translateNotification(payload.new.title, payload.new.message);
+          const isApprovalReq = title.includes("Approval Required") || message.includes("approve") || nType === 'VISITOR_APPROVAL';
           
           if (isApprovalReq) {
             Alert.alert(
-              `🔔 ${payload.new.title}`,
-              payload.new.message,
+              `🔔 ${title}`,
+              message,
               [
                 { text: "Later", style: "cancel" },
                 { 
@@ -336,11 +393,18 @@ export default function HomeScreen({ navigation }: any) {
           } else {
             // Visitor arrival notification (already entry confirmed)
             Alert.alert(
-              `🔔 ${payload.new.title}`,
-              payload.new.message,
+              `🔔 ${title}`,
+              message,
               [{ text: "OK", style: "default" }]
             );
           }
+        } else {
+          const { title, message } = translateNotification(payload.new.title, payload.new.message);
+          Alert.alert(
+            `🔔 ${title}`,
+            message,
+            [{ text: "OK", style: "default" }]
+          );
         }
       })
       .on('postgres_changes', {

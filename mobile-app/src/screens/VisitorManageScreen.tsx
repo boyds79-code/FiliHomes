@@ -263,7 +263,7 @@ export default function VisitorManageScreen({ navigation }: any) {
           vehicle_type: null,
           purpose: finalPurpose,
           visit_date: startDate,
-          status: approvalRequired ? 'PENDING' : 'APPROVED',
+          status: 'APPROVED',
           qr_code_value: qrToken
         }]);
 

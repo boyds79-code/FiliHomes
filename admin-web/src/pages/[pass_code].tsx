@@ -14,14 +14,14 @@ export default function GuestWebPass() {
   const [qrValue, setQrValue] = useState('');
 
   useEffect(() => {
-    if (pass_code) {
+    if (router.isReady && pass_code) {
       fetchGuestPass();
     }
-  }, [pass_code]);
+  }, [router.isReady, pass_code, router.query.token]);
 
   // 30-Second Security Timer Logic (Prevents pass screenshot sharing theft)
   useEffect(() => {
-    if (!passData || passData.status !== 'ACTIVE') return;
+    if (!passData || passData.status !== 'ACTIVE' || pass_code === 'pass') return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -40,25 +40,52 @@ export default function GuestWebPass() {
   const fetchGuestPass = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabaseAdmin
-        .from('guest_passes')
-        .select('*, condos(name), units(unit_number)')
-        .eq('pass_code', pass_code)
-        .single();
+      const { token } = router.query;
 
-      if (error || !data) {
-        setErrorMsg('Invalid or expired gate pass link.');
-        return;
+      if (pass_code === 'pass' && token) {
+        // Query visitor_passes table for resident-created passes
+        const { data, error } = await supabaseAdmin
+          .from('visitor_passes')
+          .select('*, units(unit_number, condos(name))')
+          .eq('qr_code_value', token)
+          .single();
+
+        if (error || !data) {
+          setErrorMsg('Invalid or expired gate pass link.');
+          return;
+        }
+
+        setPassData({
+          condos: data.units?.condos,
+          units: data.units,
+          guest_type: data.visit_type || 'VISITOR',
+          guest_name: data.visitor_name,
+          status: 'ACTIVE', // Resident passes are active if found and valid
+          valid_until: data.visit_date
+        });
+        setQrValue(token as string);
+      } else {
+        // Query guest_passes table (legacy/admin flow)
+        const { data, error } = await supabaseAdmin
+          .from('guest_passes')
+          .select('*, condos(name), units(unit_number)')
+          .eq('pass_code', pass_code)
+          .single();
+
+        if (error || !data) {
+          setErrorMsg('Invalid or expired gate pass link.');
+          return;
+        }
+
+        // Check if pass is legally expired by time guard rules
+        if (new Date(data.valid_until) < new Date()) {
+          setErrorMsg('This digital pass has expired.');
+          return;
+        }
+
+        setPassData(data);
+        setQrValue(`${pass_code}_OTP_${Math.floor(Date.now() / 30000)}`);
       }
-
-      // Check if pass is legally expired by time guard rules
-      if (new Date(data.valid_until) < new Date()) {
-        setErrorMsg('This digital pass has expired.');
-        return;
-      }
-
-      setPassData(data);
-      setQrValue(`${pass_code}_OTP_${Math.floor(Date.now() / 30000)}`);
     } catch (err) {
       setErrorMsg('System error loading access credential.');
     } finally {
@@ -86,7 +113,9 @@ export default function GuestWebPass() {
           <QRCode value={qrValue} size={180} />
         </div>
 
-        <p style={styles.timerText}>🔄 QR refreshes in <strong style={{color: '#dc2626'}}>{countdown}s</strong></p>
+        {pass_code !== 'pass' && (
+          <p style={styles.timerText}>🔄 QR refreshes in <strong style={{color: '#dc2626'}}>{countdown}s</strong></p>
+        )}
         <p style={styles.notice}>Present this screen to the security guard house upon arrival.</p>
       </div>
 

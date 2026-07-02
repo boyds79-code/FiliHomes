@@ -811,33 +811,7 @@ export default function DashboardPage() {
     setAuthError('');
     setAuthLoading(true);
     try {
-      let condoIdToLink = selectedCondoId;
-
-      if (isNewCondo) {
-        if (!condoNameInput) throw new Error('Please enter a condo name');
-        
-        const { data: newCondo, error: condoErr } = await supabase
-          .from('condos')
-          .insert([{ name: condoNameInput }])
-          .select()
-          .single();
-
-        if (condoErr) throw condoErr;
-        condoIdToLink = newCondo.id;
-
-        const { error: settingsErr } = await supabase
-          .from('condo_settings')
-          .insert([{ 
-            condo_id: condoIdToLink,
-            visitor_parking_enabled: true,
-            amenity_booking_enabled: true,
-            amenity_settings: {}
-          }]);
-        if (settingsErr) console.error("Error creating condo_settings:", settingsErr);
-      }
-
-      if (!condoIdToLink) throw new Error('Please select or create a condo');
-
+      // 1. Sign up user via Client Auth (which is allowed)
       const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: emailInput,
         password: passwordInput,
@@ -851,20 +825,23 @@ export default function DashboardPage() {
       if (authErr) throw authErr;
       if (!authData.user) throw new Error('Sign up failed');
 
-      const { error: staffErr } = await supabase
-        .from('staff_profiles')
-        .insert([{
-          id: authData.user.id,
-          full_name: fullNameInput,
-          role: 'PMO_MANAGER',
-          condo_id: condoIdToLink,
-          payroll_settings: {
-            is_billing_manager: true,
-            permissions: { create: true, read: true, update: true, delete: true }
-          }
-        }]);
+      // 2. Call our secure server API to bypass RLS and link user to Condo
+      const response = await fetch('/api/auth/register-pmo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: authData.user.id,
+          fullName: fullNameInput,
+          isNewCondo,
+          condoName: condoNameInput,
+          selectedCondoId
+        })
+      });
 
-      if (staffErr) throw staffErr;
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Failed to complete registration on database.');
+      }
 
       alert('🎉 Registration complete! Checking your session...');
       const { data: sessionData } = await supabase.auth.getSession();

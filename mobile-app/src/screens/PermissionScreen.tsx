@@ -30,7 +30,7 @@ export default function PermissionScreen({ navigation }: any) {
       if (pushStatus !== 'granted') {
         const retry = await new Promise<boolean>((resolve) => {
           Alert.alert(
-            'Notification Agreement Required 🔔',
+            'Enable Notifications 🔔',
             'Notifications are essential to receive real-time updates about billings, parcel deliveries, urgent condo announcements, and intercom chats from guards. Do you want to allow notifications?',
             [
               { text: 'Cancel', style: 'cancel', onPress: () => resolve(false) },
@@ -139,7 +139,7 @@ export default function PermissionScreen({ navigation }: any) {
           {requesting ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.actionSubmitBtnText}>Agree and Continue</Text>
+            <Text style={styles.actionSubmitBtnText}>Continue</Text>
           )}
         </TouchableOpacity>
       </View>

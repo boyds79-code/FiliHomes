@@ -451,6 +451,13 @@ export default function CondoSettings({
     reader.onload = (event) => {
       const text = event.target?.result as string;
       const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      if (lines.length === 0) return;
+
+      // Smart check: shift index if first column is serial number (no, id, seq, etc.)
+      const firstLineHeaders = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/^["']|["']$/g, ''));
+      const hasSerialCol = firstLineHeaders[0] === 'no' || firstLineHeaders[0] === 'id' || firstLineHeaders[0] === 'seq' || firstLineHeaders[0] === 'num' || firstLineHeaders[0] === '번호';
+      const offset = hasSerialCol ? 1 : 0;
+
       const parsedRows: any[] = [];
       let validCount = 0;
       let invalidCount = 0;
@@ -459,15 +466,15 @@ export default function CondoSettings({
         if (!lines[i]) continue;
         const columns = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
         
-        const unit_no = columns[0] || '';
-        const tower = columns[1] || '';
-        const full_name = columns[2] || '';
-        const email = columns[3] || '';
-        const phone = columns[4] || '';
-        const role = columns[5]?.toLowerCase() || '';
-        const lease_start = columns[6] || '';
-        const lease_end = columns[7] || '';
-        const rawPayer = columns[8]?.toLowerCase() || 'true';
+        const unit_no = columns[0 + offset] || '';
+        const tower = columns[1 + offset] || '';
+        const full_name = columns[2 + offset] || '';
+        const email = columns[3 + offset] || '';
+        const phone = columns[4 + offset] || '';
+        const role = columns[5 + offset]?.toLowerCase() || '';
+        const lease_start = columns[6 + offset] || '';
+        const lease_end = columns[7 + offset] || '';
+        const rawPayer = columns[8 + offset]?.toLowerCase() || 'true';
 
         let isValid = true;
         let errorReason = '';

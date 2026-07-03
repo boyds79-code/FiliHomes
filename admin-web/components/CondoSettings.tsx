@@ -183,7 +183,7 @@ export default function CondoSettings({
     try {
       const { data, error } = await supabase
         .from('units')
-        .select('id, unit_number, tower_name')
+        .select('id, unit_number, building_no')
         .eq('condo_id', currentCondoId);
       if (!error && data) setUnits(data);
     } catch (e) {
@@ -485,10 +485,10 @@ export default function CondoSettings({
         let errorReason = '';
         let matchedUnitId = '';
 
-        // Cross-match unit_number and tower_name
+        // Cross-match unit_number and building_no
         const matchedUnit = units.find(u => 
           u.unit_number.toLowerCase() === unit_no.toLowerCase() &&
-          (!tower || (u.tower_name || '').toLowerCase() === tower.toLowerCase())
+          (!tower || (u.building_no || '').toLowerCase() === tower.toLowerCase())
         );
 
         if (!unit_no) {
@@ -715,6 +715,74 @@ export default function CondoSettings({
 
       {subTab === 'app' && (
         <form id="app-form" onSubmit={handleSaveSettings} style={styles.formGrid}>
+          {/* 3. Occupants Upload */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <h3 style={styles.sectionHeading}>📥 Occupants Upload</h3>
+            <div style={styles.settingsCard}>
+              <div style={styles.configRow}>
+                <div style={styles.configLeft}>
+                  <input type="file" id="occupants-csv" style={{ display: 'none' }} onChange={handleBulkFileUploadParsed} disabled={!isEditing || isBulkSyncing} />
+                  <label htmlFor="occupants-csv" style={{ ...styles.signatureFileLabel, opacity: (!isEditing || isBulkSyncing) ? 0.5 : 1, cursor: (!isEditing || isBulkSyncing) ? 'not-allowed' : 'pointer', display: 'block', textAlign: 'center', fontSize: '11px', padding: '6px 12px' }}>📁 {uploadedFileName ? `Selected: ${uploadedFileName}` : 'Select Occupants CSV File'}</label>
+                  <p style={{ color: '#94a3b8', fontSize: '9px', marginTop: '4px' }}>Format: UnitNo, Name, Email, Phone, Role (owner/tenant/family_member), LeaseStart, LeaseEnd, IsPayer(true/false)</p>
+                </div>
+                <div style={styles.configRight}>
+                  Import unified tenant and landlord rosters directly via a CSV file. Uploaded records will automatically map to existing condo units in the database.
+                </div>
+              </div>
+
+              {bulkLogSummary.total > 0 && (
+                <div style={styles.bulkSummaryGrid}>
+                  <div style={styles.bulkSummaryBox}>
+                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8' }}>TOTAL ROWS</span>
+                    <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{bulkLogSummary.total}</span>
+                  </div>
+                  <div style={{ ...styles.bulkSummaryBox, borderColor: '#22c55e' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#22c55e' }}>🟢 VALID</span>
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#22c55e' }}>{bulkLogSummary.valid}</span>
+                  </div>
+                  <div style={{ ...styles.bulkSummaryBox, borderColor: '#ef4444' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#ef4444' }}>🔴 ERRORS</span>
+                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#ef4444' }}>{bulkLogSummary.invalid}</span>
+                  </div>
+                </div>
+              )}
+
+              {bulkPreviewList.length > 0 && (
+                <div style={{ marginTop: '12px' }}>
+                  <div style={styles.bulkTableScroll}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left' }}>
+                      <thead>
+                        <tr style={{ backgroundColor: '#f8fafc', color: '#475569', borderBottom: '1px solid #e5e7eb' }}>
+                          <th style={{ padding: '6px' }}>Unit</th>
+                          <th style={{ padding: '6px' }}>Name</th>
+                          <th style={{ padding: '6px' }}>Email</th>
+                          <th style={{ padding: '6px' }}>Role</th>
+                          <th style={{ padding: '6px', textAlign: 'right' }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bulkPreviewList.map((row, idx) => (
+                          <tr style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: row.isValid ? 'transparent' : '#fef2f2' }} key={idx}>
+                            <td style={{ padding: '6px', fontWeight: 'bold' }}>{row.unit_no} {row.tower ? `(${row.tower})` : ''}</td>
+                            <td style={{ padding: '6px' }}>{row.fullName}</td>
+                            <td style={{ padding: '6px', color: '#64748b' }}>{row.email}</td>
+                            <td style={{ padding: '6px', textTransform: 'capitalize' }}>{row.unitRole}</td>
+                            <td style={{ padding: '6px', textAlign: 'right', fontWeight: 'bold', color: row.isValid ? '#16a34a' : '#ef4444' }}>
+                              {row.isValid ? 'Ready' : row.errorReason}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <button type="button" onClick={handleDeployBulkOccupants} disabled={isBulkSyncing || bulkLogSummary.valid === 0} style={{ ...styles.saveActionButton, width: '100%', marginTop: '10px' }}>
+                    {isBulkSyncing ? 'Synchronizing...' : `⚡ Sync ${bulkLogSummary.valid} Valid Occupants to DB`}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* 1. Parking Settings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <h3 style={styles.sectionHeading}>🚗 Parking Management</h3>
@@ -967,73 +1035,7 @@ export default function CondoSettings({
             </div>
           </div>
 
-          {/* 3. Occupants Upload */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <h3 style={styles.sectionHeading}>📥 Occupants Upload</h3>
-            <div style={styles.settingsCard}>
-              <div style={styles.configRow}>
-                <div style={styles.configLeft}>
-                  <input type="file" id="occupants-csv" style={{ display: 'none' }} onChange={handleBulkFileUploadParsed} disabled={!isEditing || isBulkSyncing} />
-                  <label htmlFor="occupants-csv" style={{ ...styles.signatureFileLabel, opacity: (!isEditing || isBulkSyncing) ? 0.5 : 1, cursor: (!isEditing || isBulkSyncing) ? 'not-allowed' : 'pointer', display: 'block', textAlign: 'center', fontSize: '11px', padding: '6px 12px' }}>📁 {uploadedFileName ? `Selected: ${uploadedFileName}` : 'Select Occupants CSV File'}</label>
-                  <p style={{ color: '#94a3b8', fontSize: '9px', marginTop: '4px' }}>Format: UnitNo, Name, Email, Phone, Role (owner/tenant/family_member), LeaseStart, LeaseEnd, IsPayer(true/false)</p>
-                </div>
-                <div style={styles.configRight}>
-                  Import unified tenant and landlord rosters directly via a CSV file. Uploaded records will automatically map to existing condo units in the database.
-                </div>
-              </div>
 
-              {bulkLogSummary.total > 0 && (
-                <div style={styles.bulkSummaryGrid}>
-                  <div style={styles.bulkSummaryBox}>
-                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#94a3b8' }}>TOTAL ROWS</span>
-                    <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{bulkLogSummary.total}</span>
-                  </div>
-                  <div style={{ ...styles.bulkSummaryBox, borderColor: '#22c55e' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#22c55e' }}>🟢 VALID</span>
-                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#22c55e' }}>{bulkLogSummary.valid}</span>
-                  </div>
-                  <div style={{ ...styles.bulkSummaryBox, borderColor: '#ef4444' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#ef4444' }}>🔴 ERRORS</span>
-                    <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#ef4444' }}>{bulkLogSummary.invalid}</span>
-                  </div>
-                </div>
-              )}
-
-              {bulkPreviewList.length > 0 && (
-                <div style={{ marginTop: '12px' }}>
-                  <div style={styles.bulkTableScroll}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left' }}>
-                      <thead>
-                        <tr style={{ backgroundColor: '#f8fafc', color: '#475569', borderBottom: '1px solid #e5e7eb' }}>
-                          <th style={{ padding: '6px' }}>Unit</th>
-                          <th style={{ padding: '6px' }}>Name</th>
-                          <th style={{ padding: '6px' }}>Email</th>
-                          <th style={{ padding: '6px' }}>Role</th>
-                          <th style={{ padding: '6px', textAlign: 'right' }}>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {bulkPreviewList.map((row, idx) => (
-                          <tr style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: row.isValid ? 'transparent' : '#fef2f2' }} key={idx}>
-                            <td style={{ padding: '6px', fontWeight: 'bold' }}>{row.unit_no} {row.tower ? `(${row.tower})` : ''}</td>
-                            <td style={{ padding: '6px' }}>{row.fullName}</td>
-                            <td style={{ padding: '6px', color: '#64748b' }}>{row.email}</td>
-                            <td style={{ padding: '6px', textTransform: 'capitalize' }}>{row.unitRole}</td>
-                            <td style={{ padding: '6px', textAlign: 'right', fontWeight: 'bold', color: row.isValid ? '#16a34a' : '#ef4444' }}>
-                              {row.isValid ? 'Ready' : row.errorReason}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <button type="button" onClick={handleDeployBulkOccupants} disabled={isBulkSyncing || bulkLogSummary.valid === 0} style={{ ...styles.saveActionButton, width: '100%', marginTop: '10px' }}>
-                    {isBulkSyncing ? 'Synchronizing...' : `⚡ Sync ${bulkLogSummary.valid} Valid Occupants to DB`}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
 
           {/* 4. Parcel Management */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

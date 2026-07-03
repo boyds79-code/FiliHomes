@@ -50,10 +50,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Condo ID is required' }, { status: 400 });
     }
 
-    // Link user to condo by inserting into staff_profiles (assigned_building represents the condo mapping)
+    // Link user to condo using upsert to avoid duplicate key errors for existing users
     const { error: staffErr } = await adminClient
       .from('staff_profiles')
-      .insert([{
+      .upsert({
         id: userId,
         full_name: fullName,
         role: 'PMO_MANAGER',
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
           is_billing_manager: true,
           permissions: { create: true, read: true, update: true, delete: true }
         }
-      }]);
+      });
 
     if (staffErr) {
       console.error("Error creating staff_profile via Admin:", staffErr);

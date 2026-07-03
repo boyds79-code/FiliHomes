@@ -819,6 +819,8 @@ export default function DashboardPage() {
     setAuthError('');
     setAuthLoading(true);
     try {
+      let userId = '';
+
       // 1. Sign up user via Client Auth (which is allowed)
       const { data: authData, error: authErr } = await supabase.auth.signUp({
         email: emailInput,
@@ -830,15 +832,33 @@ export default function DashboardPage() {
         }
       });
 
-      if (authErr) throw authErr;
-      if (!authData.user) throw new Error('Sign up failed');
+      if (authErr) {
+        // Smart bypass: if user exists, verify password and use that user instead of failing
+        if (authErr.message.includes('already') || authErr.message.includes('registered') || authErr.status === 422) {
+          const { data: loginData, error: loginErr } = await supabase.auth.signInWithPassword({
+            email: emailInput,
+            password: passwordInput,
+          });
+
+          if (loginErr) {
+            throw new Error(`User already registered. Please provide the correct password to link new condo.`);
+          }
+          userId = loginData.user?.id || '';
+        } else {
+          throw authErr;
+        }
+      } else {
+        userId = authData.user?.id || '';
+      }
+
+      if (!userId) throw new Error('Sign up mapping failed');
 
       // 2. Call our secure server API to bypass RLS and link user to Condo
       const response = await fetch('/api/auth/register-pmo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: authData.user.id,
+          userId,
           fullName: fullNameInput,
           isNewCondo,
           condoName: condoNameInput,

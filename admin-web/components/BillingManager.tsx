@@ -137,7 +137,7 @@ export default function BillingManager({ initialView, condoId }: { initialView?:
     // ⚡ Add 4-second polling interval to bypass lack of Supabase Realtime publication on billings table
     const interval = setInterval(async () => {
       try {
-        const response = await fetch('/api/billings');
+        const response = await fetch(`/api/billings?condoId=${currentCondoId}`);
         const { data, error } = await response.json();
         if (!error && data) {
           const paymentCandidates = (data || []).filter((b: Billing) => 
@@ -184,7 +184,7 @@ export default function BillingManager({ initialView, condoId }: { initialView?:
       supabase.removeChannel(channel);
       clearInterval(interval);
     };
-  }, []);
+  }, [currentCondoId]);
 
 const fetchCondoSettings = async () => {
   try {

@@ -581,45 +581,61 @@ export default function CondoSettings({
   return (
     <div style={styles.viewWrapper}>
       {showTabs && (
-        <div style={styles.tabHeader}>
-          <button
-            type="button"
-            onClick={() => setSubTab('property')}
-            style={{
-              ...styles.tabButton,
-              color: subTab === 'property' ? '#6b21a8' : '#64748b',
-              borderBottom: subTab === 'property' ? '2px solid #6b21a8' : '2px solid transparent',
-            }}
-          >
-            🏢 Property Settings
-          </button>
-          <button
-            type="button"
-            onClick={() => setSubTab('app')}
-            style={{
-              ...styles.tabButton,
-              color: subTab === 'app' ? '#6b21a8' : '#64748b',
-              borderBottom: subTab === 'app' ? '2px solid #6b21a8' : '2px solid transparent',
-            }}
-          >
-            ⚙️ App Settings
-          </button>
-          <button
-            type="button"
-            onClick={() => setSubTab('staff')}
-            style={{
-              ...styles.tabButton,
-              color: subTab === 'staff' ? '#6b21a8' : '#64748b',
-              borderBottom: subTab === 'staff' ? '2px solid #6b21a8' : '2px solid transparent',
-            }}
-          >
-            👥 Staff Management
-          </button>
+        <div style={{ ...styles.tabHeader, justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '20px' }}>
+            <button
+              type="button"
+              onClick={() => setSubTab('property')}
+              style={{
+                ...styles.tabButton,
+                color: subTab === 'property' ? '#6b21a8' : '#64748b',
+                borderBottom: subTab === 'property' ? '2px solid #6b21a8' : '2px solid transparent',
+              }}
+            >
+              🏢 Property Settings
+            </button>
+            <button
+              type="button"
+              onClick={() => setSubTab('app')}
+              style={{
+                ...styles.tabButton,
+                color: subTab === 'app' ? '#6b21a8' : '#64748b',
+                borderBottom: subTab === 'app' ? '2px solid #6b21a8' : '2px solid transparent',
+              }}
+            >
+              ⚙️ App Settings
+            </button>
+            <button
+              type="button"
+              onClick={() => setSubTab('staff')}
+              style={{
+                ...styles.tabButton,
+                color: subTab === 'staff' ? '#6b21a8' : '#64748b',
+                borderBottom: subTab === 'staff' ? '2px solid #6b21a8' : '2px solid transparent',
+              }}
+            >
+              👥 Staff Management
+            </button>
+          </div>
+
+          {/* Action Row on Top Right */}
+          {subTab !== 'staff' && (
+            <div style={{ display: 'flex', gap: '10px', paddingBottom: '10px' }}>
+              {!isEditing ? (
+                <button type="button" onClick={() => setIsEditing(true)} style={styles.editActionButton}>✏️ Edit Parameters</button>
+              ) : (
+                <>
+                  <button type="button" onClick={() => { setIsEditing(false); fetchCondoSettings(); }} style={styles.cancelActionButton}>Cancel</button>
+                  <button type="submit" form={subTab === 'property' ? 'property-form' : 'app-form'} disabled={saving} style={styles.saveActionButton}>{saving ? 'Saving...' : 'Save & Deploy'}</button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
 
       {subTab === 'property' && (
-        <form onSubmit={handleSaveSettings} style={styles.formGrid}>
+        <form id="property-form" onSubmit={handleSaveSettings} style={styles.formGrid}>
           {/* SECTION 1: Architecture Profiling */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <h3 style={styles.sectionHeading}>🏢 Architectural Profile</h3>
@@ -685,21 +701,11 @@ export default function CondoSettings({
             </div>
           </div>
 
-          <div style={styles.actionRow}>
-            {!isEditing ? (
-              <button type="button" onClick={() => setIsEditing(true)} style={styles.editActionButton}>✏️ Edit Parameters</button>
-            ) : (
-              <>
-                <button type="button" onClick={() => { setIsEditing(false); fetchCondoSettings(); }} style={styles.cancelActionButton}>Cancel</button>
-                <button type="submit" disabled={saving} style={styles.saveActionButton}>{saving ? 'Saving...' : 'Save & Deploy'}</button>
-              </>
-            )}
-          </div>
         </form>
       )}
 
       {subTab === 'app' && (
-        <form onSubmit={handleSaveSettings} style={styles.formGrid}>
+        <form id="app-form" onSubmit={handleSaveSettings} style={styles.formGrid}>
           {/* 1. Parking Settings */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <h3 style={styles.sectionHeading}>🚗 Parking Management</h3>
@@ -1373,16 +1379,6 @@ export default function CondoSettings({
             </div>
           </div>
 
-          <div style={styles.actionRow}>
-            {!isEditing ? (
-              <button type="button" onClick={() => setIsEditing(true)} style={styles.editActionButton}>✏️ Edit Parameters</button>
-            ) : (
-              <>
-                <button type="button" onClick={() => { setIsEditing(false); fetchCondoSettings(); }} style={styles.cancelActionButton}>Cancel</button>
-                <button type="submit" disabled={saving} style={styles.saveActionButton}>{saving ? 'Saving...' : 'Save & Deploy'}</button>
-              </>
-            )}
-          </div>
         </form>
       )}
 

@@ -460,25 +460,31 @@ export default function CondoSettings({
         const columns = lines[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''));
         
         const unit_no = columns[0] || '';
-        const full_name = columns[1] || '';
-        const email = columns[2] || '';
-        const phone = columns[3] || '';
-        const role = columns[4]?.toLowerCase() || '';
-        const lease_start = columns[5] || '';
-        const lease_end = columns[6] || '';
-        const rawPayer = columns[7]?.toLowerCase() || 'true';
+        const tower = columns[1] || '';
+        const full_name = columns[2] || '';
+        const email = columns[3] || '';
+        const phone = columns[4] || '';
+        const role = columns[5]?.toLowerCase() || '';
+        const lease_start = columns[6] || '';
+        const lease_end = columns[7] || '';
+        const rawPayer = columns[8]?.toLowerCase() || 'true';
 
         let isValid = true;
         let errorReason = '';
         let matchedUnitId = '';
 
-        const matchedUnit = units.find(u => u.unit_number.toLowerCase() === unit_no.toLowerCase());
+        // Cross-match unit_number and tower_name
+        const matchedUnit = units.find(u => 
+          u.unit_number.toLowerCase() === unit_no.toLowerCase() &&
+          (!tower || (u.tower_name || '').toLowerCase() === tower.toLowerCase())
+        );
+
         if (!unit_no) {
           isValid = false;
           errorReason = 'Missing Unit Number';
         } else if (!matchedUnit) {
           isValid = false;
-          errorReason = `Unit '${unit_no}' not found in database`;
+          errorReason = `Unit '${unit_no}'${tower ? ` (Tower: ${tower})` : ''} not found in database`;
         } else {
           matchedUnitId = matchedUnit.id;
         }
@@ -495,11 +501,14 @@ export default function CondoSettings({
           errorReason = 'Invalid Email Format';
         }
 
-        const validRoles = ['owner', 'tenant', 'family_member'];
-        const normalizedRole = role === 'family' || role === 'family member' ? 'family_member' : role;
+        const validRoles = ['owner', 'tenant', 'family_member', 'caretaker'];
+        const normalizedRole = 
+          role === 'family' || role === 'family member' ? 'family_member' : 
+          role === 'manager' || role === 'caretaker' ? 'caretaker' : role;
+
         if (isValid && !validRoles.includes(normalizedRole)) {
           isValid = false;
-          errorReason = `Invalid Role '${role}' (Must be Owner, Tenant, or Family Member)`;
+          errorReason = `Invalid Role '${role}' (Must be Owner, Tenant, Caretaker, or Family Member)`;
         }
 
         const is_payer = rawPayer === 'true' || rawPayer === '1' || rawPayer === 'yes';
@@ -508,6 +517,7 @@ export default function CondoSettings({
 
         parsedRows.push({
           unit_no,
+          tower,
           unitId: matchedUnitId,
           fullName: full_name,
           email,
@@ -983,7 +993,7 @@ export default function CondoSettings({
                       <tbody>
                         {bulkPreviewList.map((row, idx) => (
                           <tr style={{ borderBottom: '1px solid #f1f5f9', backgroundColor: row.isValid ? 'transparent' : '#fef2f2' }} key={idx}>
-                            <td style={{ padding: '6px', fontWeight: 'bold' }}>{row.unit_no}</td>
+                            <td style={{ padding: '6px', fontWeight: 'bold' }}>{row.unit_no} {row.tower ? `(${row.tower})` : ''}</td>
                             <td style={{ padding: '6px' }}>{row.fullName}</td>
                             <td style={{ padding: '6px', color: '#64748b' }}>{row.email}</td>
                             <td style={{ padding: '6px', textTransform: 'capitalize' }}>{row.unitRole}</td>

@@ -283,6 +283,13 @@ const fetchBillings = async () => {
       const { error } = await supabase.from('notifications').insert(notifInserts);
       if (error) throw error;
 
+      // 🚨 Direct Edge Function invocation safety bypass for push notifications
+      for (const notif of notifInserts) {
+        supabase.functions.invoke('push-notification', {
+          body: { record: notif }
+        }).catch(err => console.error("Edge push notification invoke failed:", err));
+      }
+
       alert(`🎉 Broadcaster Dispatch Complete!\n\nStatements successfully synchronized to ${targetCount} tenant terminals.`);
     } catch (error: any) { 
       console.error(error); 
@@ -351,6 +358,13 @@ const fetchBillings = async () => {
 
       const { error } = await supabase.from('notifications').insert(notifInserts);
       if (error) throw error;
+
+      // 🚨 Direct Edge Function invocation safety bypass for push notifications
+      for (const notif of notifInserts) {
+        supabase.functions.invoke('push-notification', {
+          body: { record: notif }
+        }).catch(err => console.error("Edge push notification invoke failed:", err));
+      }
 
       alert(`🎉 Push notifications successfully re-transmitted to:\n\n${unitNumbers}`);
       setSelectedBillIds([]);

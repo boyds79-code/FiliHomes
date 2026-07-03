@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
     }
 
-    // 2. Fetch all units for this condo to map unit_number to unit_id
+    // 2. Fetch all units for this condo to map unit_number + building_no to unit_id
     const { data: unitsData, error: unitsError } = await supabaseAdmin
       .from('units')
-      .select('id, unit_number')
+      .select('id, unit_number, building_no')
       .eq('condo_id', condoId);
 
     if (unitsError) {
@@ -59,7 +59,10 @@ export async function POST(req: NextRequest) {
 
     const unitMap = new Map();
     if (unitsData) {
-      unitsData.forEach(u => unitMap.set(String(u.unit_number), u.id));
+      unitsData.forEach(u => {
+        const key = `${u.unit_number}_${u.building_no || ''}`.toLowerCase().trim();
+        unitMap.set(key, u.id);
+      });
     }
 
     // 2.5 Fetch all COMPLETED bookings to aggregate amenity fees for this condo
@@ -114,7 +117,8 @@ export async function POST(req: NextRequest) {
     // 3. Map input data to match target public.billings schema
     const finalBillingsToInsert = billings
       .map((b: any) => {
-        const unitId = unitMap.get(String(b.unit_no));
+        const mapKey = `${b.unit_no}_${b.tower || ''}`.toLowerCase().trim();
+        const unitId = unitMap.get(mapKey);
         if (!unitId) return null; // Exclude if unit number doesn't exist
 
         const amount = b.amount !== undefined ? b.amount : (b.outstanding_balance || 0);

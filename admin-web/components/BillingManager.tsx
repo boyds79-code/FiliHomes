@@ -450,6 +450,7 @@ const fetchBillings = async () => {
             };
 
             const unit_no = String(getVal(['unit_no', 'unit_number', 'unitno', 'unit', 'room', 'no']) || '').trim();
+            const tower = String(getVal(['tower', 'building', 'building_no', 'buildingno', 'block']) || '').trim();
             const condo_dues = parseFloat(getVal(['condo_dues', 'association_dues', 'associationdues', 'dues']) || 0);
             const electricity = parseFloat(getVal(['electricity', 'electricity_bill']) || 0);
             const water = parseFloat(getVal(['water', 'water_bill']) || 0);
@@ -462,6 +463,7 @@ const fetchBillings = async () => {
 
             return {
               unit_no,
+              tower,
               condo_dues,
               electricity,
               water,
@@ -535,6 +537,7 @@ const fetchBillings = async () => {
           };
 
           const unit_no = String(getVal(['unit_no', 'unit_number', 'unitno', 'unit', 'room', 'no']) || '').trim();
+          const tower = String(getVal(['tower', 'building', 'building_no', 'buildingno', 'block']) || '').trim();
           const condo_dues = parseFloat(getVal(['condo_dues', 'association_dues', 'associationdues', 'dues']) || 0);
           const electricity = parseFloat(getVal(['electricity', 'electricity_bill']) || 0);
           const water = parseFloat(getVal(['water', 'water_bill']) || 0);
@@ -547,6 +550,7 @@ const fetchBillings = async () => {
 
           return {
             unit_no,
+            tower,
             condo_dues,
             electricity,
             water,

@@ -580,8 +580,8 @@ export default function CondoSettings({
 
   return (
     <div style={styles.viewWrapper}>
-      {showTabs && (
-        <div style={{ ...styles.tabHeader, justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ ...styles.tabHeader, justifyContent: 'space-between', alignItems: 'center' }}>
+        {showTabs ? (
           <div style={{ display: 'flex', gap: '20px' }}>
             <button
               type="button"
@@ -617,22 +617,26 @@ export default function CondoSettings({
               👥 Staff Management
             </button>
           </div>
+        ) : (
+          <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#0f172a', paddingBottom: '10px' }}>
+            {subTab === 'property' ? '🏢 Property Settings' : subTab === 'app' ? '⚙️ App Settings' : '👥 Staff Management'}
+          </h2>
+        )}
 
-          {/* Action Row on Top Right */}
-          {subTab !== 'staff' && (
-            <div style={{ display: 'flex', gap: '10px', paddingBottom: '10px' }}>
-              {!isEditing ? (
-                <button type="button" onClick={() => setIsEditing(true)} style={styles.editActionButton}>✏️ Edit Parameters</button>
-              ) : (
-                <>
-                  <button type="button" onClick={() => { setIsEditing(false); fetchCondoSettings(); }} style={styles.cancelActionButton}>Cancel</button>
-                  <button type="submit" form={subTab === 'property' ? 'property-form' : 'app-form'} disabled={saving} style={styles.saveActionButton}>{saving ? 'Saving...' : 'Save & Deploy'}</button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+        {/* Action Row on Top Right (Always visible for editable tabs) */}
+        {subTab !== 'staff' && (
+          <div style={{ display: 'flex', gap: '10px', paddingBottom: '10px' }}>
+            {!isEditing ? (
+              <button type="button" onClick={() => setIsEditing(true)} style={styles.editActionButton}>✏️ Edit Parameters</button>
+            ) : (
+              <>
+                <button type="button" onClick={() => { setIsEditing(false); fetchCondoSettings(); }} style={styles.cancelActionButton}>Cancel</button>
+                <button type="submit" form={subTab === 'property' ? 'property-form' : 'app-form'} disabled={saving} style={styles.saveActionButton}>{saving ? 'Saving...' : 'Save & Deploy'}</button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {subTab === 'property' && (
         <form id="property-form" onSubmit={handleSaveSettings} style={styles.formGrid}>

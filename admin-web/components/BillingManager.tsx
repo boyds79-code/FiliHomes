@@ -257,7 +257,7 @@ const fetchBillings = async () => {
             Number(bill.job_order_fee || 0) + 
             Number(bill.previous_balance || 0) + 
             Number(bill.amenity_fee || 0);
-          calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+          calculatedPenalty = baseForPenalty * penaltyRate * Math.ceil(delayDays / 30);
         }
 
         const totalAmount = 
@@ -326,7 +326,7 @@ const fetchBillings = async () => {
             Number(bill.job_order_fee || 0) + 
             Number(bill.previous_balance || 0) + 
             Number(bill.amenity_fee || 0);
-          calculatedPenalty = baseForPenalty * (penaltyRate / 30) * delayDays;
+          calculatedPenalty = baseForPenalty * penaltyRate * Math.ceil(delayDays / 30);
         }
 
         const totalAmount = 

@@ -239,38 +239,7 @@ const fetchBillings = async () => {
     try {
       // 1. Loop through all finalFilteredBills and insert a notification row for each unit!
       const notifInserts = finalFilteredBills.map(bill => {
-        // Calculate dynamic penalty and total due just to show the correct total in the message!
-        const dueDateObj = new Date(bill.due_date);
-        const todayObj = new Date();
-        const isOverdue = (bill.status === 'OVERDUE' || bill.status === 'REQUESTED' || todayObj > dueDateObj) && bill.status !== 'PAID';
-        const penaltyRate = condoSettings?.penalty_rate || 0.02;
-        let calculatedPenalty = 0;
-        
-        if (isOverdue) {
-          const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
-          const delayDays = Math.max(14, rawDelay);
-          const baseForPenalty = 
-            Number(bill.condo_dues || 0) + 
-            Number(bill.electricity || 0) + 
-            Number(bill.water || 0) + 
-            Number(bill.parking_fee || 0) + 
-            Number(bill.job_order_fee || 0) + 
-            Number(bill.previous_balance || 0) + 
-            Number(bill.amenity_fee || 0);
-          calculatedPenalty = baseForPenalty * penaltyRate * Math.ceil(delayDays / 30);
-        }
-
-        const totalAmount = 
-          Number(bill.condo_dues || 0) + 
-          Number(bill.electricity || 0) + 
-          Number(bill.water || 0) + 
-          Number(bill.parking_fee || 0) + 
-          Number(bill.job_order_fee || 0) + 
-          Number(bill.previous_balance || 0) + 
-          Number(bill.penalty_amount || 0) + 
-          Number(bill.amenity_fee || 0) +
-          calculatedPenalty;
-
+        const totalAmount = Number(bill.total_due || 0);
         return {
           unit_id: bill.unit_id,
           title: "💰 Digital Billing Statement Issued",
@@ -316,37 +285,7 @@ const fetchBillings = async () => {
     setBroadcasting(true);
     try {
       const notifInserts = selectedBills.map(bill => {
-        const dueDateObj = new Date(bill.due_date);
-        const todayObj = new Date();
-        const isOverdue = (bill.status === 'OVERDUE' || bill.status === 'REQUESTED' || todayObj > dueDateObj) && bill.status !== 'PAID';
-        const penaltyRate = condoSettings?.penalty_rate || 0.02;
-        let calculatedPenalty = 0;
-        
-        if (isOverdue) {
-          const rawDelay = Math.ceil((todayObj.getTime() - dueDateObj.getTime()) / (1000 * 60 * 60 * 24));
-          const delayDays = Math.max(14, rawDelay);
-          const baseForPenalty = 
-            Number(bill.condo_dues || 0) + 
-            Number(bill.electricity || 0) + 
-            Number(bill.water || 0) + 
-            Number(bill.parking_fee || 0) + 
-            Number(bill.job_order_fee || 0) + 
-            Number(bill.previous_balance || 0) + 
-            Number(bill.amenity_fee || 0);
-          calculatedPenalty = baseForPenalty * penaltyRate * Math.ceil(delayDays / 30);
-        }
-
-        const totalAmount = 
-          Number(bill.condo_dues || 0) + 
-          Number(bill.electricity || 0) + 
-          Number(bill.water || 0) + 
-          Number(bill.parking_fee || 0) + 
-          Number(bill.job_order_fee || 0) + 
-          Number(bill.previous_balance || 0) + 
-          Number(bill.penalty_amount || 0) + 
-          Number(bill.amenity_fee || 0) +
-          calculatedPenalty;
-
+        const totalAmount = Number(bill.total_due || 0);
         return {
           unit_id: bill.unit_id,
           title: "🚨 Urgent Billing Notice",

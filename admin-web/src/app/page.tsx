@@ -772,18 +772,20 @@ export default function DashboardPage() {
     fetchStaffForDropdown();
     fetchHQStaffList();
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       if (session) {
+        await fetchCondos();
         loadUserProfile(session.user.id);
       } else {
         setAuthLoading(false);
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       if (session) {
+        await fetchCondos();
         loadUserProfile(session.user.id);
       } else {
         setAuthLoading(false);
@@ -865,6 +867,7 @@ export default function DashboardPage() {
       }
 
       alert('🎉 Registration complete! Checking your session...');
+      await fetchCondos();
       const { data: sessionData } = await supabase.auth.getSession();
       if (sessionData?.session) {
         setSession(sessionData.session);

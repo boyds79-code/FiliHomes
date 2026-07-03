@@ -147,14 +147,22 @@ export async function POST(req: Request) {
       }
     }
 
-    // 4. Upsert mappings in user_units table
+    // 4. Safe Sync mappings in user_units table (Delete existing then Insert to prevent unique key errors)
     if (mappingsToUpsert.length > 0) {
+      for (const mapping of mappingsToUpsert) {
+        await adminClient
+          .from('user_units')
+          .delete()
+          .eq('user_id', mapping.user_id)
+          .eq('unit_id', mapping.unit_id);
+      }
+
       const { error: mappingError } = await adminClient
         .from('user_units')
-        .upsert(mappingsToUpsert, { onConflict: 'user_id,unit_id' });
+        .insert(mappingsToUpsert);
 
       if (mappingError) {
-        console.error("Supabase Bulk Upsert user_units Error:", mappingError);
+        console.error("Supabase Bulk Insert user_units Error:", mappingError);
         return NextResponse.json({ error: mappingError.message }, { status: 500 });
       }
     }

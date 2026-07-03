@@ -17,6 +17,16 @@ export async function POST(req: Request) {
 
     const adminClient = getAdminClient();
 
+    // Fetch existing units for cache to support auto-creation & matching
+    const { data: dbUnits, error: fetchUnitsErr } = await adminClient
+      .from('units')
+      .select('id, unit_number, building_no')
+      .eq('condo_id', condoId);
+    if (fetchUnitsErr) {
+      console.error("Fetch units for bulk mapping error:", fetchUnitsErr);
+    }
+    const unitsCache = dbUnits || [];
+
     // 1. Fetch all existing auth users once to check against in memory (optimization)
     const { data: { users }, error: listError } = await adminClient.auth.admin.listUsers();
     if (listError) {
@@ -31,10 +41,44 @@ export async function POST(req: Request) {
 
     // 2. Process each occupant
     for (const occ of occupants) {
-      const { email, fullName, phone, unitId, unitRole = 'family_member', leaseStartDate = null, leaseEndDate = null, isPayer = true } = occ;
+      const { email, fullName, phone, unitId, unitRole = 'family_member', leaseStartDate = null, leaseEndDate = null, isPayer = true, unit_no, tower } = occ;
 
-      if (!email || !unitId) {
+      if (!email || (!unitId && !unit_no)) {
         continue; // Skip invalid records
+      }
+
+      let finalUnitId = unitId;
+
+      // Auto-create unit if not matched/existing in DB
+      if (!finalUnitId && unit_no) {
+        let matchedUnit = unitsCache.find(u => 
+          u.unit_number.toLowerCase() === unit_no.toLowerCase() &&
+          (!tower || (u.building_no || '').toLowerCase() === tower.toLowerCase())
+        );
+
+        if (matchedUnit) {
+          finalUnitId = matchedUnit.id;
+        } else {
+          // Dynamic unit creation on-the-fly
+          const { data: newUnit, error: createUnitErr } = await adminClient
+            .from('units')
+            .insert({
+              condo_id: condoId,
+              unit_number: unit_no,
+              building_no: tower || 'A',
+              status: 'vacant'
+            })
+            .select('id')
+            .single();
+
+          if (createUnitErr) {
+            console.error(`Failed to auto-create unit ${unit_no} (${tower}):`, createUnitErr.message);
+            continue;
+          }
+
+          finalUnitId = newUnit.id;
+          unitsCache.push({ id: finalUnitId, unit_number: unit_no, building_no: tower || 'A' });
+        }
       }
 
       let authUser = currentUsers.find(u => u.email?.toLowerCase() === email.toLowerCase());
@@ -71,7 +115,7 @@ export async function POST(req: Request) {
         phone: phone,
         full_name: fullName,
         role: 'resident',
-        unit_id: unitId,
+        unit_id: finalUnitId,
         condo_id: condoId,
         status: 'active'
       });
@@ -79,7 +123,7 @@ export async function POST(req: Request) {
       // Prepare user_unit mapping data
       mappingsToUpsert.push({
         user_id: userId,
-        unit_id: unitId,
+        unit_id: finalUnitId,
         condo_id: condoId,
         role: unitRole,
         status: 'active',
@@ -88,7 +132,7 @@ export async function POST(req: Request) {
         is_payer: isPayer
       });
 
-      registeredOccupants.push({ email, fullName, unitId });
+      registeredOccupants.push({ email, fullName, unitId: finalUnitId });
     }
 
     // 3. Batch upsert profiles

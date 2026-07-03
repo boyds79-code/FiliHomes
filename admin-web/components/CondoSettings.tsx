@@ -495,8 +495,8 @@ export default function CondoSettings({
           isValid = false;
           errorReason = 'Missing Unit Number';
         } else if (!matchedUnit) {
-          isValid = false;
-          errorReason = `Unit '${unit_no}'${tower ? ` (Tower: ${tower})` : ''} not found in database`;
+          isValid = true;
+          errorReason = 'NEW_UNIT';
         } else {
           matchedUnitId = matchedUnit.id;
         }
@@ -767,8 +767,11 @@ export default function CondoSettings({
                             <td style={{ padding: '6px' }}>{row.fullName}</td>
                             <td style={{ padding: '6px', color: '#64748b' }}>{row.email}</td>
                             <td style={{ padding: '6px', textTransform: 'capitalize' }}>{row.unitRole}</td>
-                            <td style={{ padding: '6px', textAlign: 'right', fontWeight: 'bold', color: row.isValid ? '#16a34a' : '#ef4444' }}>
-                              {row.isValid ? 'Ready' : row.errorReason}
+                            <td style={{ padding: '6px', textAlign: 'right', fontWeight: 'bold', color: row.isValid ? (row.errorReason === 'NEW_UNIT' ? '#3b82f6' : '#16a34a') : '#ef4444' }}>
+                              {row.isValid 
+                                ? (row.errorReason === 'NEW_UNIT' ? '🆕 New Unit' : 'Ready') 
+                                : row.errorReason
+                              }
                             </td>
                           </tr>
                         ))}

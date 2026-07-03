@@ -283,12 +283,12 @@ const fetchBillings = async () => {
       const { error } = await supabase.from('notifications').insert(notifInserts);
       if (error) throw error;
 
-      // 🚨 Direct Edge Function invocation safety bypass for push notifications
-      for (const notif of notifInserts) {
-        supabase.functions.invoke('push-notification', {
-          body: { record: notif }
-        }).catch(err => console.error("Edge push notification invoke failed:", err));
-      }
+      // 🚨 Invoke Server proxy API to safely trigger Edge Function with service role credentials
+      fetch('/api/broadcast-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notifications: notifInserts })
+      }).catch(err => console.error("Proxy push failed:", err));
 
       alert(`🎉 Broadcaster Dispatch Complete!\n\nStatements successfully synchronized to ${targetCount} tenant terminals.`);
     } catch (error: any) { 
@@ -359,12 +359,12 @@ const fetchBillings = async () => {
       const { error } = await supabase.from('notifications').insert(notifInserts);
       if (error) throw error;
 
-      // 🚨 Direct Edge Function invocation safety bypass for push notifications
-      for (const notif of notifInserts) {
-        supabase.functions.invoke('push-notification', {
-          body: { record: notif }
-        }).catch(err => console.error("Edge push notification invoke failed:", err));
-      }
+      // 🚨 Invoke Server proxy API to safely trigger Edge Function with service role credentials
+      fetch('/api/broadcast-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notifications: notifInserts })
+      }).catch(err => console.error("Proxy push failed:", err));
 
       alert(`🎉 Push notifications successfully re-transmitted to:\n\n${unitNumbers}`);
       setSelectedBillIds([]);

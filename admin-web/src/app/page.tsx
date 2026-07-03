@@ -725,9 +725,13 @@ export default function DashboardPage() {
         setCurrentUser(userId);
         setCurrentUserRole(staffData.role || 'PMO_MANAGER');
         setIsBillingManager(!!staffData.payroll_settings?.is_billing_manager);
-        if (staffData.condo_id) {
-          setActiveCondoId(staffData.condo_id);
+        
+        // Match either condo_id or assigned_building
+        const effectiveCondoId = staffData.condo_id || staffData.assigned_building;
+        if (effectiveCondoId) {
+          setActiveCondoId(effectiveCondoId);
         }
+
         const perms = staffData.payroll_settings?.permissions || { create: true, read: true, update: true, delete: true };
         setUserPermissions({
           create: !!perms.create,
@@ -744,8 +748,12 @@ export default function DashboardPage() {
 
         if (profileData) {
           setCurrentUser(userId);
-          setCurrentUserRole('SUPER_ADMIN');
+          // Set role based on profile role if not super admin
+          setCurrentUserRole(profileData.role === 'admin' ? 'PMO_MANAGER' : 'SUPER_ADMIN');
           setIsBillingManager(true);
+          if (profileData.condo_id) {
+            setActiveCondoId(profileData.condo_id);
+          }
           setUserPermissions({ create: true, read: true, update: true, delete: true });
         } else {
           setCurrentUser(userId);

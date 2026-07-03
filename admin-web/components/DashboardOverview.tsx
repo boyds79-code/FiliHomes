@@ -7,9 +7,10 @@ interface DashboardOverviewProps {
   onNavigate: (menu: string, options?: any) => void;
   overdueParcelCount: number;
   newJobsCount: number;
+  condoId: string;
 }
 
-export default function DashboardOverview({ onNavigate, overdueParcelCount, newJobsCount }: DashboardOverviewProps) {
+export default function DashboardOverview({ onNavigate, overdueParcelCount, newJobsCount, condoId }: DashboardOverviewProps) {
   // Local state for statistics
   const [overdueBillsCount, setOverdueBillsCount] = useState(0);
   const [overdueBillsAmount, setOverdueBillsAmount] = useState(0);
@@ -29,8 +30,8 @@ export default function DashboardOverview({ onNavigate, overdueParcelCount, newJ
   const fetchStats = async () => {
     setLoading(true);
     try {
-      // 1. Fetch Overdue Bills from API
-      const billRes = await fetch('/api/billings');
+      // 1. Fetch Overdue Bills from API (filtered by condoId)
+      const billRes = await fetch(`/api/billings?condoId=${condoId}`);
       if (billRes.ok) {
         const { data } = await billRes.json();
         if (Array.isArray(data)) {
@@ -129,7 +130,7 @@ export default function DashboardOverview({ onNavigate, overdueParcelCount, newJ
     return () => {
       window.removeEventListener('occupantRequestsUpdated', handleRequestsUpdate);
     };
-  }, []);
+  }, [condoId]);
 
   return (
     <div className="space-y-8 animate-fade-in max-w-6xl mx-auto">

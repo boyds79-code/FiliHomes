@@ -2212,6 +2212,7 @@ export default function DashboardPage() {
               onNavigate={(menu: any, options?: any) => handleDashboardNavigate(menu, options)} 
               overdueParcelCount={overdueParcelCount} 
               newJobsCount={newJobsCount} 
+              condoId={activeCondoId}
             />
           )}
           {currentMenu === 'billings-issuance' && <BillingManager initialView="ISSUANCE" condoId={activeCondoId} />}

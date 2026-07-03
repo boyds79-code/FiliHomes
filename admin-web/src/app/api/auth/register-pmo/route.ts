@@ -70,6 +70,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Condo ID is required' }, { status: 400 });
     }
 
+    // Resolve condo name for non-new condo mapping
+    let finalCondoName = condoName;
+    if (!isNewCondo && selectedCondoId) {
+      const { data: condoData } = await adminClient
+        .from('condos')
+        .select('name')
+        .eq('id', selectedCondoId)
+        .maybeSingle();
+      if (condoData) {
+        finalCondoName = condoData.name;
+      }
+    }
+
     // Link user to condo using upsert to avoid duplicate key errors for existing users
     const { error: staffErr } = await adminClient
       .from('staff_profiles')
@@ -78,6 +91,7 @@ export async function POST(req: NextRequest) {
         full_name: fullName,
         role: 'PMO_MANAGER',
         assigned_building: condoIdToLink,
+        condo_name: finalCondoName,
         payroll_settings: {
           is_billing_manager: true,
           permissions: { create: true, read: true, update: true, delete: true }

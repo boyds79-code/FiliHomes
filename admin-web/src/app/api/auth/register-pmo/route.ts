@@ -83,6 +83,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Resolve email safely if missing in payload
+    let finalEmail = email;
+    if (!finalEmail && finalUserId) {
+      const { data: { users } } = await adminClient.auth.admin.listUsers();
+      const matched = users.find(u => u.id === finalUserId);
+      if (matched) {
+        finalEmail = matched.email;
+      }
+    }
+
     // Link user to condo using upsert to avoid duplicate key errors for existing users
     const { error: staffErr } = await adminClient
       .from('staff_profiles')
@@ -92,6 +102,7 @@ export async function POST(req: NextRequest) {
         role: 'PMO_MANAGER',
         assigned_building: condoIdToLink,
         condo_name: finalCondoName,
+        email: finalEmail,
         payroll_settings: {
           is_billing_manager: true,
           permissions: { create: true, read: true, update: true, delete: true }

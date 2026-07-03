@@ -476,6 +476,11 @@ export default function CondoSettings({
         const lease_end = columns[7 + offset] || '';
         const rawPayer = columns[8 + offset]?.toLowerCase() || 'true';
 
+        // Smart skip: if unit_no, full_name, and email are all empty, it's just a blank CSV row.
+        if (!unit_no && !full_name && !email) {
+          continue;
+        }
+
         let isValid = true;
         let errorReason = '';
         let matchedUnitId = '';

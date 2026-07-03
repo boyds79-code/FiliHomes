@@ -3,10 +3,30 @@ import { getAdminClient } from '../../../../lib/supabaseServer';
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, fullName, isNewCondo, condoName, selectedCondoId } = await req.json();
+    const { userId, fullName, isNewCondo, condoName, selectedCondoId, email, password } = await req.json();
     const adminClient = getAdminClient();
 
-    if (!userId || !fullName) {
+    let finalUserId = userId;
+
+    // Smart Admin Bypass: if userId is missing but email is provided, lookup the user
+    if (!finalUserId && email) {
+      const { data: { users }, error: listError } = await adminClient.auth.admin.listUsers();
+      if (!listError) {
+        const matched = users.find(u => u.email?.toLowerCase() === email.toLowerCase());
+        if (matched) {
+          finalUserId = matched.id;
+          // Synchronize password to what they typed now to ensure successful login on client
+          if (password) {
+            const { error: updatePassErr } = await adminClient.auth.admin.updateUserById(finalUserId, { password });
+            if (updatePassErr) {
+              console.error("Force password update error:", updatePassErr.message);
+            }
+          }
+        }
+      }
+    }
+
+    if (!finalUserId || !fullName) {
       return NextResponse.json({ error: 'Missing required user information' }, { status: 400 });
     }
 
@@ -54,7 +74,7 @@ export async function POST(req: NextRequest) {
     const { error: staffErr } = await adminClient
       .from('staff_profiles')
       .upsert({
-        id: userId,
+        id: finalUserId,
         full_name: fullName,
         role: 'PMO_MANAGER',
         assigned_building: condoIdToLink,
@@ -76,7 +96,7 @@ export async function POST(req: NextRequest) {
         condo_id: condoIdToLink,
         role: 'admin'
       })
-      .eq('id', userId);
+      .eq('id', finalUserId);
 
     if (profileErr) {
       console.error("Error updating profile role via Admin:", profileErr);

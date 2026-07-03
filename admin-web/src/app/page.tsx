@@ -832,18 +832,11 @@ export default function DashboardPage() {
         }
       });
 
-      if (authErr) {
-        // Smart bypass: if user exists, verify password and use that user instead of failing
-        if (authErr.message.includes('already') || authErr.message.includes('registered') || authErr.status === 422) {
-          const { data: loginData, error: loginErr } = await supabase.auth.signInWithPassword({
-            email: emailInput,
-            password: passwordInput,
-          });
+      let isAlreadyRegistered = false;
 
-          if (loginErr) {
-            throw new Error(`User already registered. Please provide the correct password to link new condo.`);
-          }
-          userId = loginData.user?.id || '';
+      if (authErr) {
+        if (authErr.message.includes('already') || authErr.message.includes('registered') || authErr.status === 422) {
+          isAlreadyRegistered = true;
         } else {
           throw authErr;
         }
@@ -851,14 +844,14 @@ export default function DashboardPage() {
         userId = authData.user?.id || '';
       }
 
-      if (!userId) throw new Error('Sign up mapping failed');
-
       // 2. Call our secure server API to bypass RLS and link user to Condo
       const response = await fetch('/api/auth/register-pmo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
+          userId: isAlreadyRegistered ? '' : userId,
+          email: emailInput,
+          password: passwordInput,
           fullName: fullNameInput,
           isNewCondo,
           condoName: condoNameInput,

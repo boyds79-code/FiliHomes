@@ -9,14 +9,22 @@ if (typeof dns.setDefaultResultOrder === 'function') {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const condoId = searchParams.get('condoId');
+
     const adminClient = getAdminClient();
 
-    const { data, error } = await adminClient
+    let query = adminClient
       .from('units')
-      .select('id, unit_number, building_no')
-      .order('unit_number', { ascending: true });
+      .select('id, unit_number, building_no');
+
+    if (condoId) {
+      query = query.eq('condo_id', condoId);
+    }
+
+    const { data, error } = await query.order('unit_number', { ascending: true });
 
     if (error) {
       console.error("Supabase Select Error (units):", error);

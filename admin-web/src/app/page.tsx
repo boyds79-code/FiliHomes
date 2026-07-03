@@ -1553,7 +1553,9 @@ export default function DashboardPage() {
         <aside className="hidden md:flex flex-col h-screen sticky top-0 bg-white border-r border-slate-200 p-4 lg:p-6 transition-all duration-300 w-20 lg:w-64 shrink-0 overflow-y-auto">
           
           <div className="mb-10 text-center lg:text-left">
-            <h1 className="hidden lg:block font-black text-xl text-blue-700 tracking-tight">🏢 FiliCondo Admin</h1>
+            <h1 className="hidden lg:block font-black text-xl text-blue-700 tracking-tight">
+              🏢 {condoList.find(c => c.id === activeCondoId)?.name || 'FiliCondo Admin'}
+            </h1>
             <h1 className="block lg:hidden font-black text-xl text-blue-700">🏢</h1>
           </div>
           
@@ -2129,18 +2131,24 @@ export default function DashboardPage() {
             ))}
           </span>
           <div className="flex items-center gap-4">
-            {/* Condo Selector (Admin/PMO can switch or see active) */}
+            {/* Condo Selector (Only Super Admin can switch, others see text) */}
             <div className="flex items-center gap-2 text-xs">
               <span className="font-semibold text-slate-500">Active Condo:</span>
-              <select 
-                value={activeCondoId} 
-                onChange={(e) => setActiveCondoId(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded px-2.5 py-1 font-semibold text-slate-700 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                {condoList.map(c => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
+              {currentUserRole === 'SUPER_ADMIN' ? (
+                <select 
+                  value={activeCondoId} 
+                  onChange={(e) => setActiveCondoId(e.target.value)}
+                  className="bg-slate-50 border border-slate-200 rounded px-2.5 py-1 font-semibold text-slate-700 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  {condoList.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              ) : (
+                <span className="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs">
+                  {condoList.find(c => c.id === activeCondoId)?.name || 'FiliCondo Admin'}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 text-xs">

@@ -250,7 +250,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
 
   const fetchUnits = async () => {
     try {
-      const response = await fetch('/api/admin/units');
+      const response = await fetch(`/api/admin/units?condoId=${condoId}`);
       if (!response.ok) throw new Error("Failed to fetch units list");
       const data = await response.json();
       setUnits(data || []);

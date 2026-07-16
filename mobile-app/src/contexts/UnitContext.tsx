@@ -13,6 +13,7 @@ interface AssignedUnit {
   role: string;
   block_phase_no?: string;
   has_badge?: boolean;
+  has_active_tenant?: boolean;
 }
 
 interface UnitContextType {
@@ -97,6 +98,35 @@ export function UnitProvider({ session, children }: { session?: Session | null; 
           }
         } catch (badgeErr) {
           console.error("Failed to calculate unit badges:", badgeErr);
+        }
+
+        // 🎯 [실시간 권한 분기] 집주인(owner, co_owner)인 유닛에 대해 활성 세입자(tenant, short_term_renter)가 매핑되어 있는지 검사
+        try {
+          const ownerUnitIds = formattedUnits
+            .filter(u => u.role === 'owner' || u.role === 'co_owner')
+            .map(u => u.unit_id);
+
+          if (ownerUnitIds.length > 0) {
+            const { data: tenantCheck, error: tenantErr } = await supabase
+              .from('user_units')
+              .select('unit_id')
+              .in('unit_id', ownerUnitIds)
+              .eq('status', 'active')
+              .in('role', ['tenant', 'short_term_renter']);
+
+            if (!tenantErr && tenantCheck) {
+              const unitsWithTenants = new Set(tenantCheck.map(t => t.unit_id));
+              formattedUnits.forEach(u => {
+                if (u.role === 'owner' || u.role === 'co_owner') {
+                  u.has_active_tenant = unitsWithTenants.has(u.unit_id);
+                } else {
+                  u.has_active_tenant = false;
+                }
+              });
+            }
+          }
+        } catch (tenantCheckErr) {
+          console.error("Failed to check active tenants:", tenantCheckErr);
         }
 
         setMyUnits(formattedUnits);

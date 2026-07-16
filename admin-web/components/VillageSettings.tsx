@@ -72,6 +72,7 @@ export default function VillageSettings({
   const [amenityBookingRequired, setAmenityBookingRequired] = useState<boolean>(true);
   const [pmoStart, setPmoStart] = useState<string>('09:00');
   const [pmoEnd, setPmoEnd] = useState<string>('18:00');
+  const [visitorEntryMode, setVisitorEntryMode] = useState<string>('QR_CODE');
 
   // Holiday & Payroll Multipliers
   const [defaultRegHolidayMultiplier, setDefaultRegHolidayMultiplier] = useState<number | ''>(2.0);
@@ -213,6 +214,7 @@ export default function VillageSettings({
         setVisitorParkingEnabled(settingsData.visitor_parking_enabled !== false);
         setAmenityBookingEnabled(settingsData.amenity_booking_enabled !== false);
         setAmenityBillingEnabled(settingsData.amenity_billing_enabled !== false);
+        setVisitorEntryMode(settingsData.visitor_entry_mode || 'QR_CODE');
         
         // Extended configurations
         setBillingTypes(settingsData.billing_types || ["Electricity", "Water", "Association Dues", "Parking", "Visitor Parking"]);
@@ -239,6 +241,7 @@ export default function VillageSettings({
         setVisitorParkingEnabled(true);
         setAmenityBookingEnabled(true);
         setAmenityBillingEnabled(true);
+        setVisitorEntryMode('QR_CODE');
         setBillingTypes(["Electricity", "Water", "Association Dues", "Parking", "Visitor Parking"]);
         setPenaltyDueDay(5);
         setParcelDeliveryPolicy('GUARD_HOUSE');
@@ -335,6 +338,7 @@ export default function VillageSettings({
           visitor_parking_enabled: visitorParkingEnabled,
           amenity_booking_enabled: amenityBookingEnabled,
           amenity_billing_enabled: amenityBillingEnabled,
+          visitor_entry_mode: visitorEntryMode,
           billing_types: billingTypes,
           penalty_due_day: penaltyDueDay,
           parcel_delivery_policy: parcelDeliveryPolicy,
@@ -1038,7 +1042,30 @@ export default function VillageSettings({
             </div>
           </div>
 
-
+          {/* 3. Security & Visitor Gate Control */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <h3 style={styles.sectionHeading}>🛡️ Security & Visitor Gate Control</h3>
+            <div style={styles.settingsCard}>
+              <div style={styles.configRow}>
+                <div style={styles.configLeft}>
+                  <label style={styles.inputLabel}>Visitor Verification Mode</label>
+                  <select 
+                    value={visitorEntryMode} 
+                    onChange={(e) => setVisitorEntryMode(e.target.value)} 
+                    style={styles.selectInput} 
+                    disabled={!isEditing}
+                  >
+                    <option value="QR_CODE">📲 Pre-authorized QR Code (방문자 QR 통과)</option>
+                    <option value="ID_PHOTO">🪪 ID Photo & Approval (신분증 촬영 및 승인 통과)</option>
+                  </select>
+                </div>
+                <div style={styles.configRight}>
+                  <strong>Pre-authorized QR Code:</strong> Residents pre-authorize their visitors by sharing a temporary entry QR code.
+                  <br/><strong>ID Photo & Approval:</strong> Guards scan or take a photo of the visitor's physical ID at the gate, log their details, and request real-time approval from the resident.
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* 4. Parcel Management */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>

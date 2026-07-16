@@ -85,6 +85,29 @@ export default function HomeScreen({ navigation }: any) {
   const activeLayout: 'dashboard' | 'concierge' | 'classic' = 'dashboard';
   const colorTheme: 'phili-flag' | 'teal' | 'charcoal' = 'phili-flag';
 
+  // 🎯 거주 상태에 따른 권한 체크 (세입자 유무, 관리자 여부)
+  const isRestrictedUser = () => {
+    if (!currentUnit) return false;
+    // 1. 거주하지 않는 관리자 (property_manager)
+    if (currentUnit.role === 'property_manager') return true;
+    // 2. Tenant가 있는 Home Owner (세입자가 살고 있는 집주인)
+    if ((currentUnit.role === 'owner' || currentUnit.role === 'co_owner') && currentUnit.has_active_tenant) {
+      return true;
+    }
+    return false;
+  };
+
+  const handleGuardedNavigation = (screenName: string, featureTitle: string) => {
+    if (isRestrictedUser()) {
+      Alert.alert(
+        "Access Denied",
+        `Only residing occupants (Tenants or Residing Owners) have access to ${featureTitle} services.`
+      );
+      return;
+    }
+    navigation.navigate(screenName);
+  };
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good MORNING';
@@ -312,7 +335,7 @@ export default function HomeScreen({ navigation }: any) {
                     { 
                       text: "Go to Approvals", 
                       onPress: () => {
-                        navigation.navigate('VisitorManage');
+                        handleGuardedNavigation('VisitorManage', 'Visitor Approvals');
                       } 
                     }
                   ]
@@ -385,7 +408,7 @@ export default function HomeScreen({ navigation }: any) {
                 { 
                   text: "Go to Approvals", 
                   onPress: () => {
-                    navigation.navigate('VisitorManage');
+                    handleGuardedNavigation('VisitorManage', 'Visitor Approvals');
                   } 
                 }
               ]
@@ -480,7 +503,16 @@ export default function HomeScreen({ navigation }: any) {
               <Text style={styles.dashboardUnitText}>Unit {activeUnitNumber}</Text>
             </View>
             <View style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
-              <TouchableOpacity style={styles.dashboardMyPassBtn} onPress={() => setQuickPassVisible(true)}>
+              <TouchableOpacity 
+                style={styles.dashboardMyPassBtn} 
+                onPress={() => {
+                  if (isRestrictedUser()) {
+                    Alert.alert("Access Denied", "Resident Gate Pass is only available to residing occupants.");
+                    return;
+                  }
+                  setQuickPassVisible(true);
+                }}
+              >
                 <Ionicons name="qr-code-outline" size={14} color="#fff" style={{ marginRight: 6 }} />
                 <Text style={styles.dashboardMyPassText}>My Pass</Text>
               </TouchableOpacity>
@@ -510,7 +542,16 @@ export default function HomeScreen({ navigation }: any) {
                 <Text style={{ fontSize: 18 }}>🔔</Text>
                 {unreadCount > 0 && <View style={styles.conciergeBadgeDot} />}
               </TouchableOpacity>
-              <TouchableOpacity style={styles.conciergeQrBtn} onPress={() => setQuickPassVisible(true)}>
+              <TouchableOpacity 
+                style={styles.conciergeQrBtn} 
+                onPress={() => {
+                  if (isRestrictedUser()) {
+                    Alert.alert("Access Denied", "Resident Gate Pass is only available to residing occupants.");
+                    return;
+                  }
+                  setQuickPassVisible(true);
+                }}
+              >
                 <Text style={styles.conciergeQrBtnText}>📷 SCAN</Text>
               </TouchableOpacity>
             </View>
@@ -532,7 +573,16 @@ export default function HomeScreen({ navigation }: any) {
                   </View>
                 )}
               </TouchableOpacity>
-              <TouchableOpacity style={styles.quickPassBtn} onPress={() => setQuickPassVisible(true)}>
+              <TouchableOpacity 
+                style={styles.quickPassBtn} 
+                onPress={() => {
+                  if (isRestrictedUser()) {
+                    Alert.alert("Access Denied", "Resident Gate Pass is only available to residing occupants.");
+                    return;
+                  }
+                  setQuickPassVisible(true);
+                }}
+              >
                 <Text style={styles.quickPassIcon}>⚡ QUICK PASS</Text>
               </TouchableOpacity>
             </View>
@@ -577,7 +627,7 @@ export default function HomeScreen({ navigation }: any) {
               <TouchableOpacity 
                 style={styles.dashboardMetricCard} 
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate('ParcelDelivery')}
+                onPress={() => handleGuardedNavigation('ParcelDelivery', 'Mail & Parcels')}
               >
                 <View style={styles.dashboardMetricHeader}>
                   <Ionicons name="cube-outline" size={18} color="#64748b" style={{ marginRight: 6 }} />
@@ -614,7 +664,13 @@ export default function HomeScreen({ navigation }: any) {
                     key={item.id} 
                     style={styles.dashboardGridItem}
                     activeOpacity={0.7}
-                    onPress={() => navigation.navigate(item.screen)}
+                    onPress={() => {
+                      if (['visitor', 'maintenance', 'amenity'].includes(item.id)) {
+                        handleGuardedNavigation(item.screen, item.title);
+                      } else {
+                        navigation.navigate(item.screen);
+                      }
+                    }}
                   >
                     <View style={styles.dashboardItemIconWrap}>
                       <Ionicons name={item.icon as any} size={22} color={currentColors.accent} />
@@ -657,7 +713,7 @@ export default function HomeScreen({ navigation }: any) {
               <TouchableOpacity 
                 style={styles.conciergeCard} 
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate('VisitorManage')}
+                onPress={() => handleGuardedNavigation('VisitorManage', 'Guest Entry')}
               >
                 <View style={styles.conciergeCardHeader}>
                   <View style={[styles.conciergeIconBg, { backgroundColor: '#f0fdf4' }]}>
@@ -677,7 +733,7 @@ export default function HomeScreen({ navigation }: any) {
               <TouchableOpacity 
                 style={styles.conciergeCard} 
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate('Amenity')}
+                onPress={() => handleGuardedNavigation('Amenity', 'Facility Reservation')}
               >
                 <View style={styles.conciergeCardHeader}>
                   <View style={[styles.conciergeIconBg, { backgroundColor: '#eff6ff' }]}>
@@ -692,7 +748,7 @@ export default function HomeScreen({ navigation }: any) {
               <TouchableOpacity 
                 style={styles.conciergeCard} 
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate('Maintenance')}
+                onPress={() => handleGuardedNavigation('Maintenance', 'Maintenance')}
               >
                 <View style={styles.conciergeCardHeader}>
                   <View style={[styles.conciergeIconBg, { backgroundColor: '#fff7ed' }]}>
@@ -712,7 +768,7 @@ export default function HomeScreen({ navigation }: any) {
               <TouchableOpacity 
                 style={styles.conciergeCard} 
                 activeOpacity={0.8}
-                onPress={() => navigation.navigate('VehicleManage')}
+                onPress={() => handleGuardedNavigation('VehicleManage', 'Vehicle Management')}
               >
                 <View style={styles.conciergeCardHeader}>
                   <View style={[styles.conciergeIconBg, { backgroundColor: '#f5f5f7' }]}>
@@ -806,7 +862,7 @@ export default function HomeScreen({ navigation }: any) {
                 <TouchableOpacity 
                   style={[styles.quickAccessCard, { borderLeftColor: currentColors.warning, borderLeftWidth: 4 }]} 
                   activeOpacity={0.8}
-                  onPress={() => navigation.navigate('ParcelDelivery')}
+                  onPress={() => handleGuardedNavigation('ParcelDelivery', 'Mail & Parcels')}
                 >
                   {holdingParcelsCount > 0 && (
                     <View style={styles.badge}>
@@ -836,7 +892,7 @@ export default function HomeScreen({ navigation }: any) {
                     key={item.id} 
                     style={styles.lifestyleItem}
                     activeOpacity={0.6}
-                    onPress={() => navigation.navigate(item.screen)}
+                    onPress={() => handleGuardedNavigation(item.screen, item.title)}
                   >
                     <View>
                       <View style={styles.iconCircle}>

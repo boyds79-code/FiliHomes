@@ -23,6 +23,7 @@ interface CondoConfigContextType {
   amenityBillingEnabled: boolean;
   isCommunityEnabled: boolean;
   isBazaarEnabled: boolean;
+  visitorEntryMode: string;
 }
 
 const CondoConfigContext = createContext<CondoConfigContextType | undefined>(undefined);
@@ -43,6 +44,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
   const [amenityBillingEnabled, setAmenityBillingEnabled] = useState<boolean>(true);
   const [isCommunityEnabled, setIsCommunityEnabled] = useState<boolean>(true);
   const [isBazaarEnabled, setIsBazaarEnabled] = useState<boolean>(true);
+  const [visitorEntryMode, setVisitorEntryMode] = useState<string>('QR_CODE');
 
   // 안전하게 기본값을 설정하는 함수
   const useFallbackData = () => {
@@ -119,7 +121,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
         setCondoId(activeCondoId);
         const { data: settings } = await supabase
           .from('condo_settings')
-          .select('visitor_parking_enabled, amenity_booking_enabled, visitor_parking_policy, amenity_billing_enabled, is_community_enabled, is_bazaar_enabled')
+          .select('visitor_parking_enabled, amenity_booking_enabled, visitor_parking_policy, amenity_billing_enabled, is_community_enabled, is_bazaar_enabled, visitor_entry_mode')
           .eq('condo_id', activeCondoId)
           .maybeSingle();
 
@@ -130,6 +132,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
           setAmenityBillingEnabled(settings.amenity_billing_enabled !== false);
           setIsCommunityEnabled(settings.is_community_enabled !== false);
           setIsBazaarEnabled(settings.is_bazaar_enabled !== false);
+          setVisitorEntryMode(settings.visitor_entry_mode || 'QR_CODE');
         } else {
           setVisitorParkingEnabled(true);
           setAmenityBookingEnabled(true);
@@ -137,6 +140,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
           setAmenityBillingEnabled(true);
           setIsCommunityEnabled(true);
           setIsBazaarEnabled(true);
+          setVisitorEntryMode('QR_CODE');
         }
       } else {
         setCondoId(null);
@@ -146,6 +150,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
         setAmenityBillingEnabled(true);
         setIsCommunityEnabled(true);
         setIsBazaarEnabled(true);
+        setVisitorEntryMode('QR_CODE');
       }
       
       setUnitNumber('1206'); // 나중에 DB에서 가져오게 확장 가능
@@ -179,7 +184,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
       configLoading, refreshConfig: loadCondoConfiguration,
       visitorParkingEnabled, amenityBookingEnabled,
       visitorParkingBillingEnabled, amenityBillingEnabled,
-      isCommunityEnabled, isBazaarEnabled
+      isCommunityEnabled, isBazaarEnabled, visitorEntryMode
     }}>
       {children}
     </CondoConfigContext.Provider>

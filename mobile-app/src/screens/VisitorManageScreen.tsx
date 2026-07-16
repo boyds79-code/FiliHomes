@@ -12,7 +12,7 @@ import VisitorHistory from '../components/VisitorHistory';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function VisitorManageScreen({ navigation }: any) {
-  const { themeColor, condoName } = useCondoConfig();
+  const { themeColor, condoName, visitorEntryMode } = useCondoConfig();
   const { currentUnit, unitLoading } = useUnit();
   const { refreshBadges } = useBadge();
   
@@ -492,44 +492,78 @@ export default function VisitorManageScreen({ navigation }: any) {
               {submitting ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.actionButtonText}>⚡ Generate QR Pass</Text>
+                <Text style={styles.actionButtonText}>
+                  {visitorEntryMode === 'ID_PHOTO' ? '⚡ Pre-Register Visitor' : '⚡ Generate QR Pass'}
+                </Text>
               )}
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity 
-              style={[styles.actionButton, { backgroundColor: '#16a34a' }]} 
-              onPress={handleSharePass}
-            >
-              <Text style={styles.actionButtonText}>✉️ Share Access Pass Link</Text>
-            </TouchableOpacity>
+            visitorEntryMode !== 'ID_PHOTO' && (
+              <TouchableOpacity 
+                style={[styles.actionButton, { backgroundColor: '#16a34a' }]} 
+                onPress={handleSharePass}
+              >
+                <Text style={styles.actionButtonText}>✉️ Share Access Pass Link</Text>
+              </TouchableOpacity>
+            )
           )}
 
           {/* Dynamic Visual Token Card Box */}
           {isRegistered ? (
-            <View style={styles.qrCard}>
-              <Text style={styles.cardCondoName}>{condoName || 'Phili-One Village/Subdivision'}</Text>
-              <Text style={styles.cardPassType}>
-                {isMultiUser ? 'MULTI-USER GROUP PASS' : (isReusable ? 'REUSABLE PASS (30 DAYS MAX)' : 'SINGLE-USE ENTRY PASS')}
-              </Text>
-              <View style={styles.qrWrapper}>
-                <QRCode value={qrToken || 'FILIHOMES-VMS'} size={160} color="#0f172a" backgroundColor="#fff" />
-              </View>
-              <View style={[styles.statusBadge, { backgroundColor: '#eafaf1', borderColor: '#d1fae5' }]}>
-                <Text style={[styles.statusText, { color: '#16a34a' }]}>
-                  {isMultiUser ? '✓ ACTIVE MULTI-USER PASS' : (isReusable ? '✓ ACTIVE REUSABLE PASS' : '✓ ACTIVE SINGLE-USE PASS')}
+            visitorEntryMode === 'ID_PHOTO' ? (
+              <View style={styles.qrCard}>
+                <Text style={styles.cardCondoName}>{condoName || 'Phili-One Village/Subdivision'}</Text>
+                <Text style={styles.cardPassType}>PRE-REGISTERED RECORD</Text>
+                <View style={{ paddingVertical: 20, alignItems: 'center' }}>
+                  <Text style={{ fontSize: 54 }}>🪪</Text>
+                </View>
+                <View style={[styles.statusBadge, { backgroundColor: '#eff6ff', borderColor: '#bfdbfe' }]}>
+                  <Text style={[styles.statusText, { color: '#1d4ed8' }]}>
+                    ✓ ID VERIFICATION MODE ACTIVE
+                  </Text>
+                </View>
+                <Text style={{ color: '#475569', fontSize: 13, textAlign: 'center', marginTop: 12, marginHorizontal: 16, lineHeight: 18 }}>
+                  Your visitor has been pre-registered. They must present a physical ID card to the guard at the main gate. The guard will take a photo of their ID card to log entry.
                 </Text>
               </View>
-            </View>
-          ) : (
-            <View style={[styles.qrCard, { backgroundColor: '#f1f5f9', borderColor: '#cbd5e1', borderStyle: 'dashed' }]}>
-              <Text style={[styles.cardPassType, { color: '#64748b', marginTop: 10 }]}>ACCESS PASS NOT ACTIVE</Text>
-              <View style={[styles.qrWrapper, { opacity: 0.15, paddingVertical: 20 }]}>
-                <QRCode value="FILIHOMES-VMS" size={120} color="#64748b" backgroundColor="#fff" />
+            ) : (
+              <View style={styles.qrCard}>
+                <Text style={styles.cardCondoName}>{condoName || 'Phili-One Village/Subdivision'}</Text>
+                <Text style={styles.cardPassType}>
+                  {isMultiUser ? 'MULTI-USER GROUP PASS' : (isReusable ? 'REUSABLE PASS (30 DAYS MAX)' : 'SINGLE-USE ENTRY PASS')}
+                </Text>
+                <View style={styles.qrWrapper}>
+                  <QRCode value={qrToken || 'FILIHOMES-VMS'} size={160} color="#0f172a" backgroundColor="#fff" />
+                </View>
+                <View style={[styles.statusBadge, { backgroundColor: '#eafaf1', borderColor: '#d1fae5' }]}>
+                  <Text style={[styles.statusText, { color: '#16a34a' }]}>
+                    {isMultiUser ? '✓ ACTIVE MULTI-USER PASS' : (isReusable ? '✓ ACTIVE REUSABLE PASS' : '✓ ACTIVE SINGLE-USE PASS')}
+                  </Text>
+                </View>
               </View>
-              <Text style={{ color: '#475569', fontSize: 13, fontWeight: '700', textAlign: 'center', marginHorizontal: 20, marginBottom: 10 }}>
-                👉 Tap the button above to generate your QR Pass.
-              </Text>
-            </View>
+            )
+          ) : (
+            visitorEntryMode === 'ID_PHOTO' ? (
+              <View style={[styles.qrCard, { backgroundColor: '#f1f5f9', borderColor: '#cbd5e1', borderStyle: 'dashed' }]}>
+                <Text style={[styles.cardPassType, { color: '#64748b', marginTop: 10 }]}>NO ACTIVE PRE-REGISTRATION</Text>
+                <View style={{ paddingVertical: 20, alignItems: 'center', opacity: 0.3 }}>
+                  <Text style={{ fontSize: 54 }}>🪪</Text>
+                </View>
+                <Text style={{ color: '#475569', fontSize: 13, fontWeight: '700', textAlign: 'center', marginHorizontal: 20, marginBottom: 10 }}>
+                  👉 Tap the button above to pre-register your visitor.
+                </Text>
+              </View>
+            ) : (
+              <View style={[styles.qrCard, { backgroundColor: '#f1f5f9', borderColor: '#cbd5e1', borderStyle: 'dashed' }]}>
+                <Text style={[styles.cardPassType, { color: '#64748b', marginTop: 10 }]}>ACCESS PASS NOT ACTIVE</Text>
+                <View style={[styles.qrWrapper, { opacity: 0.15, paddingVertical: 20 }]}>
+                  <QRCode value="FILIHOMES-VMS" size={120} color="#64748b" backgroundColor="#fff" />
+                </View>
+                <Text style={{ color: '#475569', fontSize: 13, fontWeight: '700', textAlign: 'center', marginHorizontal: 20, marginBottom: 10 }}>
+                  👉 Tap the button above to generate your QR Pass.
+                </Text>
+              </View>
+            )
           )}
 
           {isRegistered && (

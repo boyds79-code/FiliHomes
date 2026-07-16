@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput, Modal } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, TextInput, Modal, Image } from 'react-native';
 import { supabase } from '../lib/supabase';
 
 const formatDate = (dateString?: string) => {
@@ -305,6 +305,12 @@ const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toStr
               {selectedLog?.visit_type === 'VEHICLE' && (
                 <Text style={styles.modalLabel}>Vehicle: <Text style={styles.modalValue}>{selectedLog?.plate_number} ({selectedLog?.vehicle_model || 'N/A'})</Text></Text>
               )}
+              {selectedLog?.id_photo_url && (
+                <View style={{ marginTop: 12 }}>
+                  <Text style={styles.modalLabel}>Visitor ID Photo:</Text>
+                  <Image source={{ uri: selectedLog.id_photo_url }} style={styles.idPhoto} />
+                </View>
+              )}
             </View>
             <TouchableOpacity style={styles.closeBtn} onPress={() => setSelectedLog(null)}>
               <Text style={styles.closeBtnText}>Close</Text>
@@ -317,6 +323,7 @@ const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toStr
 }
 
 const styles = StyleSheet.create({
+  idPhoto: { width: '100%', height: 180, borderRadius: 8, marginTop: 8, resizeMode: 'cover', backgroundColor: '#f1f5f9' },
   container: { flex: 1, padding: 15 },
   header: { fontSize: 16, fontWeight: 'bold', color: '#334155', marginBottom: 10 },
   card: { padding: 16, backgroundColor: '#fff', borderRadius: 12, marginBottom: 10, borderWidth: 1, borderColor: '#e2e8f0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

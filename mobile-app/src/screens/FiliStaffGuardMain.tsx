@@ -113,7 +113,8 @@ export default function FiliStaffGuardMain({ navigation }: any) {
     visitor_scope: 'MAIN_GATE_ONLY',
     parcel_lockers_enabled: false,
     amenity_booking_required: true,
-    parcel_delivery_policy: 'GUARD_HOUSE'
+    parcel_delivery_policy: 'GUARD_HOUSE',
+    visitor_entry_mode: 'QR_CODE'
   });
 
   // Direct Courier Delivery states
@@ -121,6 +122,28 @@ export default function FiliStaffGuardMain({ navigation }: any) {
   const [courierPhoto, setCourierPhoto] = useState<string | null>(null);
   const [courierBase64, setCourierBase64] = useState<string | null>(null);
   const [directTracking, setDirectTracking] = useState('');
+  const [visitorIdPhoto, setVisitorIdPhoto] = useState<string | null>(null);
+  const [visitorIdBase64, setVisitorIdBase64] = useState<string | null>(null);
+
+  const captureVisitorIdPhoto = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert("Permission Required ⚠️", "Camera access is required to take photos of ID cards.");
+      return;
+    }
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: 'images',
+      quality: 0.3,
+      base64: true,
+    });
+
+    if (result.canceled || !result.assets) {
+      return; 
+    }
+
+    setVisitorIdPhoto(result.assets[0].uri);
+    setVisitorIdBase64(result.assets[0].base64 || null);
+  };
 
   const fetchCondoPolicy = async () => {
     // 🎯 Make sure to explicitly include the condo ID for testing.
@@ -155,7 +178,8 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         visitor_scope: settingsData ? settingsData.visitor_scope || 'MAIN_GATE_ONLY' : 'MAIN_GATE_ONLY',
         parcel_lockers_enabled: settingsData ? !!settingsData.parcel_lockers_enabled : false,
         amenity_booking_required: settingsData ? settingsData.amenity_booking_required !== false : true,
-        parcel_delivery_policy: settingsData ? settingsData.parcel_delivery_policy || 'GUARD_HOUSE' : 'GUARD_HOUSE'
+        parcel_delivery_policy: settingsData ? settingsData.parcel_delivery_policy || 'GUARD_HOUSE' : 'GUARD_HOUSE',
+        visitor_entry_mode: settingsData ? settingsData.visitor_entry_mode || 'QR_CODE' : 'QR_CODE'
       });
     } catch (err) {
       console.error("Error fetching condo policy:", err);
@@ -1620,6 +1644,11 @@ export default function FiliStaffGuardMain({ navigation }: any) {
       return;
     }
 
+    if (condoPolicy.visitor_entry_mode === 'ID_PHOTO' && !visitorIdBase64) {
+      Alert.alert("ID Photo Required ⚠️", "Please capture a photo of the visitor's ID card first.");
+      return;
+    }
+
     const visitorName = manualVisitorName.trim() || manualVisitorType.trim() || 'Walk-in Guest';
 
     // 🎯 Fix Condo ID as a variable and include it in search conditions!
@@ -1645,6 +1674,21 @@ export default function FiliStaffGuardMain({ navigation }: any) {
     const day = String(localDate.getDate()).padStart(2, '0');
     const today = `${year}-${month}-${day}`; // 🎯 Auto-generate visit date (today)
 
+    let uploadedIdPhotoUrl = null;
+    if (visitorIdBase64) {
+      const fileName = `visitor_id_${manualTargetUnit.trim()}_${Date.now()}.jpg`;
+      const { error: uploadError } = await supabase.storage
+        .from('parcel-images')
+        .upload(fileName, decode(visitorIdBase64), { contentType: 'image/jpeg' });
+      
+      if (!uploadError) {
+        const { data } = supabase.storage.from('parcel-images').getPublicUrl(fileName);
+        uploadedIdPhotoUrl = data.publicUrl;
+      } else {
+        console.error("ID Photo upload failed:", uploadError);
+      }
+    }
+
     if (condoPolicy.approval_required) {
       // 1) Insert into visitor_passes with PENDING status (to expose to resident app's approval queue)
       const { data: passData, error: passError } = await supabase
@@ -1655,7 +1699,8 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           visit_type: 'WALK_IN', // 🎯 Set to WALK_IN since it's walk-in manual entry
           status: 'PENDING',
           purpose: manualVisitorType, // 🎯 Put guard's input (Grab Food, etc.) here!
-          visit_date: today // 🎯 Must include the date!
+          visit_date: today, // 🎯 Must include the date!
+          id_photo_url: uploadedIdPhotoUrl
         }])
         .select('id')
         .single();
@@ -1727,7 +1772,8 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           visit_type: 'WALK_IN', // 🎯 Set to WALK_IN since it's walk-in manual entry
           status: 'USED', // 🎯 Guard verified, so set to USED immediately
           purpose: manualVisitorType,
-          visit_date: today // 🎯 Add visit date even in logic where approval is not required!
+          visit_date: today, // 🎯 Add visit date even in logic where approval is not required!
+          id_photo_url: uploadedIdPhotoUrl
         }])
         .select('id')
         .single();
@@ -1754,6 +1800,8 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
     setManualTargetUnit(''); 
     setManualVisitorName('');
+    setVisitorIdPhoto(null);
+    setVisitorIdBase64(null);
     fetchWalkInPasses();
   };
 
@@ -3190,6 +3238,35 @@ const takeAddressPhoto = async () => {
                   )}
                   <TextInput style={[styles.hugeInput, { marginBottom: 12, fontSize: 13, textAlign: 'center' }]} value={manualVisitorName} onChangeText={setManualVisitorName} placeholder="Visitor Name (Optional)" placeholderTextColor="#64748b" />
                   
+                  {condoPolicy.visitor_entry_mode === 'ID_PHOTO' && (
+                    <View style={{ marginBottom: 12 }}>
+                      <TouchableOpacity 
+                        style={[
+                          styles.submitBtn, 
+                          { 
+                            backgroundColor: visitorIdPhoto ? '#10b981' : '#475569', 
+                            marginBottom: 8,
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                          }
+                        ]} 
+                        onPress={captureVisitorIdPhoto}
+                      >
+                        <Text style={{ fontSize: 16, marginRight: 8 }}>📷</Text>
+                        <Text style={styles.submitBtnText}>
+                          {visitorIdPhoto ? '✓ ID Photo Captured' : 'Capture Visitor ID Card'}
+                        </Text>
+                      </TouchableOpacity>
+                      {visitorIdPhoto && (
+                        <Image 
+                          source={{ uri: visitorIdPhoto }} 
+                          style={{ width: '100%', height: 120, borderRadius: 8, resizeMode: 'cover', marginTop: 4 }} 
+                        />
+                      )}
+                    </View>
+                  )}
+
                   <TouchableOpacity style={styles.submitBtn} onPress={handleVisitorEntry}>
                     <Text style={styles.submitBtnText}>⚡ Visitor Entry</Text>
                   </TouchableOpacity>

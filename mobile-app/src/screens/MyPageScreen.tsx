@@ -335,14 +335,14 @@ export default function MyPageScreen({ navigation }: any) {
           name: pData.full_name || 'Resident Member',
           email: session.user.email || '',
           unit_number: pData.unit_number || '1204',
-          condo_name: pData.condo_name || 'Fili-One Condominium'
+          condo_name: pData.condo_name || 'Fili-One Village/Subdivision'
         });
       } else {
         setProfile({
           name: 'Chris',
-          email: session.user.email || 'developer@filicondo.com',
+          email: session.user.email || 'developer@filihomes.com',
           unit_number: '1204',
-          condo_name: condoName || 'Fili-One Condominium'
+          condo_name: condoName || 'Fili-One Village/Subdivision'
         });
       }
 
@@ -448,7 +448,7 @@ export default function MyPageScreen({ navigation }: any) {
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Verify your biometric data to secure FiliCondo',
+        promptMessage: 'Verify your biometric data to secure FiliHomes',
         fallbackLabel: 'Enter Passcode',
         disableDeviceFallback: false,
       });
@@ -503,7 +503,7 @@ export default function MyPageScreen({ navigation }: any) {
   };
 
   const handleLogout = async () => {
-    Alert.alert('Logout', 'Are you sure you want to sign out of FiliCondo?', [
+    Alert.alert('Logout', 'Are you sure you want to sign out of FiliHomes?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Sign Out', style: 'destructive', onPress: async () => {
           await supabase.auth.signOut();
@@ -932,7 +932,7 @@ export default function MyPageScreen({ navigation }: any) {
             <ScrollView style={{ width: '100%', paddingHorizontal: 4, flexShrink: 1 }} showsVerticalScrollIndicator={true}>
               <Text style={styles.legalHeading}>1. Purpose & Access Authorization</Text>
               <Text style={styles.legalText}>
-                FiliCondo is an exclusive platform for verified residents, tenants, and PMO staff of this condominium. Access is authorized solely for legitimate occupants holding a valid lease or ownership mapping.
+                FiliHomes is an exclusive platform for verified residents, tenants, and PMO staff of this village/subdivision. Access is authorized solely for legitimate occupants holding a valid lease or ownership mapping.
               </Text>
               <Text style={styles.legalHeading}>2. Compliance with Philippine Laws</Text>
               <Text style={styles.legalText}>
@@ -970,8 +970,8 @@ export default function MyPageScreen({ navigation }: any) {
               <Text style={styles.legalHeading}>2. Data Minimization & Security</Text>
               <Text style={styles.legalText}>
                 To protect your physical security inside the condo and prevent unsolicited door-to-door visits:
-                {"\n"}• Your exact unit number is masked in the public feed (e.g. Unit 12**).
-                {"\n"}• Bazaar trades are conducted via user aliases (nicknames) rather than unit numbers.
+                {"\n"}• Your exact house/lot number is masked in the public feed (e.g. Unit 12**).
+                {"\n"}• Bazaar trades are conducted via user aliases (nicknames) rather than house/lot numbers.
                 {"\n"}• The PMO will never disclose your room information to other residents.
               </Text>
               <Text style={styles.legalHeading}>3. Shared Data</Text>
@@ -1006,7 +1006,7 @@ export default function MyPageScreen({ navigation }: any) {
                 Pursuant to the Philippine Data Privacy Act (RA 10173), deleting your account will immediately erase or anonymize your personal identifiers (name, email, phone number, vehicle plate numbers, and bazaar alias profile).
               </Text>
               <Text style={[styles.legalText, { marginTop: 8, fontStyle: 'italic' }]}>
-                Note: In compliance with Bureau of Internal Revenue (BIR) regulations and local condominium corporate bylaws, historical transaction records (such as unpaid billings, maintenance requests, and amenity bookings) must be archived for a minimum retention period of 5 years.
+                Note: In compliance with Bureau of Internal Revenue (BIR) regulations and local village/subdivision corporate bylaws, historical transaction records (such as unpaid billings, maintenance requests, and amenity bookings) must be archived for a minimum retention period of 5 years.
               </Text>
             </ScrollView>
             <View style={styles.modalBtnRow}>

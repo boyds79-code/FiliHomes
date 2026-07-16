@@ -720,7 +720,7 @@ export default function MaintenanceTechApp({ navigation }: any) {
         const mapped = allJobs.map((j: any) => ({
           ...j,
           id: j.id.toString(),
-          units: j.units ? { ...j.units, tower_name: j.units.building_no } : null
+          units: j.units ? { ...j.units, tower_name: j.units.block_phase_no } : null
         }));
 
         setJobOrders(mapped);
@@ -757,7 +757,7 @@ export default function MaintenanceTechApp({ navigation }: any) {
         const mapped = data.map((j: any) => ({
           ...j,
           id: j.id.toString(),
-          units: j.units ? { ...j.units, tower_name: j.units.building_no } : null
+          units: j.units ? { ...j.units, tower_name: j.units.block_phase_no } : null
         }));
         setHistoryOrders(mapped);
       }

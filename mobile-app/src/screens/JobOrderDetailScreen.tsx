@@ -895,7 +895,7 @@ export default function JobOrderDetailScreen({ route, navigation }: any) {
             </Text>
             
             <Text style={{ fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 18, marginBottom: 20 }}>
-              This team member is authorized by FiliCondo management to perform maintenance services in your unit.
+              This team member is authorized by FiliHomes management to perform maintenance services in your unit.
             </Text>
 
             <TouchableOpacity 

@@ -40,7 +40,7 @@ BEGIN
         -- B) ✉️ EMAIL ALERT: Invoke the system-error-email Edge Function asynchronously using pg_net
         PERFORM net.http_post(
             url := 'https://' || project_ref || '.functions.supabase.co/system-error-email',
-            headers := '{"Content-Type": "application/json", "x-webhook-secret": "FiliCondoSecretToken123"}'::jsonb,
+            headers := '{"Content-Type": "application/json", "x-webhook-secret": "FiliHomesSecretToken123"}'::jsonb,
             body := jsonb_build_object(
                 'job_name', job_name,
                 'run_id', NEW.runid,

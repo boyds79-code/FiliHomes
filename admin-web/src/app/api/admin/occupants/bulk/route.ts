@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     // Fetch existing units for cache to support auto-creation & matching
     const { data: dbUnits, error: fetchUnitsErr } = await adminClient
       .from('units')
-      .select('id, unit_number, building_no')
+      .select('id, unit_number, block_phase_no')
       .eq('condo_id', condoId);
     if (fetchUnitsErr) {
       console.error("Fetch units for bulk mapping error:", fetchUnitsErr);
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       if (!finalUnitId && unit_no) {
         let matchedUnit = unitsCache.find(u => 
           u.unit_number.toLowerCase() === unit_no.toLowerCase() &&
-          (!tower || (u.building_no || '').toLowerCase() === tower.toLowerCase())
+          (!tower || (u.block_phase_no || '').toLowerCase() === tower.toLowerCase())
         );
 
         if (matchedUnit) {
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
             .insert({
               condo_id: condoId,
               unit_number: unit_no,
-              building_no: tower || 'A',
+              block_phase_no: tower || 'A',
               status: 'vacant'
             })
             .select('id')
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
           }
 
           finalUnitId = newUnit.id;
-          unitsCache.push({ id: finalUnitId, unit_number: unit_no, building_no: tower || 'A' });
+          unitsCache.push({ id: finalUnitId, unit_number: unit_no, block_phase_no: tower || 'A' });
         }
       }
 

@@ -9,7 +9,7 @@ api_files = [
     "src/app/api/upload-billings/route.ts"
 ]
 
-base_dir = "/Users/chriskim/Documents/FiliCondo/admin-web"
+base_dir = "/Users/chriskim/Documents/FiliHomes/admin-web"
 
 for relative_path in api_files:
     file_path = os.path.join(base_dir, relative_path)

@@ -19,7 +19,7 @@ interface AmenityBooking {
   } | null;
   units?: {
     unit_number: string | null;
-    building_no: string | null;
+    block_phase_no: string | null;
     condo_id: string | null;
   } | null;
 }
@@ -73,7 +73,7 @@ export default function AmenityBookingManager({ condoId }: { condoId: string }) 
 
         const [profilesRes, unitsRes, amenitiesRes] = await Promise.all([
           userIds.length > 0 ? supabase.from('profiles').select('id, full_name, email, phone, expo_push_token').in('id', userIds) : { data: [] },
-          unitIds.length > 0 ? supabase.from('units').select('id, unit_number, building_no, condo_id').in('id', unitIds) : { data: [] },
+          unitIds.length > 0 ? supabase.from('units').select('id, unit_number, block_phase_no, condo_id').in('id', unitIds) : { data: [] },
           amenityIds.length > 0 ? supabase.from('amenities').select('id, name').in('id', amenityIds) : { data: [] }
         ]);
 
@@ -98,7 +98,7 @@ export default function AmenityBookingManager({ condoId }: { condoId: string }) 
             } : null,
             units: unit ? {
               unit_number: unit.unit_number || '',
-              building_no: unit.building_no || '',
+              block_phase_no: unit.block_phase_no || '',
               condo_id: unit.condo_id || ''
             } : null
           };
@@ -189,7 +189,7 @@ export default function AmenityBookingManager({ condoId }: { condoId: string }) 
     if (activeTab === 'UPCOMING' && !isUpcoming) return false;
     if (activeTab === 'HISTORY' && !isHistory) return false;
 
-    // Search query match (name, email, unit number)
+    // Search query match (name, email, house/lot number)
     const fullName = b.profiles?.full_name?.toLowerCase() || '';
     const email = b.profiles?.email?.toLowerCase() || '';
     const unitNo = b.units?.unit_number?.toLowerCase() || '';
@@ -340,7 +340,7 @@ export default function AmenityBookingManager({ condoId }: { condoId: string }) 
           <div className="w-full md:w-80">
             <input
               type="text"
-              placeholder="🔍 Search name, email, or unit number..."
+              placeholder="🔍 Search name, email, or house/lot number..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-3.5 py-2.5 font-medium text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
@@ -441,7 +441,7 @@ export default function AmenityBookingManager({ condoId }: { condoId: string }) 
                         {b.profiles?.full_name || 'Resident'}
                       </span>
                       <span className="text-[10px] text-slate-400 font-semibold block mt-0.5">
-                        Unit {b.units?.unit_number || 'N/A'} ({b.units?.building_no || 'Tower'}) • {b.profiles?.email || 'No email'}
+                        Unit {b.units?.unit_number || 'N/A'} ({b.units?.block_phase_no || 'Tower'}) • {b.profiles?.email || 'No email'}
                       </span>
                     </td>
 

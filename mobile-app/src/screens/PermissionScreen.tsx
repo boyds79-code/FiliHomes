@@ -58,7 +58,7 @@ export default function PermissionScreen({ navigation }: any) {
 
       Alert.alert(
         'Setup Complete 🎉',
-        'FiliCondo has customized your secure hardware setup for Fili-One Condominium.',
+        'FiliHomes has customized your secure hardware setup for Fili-One Village/Subdivision.',
         [
           { 
             text: 'Let\'s Start', 
@@ -82,7 +82,7 @@ export default function PermissionScreen({ navigation }: any) {
       
       <View style={styles.contentContainer}>
         <View style={styles.welcomeHeaderGroup}>
-          <Text style={styles.appLogoText}>🇵🇭 FiliCondo</Text>
+          <Text style={styles.appLogoText}>🇵🇭 FiliHomes</Text>
           <Text style={styles.mainTitle}>Access Permissions</Text>
           <Text style={styles.subTitle}>To provide seamless luxury condo operations and real-time gate security, please allow the following device controls.</Text>
         </View>

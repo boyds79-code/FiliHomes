@@ -101,7 +101,7 @@ export default function DataMigrator({ condoId, onSyncComplete }: { condoId: str
 
   const executeParsingWithMapping = () => {
     if (mapping.unit_no === -1 || mapping.outstanding_balance === -1) {
-      alert("Please map the required fields: Unit Number and Outstanding Balance.");
+      alert("Please map the required fields: House/Lot Number and Outstanding Balance.");
       return;
     }
 
@@ -124,7 +124,7 @@ export default function DataMigrator({ condoId, onSyncComplete }: { condoId: str
 
       if (!unit_no) {
         isValid = false;
-        errorReason = 'Missing Unit Number';
+        errorReason = 'Missing House/Lot Number';
       } else if (email && !email.includes('@')) {
         isValid = false;
         errorReason = 'Invalid Email Format';
@@ -201,7 +201,7 @@ export default function DataMigrator({ condoId, onSyncComplete }: { condoId: str
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>📊 Legacy Data Ingestion Pipeline Hub</h2>
-      <p style={styles.subtitle}>Upload existing condominium Excel/CSV rosters to instantly sync with Resident, Guard, and Intercom mobile interfaces.</p>
+      <p style={styles.subtitle}>Upload existing village/subdivision Excel/CSV rosters to instantly sync with Resident, Guard, and Intercom mobile interfaces.</p>
 
       {/* Step 1: Upload File */}
       <div style={styles.dropzone}>
@@ -220,14 +220,14 @@ export default function DataMigrator({ condoId, onSyncComplete }: { condoId: str
         <div style={styles.mappingCard}>
           <h3 style={styles.mappingCardTitle}>🔧 CSV Column Mapping Wizard</h3>
           <p style={styles.mappingCardDesc}>
-            Map your CSV file's headers to FiliCondo's system parameters.
+            Map your CSV file's headers to FiliHomes's system parameters.
           </p>
 
           <div style={styles.mappingGrid}>
-            {/* Unit Number Map (Required) */}
+            {/* House/Lot Number Map (Required) */}
             <div style={styles.mappingFieldRow}>
               <div style={styles.mappingLabelContainer}>
-                <span style={styles.systemFieldLabel}>Unit Number *</span>
+                <span style={styles.systemFieldLabel}>House/Lot Number *</span>
                 <span style={styles.fieldRequiredBadge}>Required</span>
               </div>
               <select 

@@ -59,19 +59,22 @@ const calculateDynamicPenalty = (bill: any, rate: number) => {
     Number(bill.job_order_fee || 0) + 
     Number(bill.previous_balance || 0);
 
-  return baseForPenalty * (rate / 30) * delayDays;
+  // Monthly 2% flat rate (or multiples of 2% based on month offset)
+  return baseForPenalty * rate * Math.ceil(delayDays / 30);
 };
 
 export default function BillingScreen({ navigation }: any) {
   const { 
     themeColor, 
     unitId, 
+    condoId,
     visitorParkingBillingEnabled, 
     amenityBillingEnabled 
   } = useCondoConfig(); 
   const { currentUnit } = useUnit();
   const { refreshBadges } = useBadge();
   const activeUnitId = currentUnit?.unit_id || unitId;
+  const activeCondoId = currentUnit?.condo_id || condoId;
 
   const [billings, setBillings] = useState<any[]>([]);
   const [filteredBillings, setFilteredBillings] = useState<any[]>([]);
@@ -146,7 +149,7 @@ export default function BillingScreen({ navigation }: any) {
 
   const markMonthAsRead = async (month: string) => {
     try {
-      await AsyncStorage.setItem(`billing_read_${month}`, 'true');
+      await AsyncStorage.setItem(`billing_read_${activeCondoId}_${month}`, 'true');
       refreshBadges();
     } catch (e) {
       console.log("Error marking month as read:", e);
@@ -317,7 +320,7 @@ export default function BillingScreen({ navigation }: any) {
           }
 
           const calculatedPenalty = calculateDynamicPenalty(b, penaltyRate);
-          const amount = (b.total_due !== undefined && b.total_due !== null && b.status === 'PAID')
+          const amount = (b.total_due !== undefined && b.total_due !== null)
             ? Number(b.total_due)
             : (
               Number(b.condo_dues || 0) + 
@@ -335,7 +338,7 @@ export default function BillingScreen({ navigation }: any) {
           return {
             ...b,
             unit_number: b.unit_number || '1204',
-            condo_name: b.condo_name || 'Phili-One Condominium',
+            condo_name: b.condo_name || 'Phili-One Village/Subdivision',
             category: uiCategory, 
             billing_month: b.billing_month || '2026-05',
             billing_period: b.billing_period || 'Monthly Statement',
@@ -350,7 +353,7 @@ export default function BillingScreen({ navigation }: any) {
               amenity_fee: amenityBillingEnabled ? Number(b.amenity_fee || 0) : 0,
               job_order_fee: Number(b.job_order_fee || 0),
               previous_balance: Number(b.previous_balance || 0),
-              penalty_amount: Number(b.penalty_amount || 0) + calculatedPenalty
+              penalty_amount: Number(b.penalty_amount || 0)
             }
           };
         });

@@ -576,7 +576,7 @@ export default function CommunityScreen({ navigation, route }: any) {
             
             <View style={styles.privacyBanner}>
               <Text style={styles.privacyBannerText}>
-                ⚠️ Privacy Guard: Your exact unit number is masked to others (e.g. Unit {currentUnitNumber ? maskUnitNumber(currentUnitNumber) : '12**'}). Please do NOT write your unit number, phone number, or private details inside the post content.
+                ⚠️ Privacy Guard: Your exact house/lot number is masked to others (e.g. Unit {currentUnitNumber ? maskUnitNumber(currentUnitNumber) : '12**'}). Please do NOT write your house/lot number, phone number, or private details inside the post content.
               </Text>
             </View>
 

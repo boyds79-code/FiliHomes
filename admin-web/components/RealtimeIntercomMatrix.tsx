@@ -86,7 +86,7 @@ export default function RealtimeIntercomMatrix({ condoId }: { condoId: string })
       if (!session) {
         console.log("Logging in admin client to Supabase auth for RLS access...");
         await supabase.auth.signInWithPassword({
-          email: 'solea.admin@filicondo.com',
+          email: 'solea.admin@filihomes.com',
           password: 'password123'
         });
       }
@@ -155,7 +155,7 @@ export default function RealtimeIntercomMatrix({ condoId }: { condoId: string })
         user_id,
         units (
           unit_number,
-          building_no
+          block_phase_no
         )
       `);
       
@@ -166,13 +166,13 @@ export default function RealtimeIntercomMatrix({ condoId }: { condoId: string })
         name: 'PMO Office',
         unit: 'HQ',
         building: 'HQ',
-        email: 'pmo@filicondo.com'
+        email: 'pmo@filihomes.com'
       };
       map['66dcdab9-091a-440f-a871-fe2133c1813e'] = {
         name: 'PMO Office',
         unit: 'HQ',
         building: 'HQ',
-        email: 'pmo@filicondo.com'
+        email: 'pmo@filihomes.com'
       };
 
       if (profiles) {
@@ -182,7 +182,7 @@ export default function RealtimeIntercomMatrix({ condoId }: { condoId: string })
           map[p.id] = {
             name: p.full_name || 'Resident',
             unit: unitData?.unit_number || 'N/A',
-            building: unitData?.building_no || 'N/A',
+            building: unitData?.block_phase_no || 'N/A',
             email: p.email || ''
           };
         });
@@ -564,7 +564,7 @@ export default function RealtimeIntercomMatrix({ condoId }: { condoId: string })
                           {activeChat ? getChatTitle(activeChat) : 'Resident Chat'}
                         </h4>
                         <p className="text-[10px] text-slate-400">
-                          {prof ? `Email: ${prof.email} | Building: ${prof.building}` : 'FiliCondo Resident Gateway'}
+                          {prof ? `Email: ${prof.email} | Building: ${prof.building}` : 'FiliHomes Resident Gateway'}
                         </p>
                       </div>
                       <span className={`text-xs font-bold px-2.5 py-1 rounded-full bg-teal-100 text-teal-800 border border-teal-200`}>

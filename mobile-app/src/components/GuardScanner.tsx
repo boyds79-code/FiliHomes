@@ -36,8 +36,8 @@ export function GuardScanner() {
 
       pass = directPass;
 
-      // Fallback: If not found but starts with 'FILICONDO-VMS|', parse the token components
-      if (!pass && trimmedCode.startsWith('FILICONDO-VMS|')) {
+      // Fallback: If not found but starts with 'FILIHOMES-VMS|', parse the token components
+      if (!pass && trimmedCode.startsWith('FILIHOMES-VMS|')) {
         const parts = trimmedCode.split('|');
         const tokenData: Record<string, string> = {};
         parts.forEach(part => {
@@ -122,12 +122,12 @@ export function GuardScanner() {
   const sendLiveAccessRequest = async () => {
     if (calling) return;
     if (!targetUnitNumber.trim() || !visitorName.trim()) {
-      Alert.alert("Error", "Please enter both Visitor Name and Target Unit Number.");
+      Alert.alert("Error", "Please enter both Visitor Name and Target House/Lot Number.");
       return;
     }
 
     if (!currentUnit) {
-      Alert.alert("Error", "No condo assigned to your guard profile.");
+      Alert.alert("Error", "No village/subdivision assigned to your guard profile.");
       return;
     }
 
@@ -140,7 +140,7 @@ export function GuardScanner() {
       .maybeSingle();
 
     if (error || !unitData) {
-      Alert.alert("Error", "This unit number does not exist in your condo.");
+      Alert.alert("Error", "This house/lot number does not exist in your village/subdivision.");
       return;
     }
 
@@ -210,7 +210,7 @@ export function GuardScanner() {
           style={styles.input} 
           value={targetUnitNumber} 
           onChangeText={setTargetUnitNumber} 
-          placeholder="Target Unit Number (e.g., 1004)" 
+          placeholder="Target House/Lot Number (e.g., 1004)" 
           keyboardType="numeric" 
           editable={!calling}
           inputAccessoryViewID="guardScannerUnitAccessory"

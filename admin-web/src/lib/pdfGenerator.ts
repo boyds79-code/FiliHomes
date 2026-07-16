@@ -235,7 +235,7 @@ export const generateOfficialReceipt = async (bill: any, condoInfo: any = {}) =>
   // 1) PMO 회사 정보 헤더 (우측 상단 배치)
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  const condoName = condoInfo.business_name || condoInfo.businessName || "Fili-One Condominium Management Corp.";
+  const condoName = condoInfo.business_name || condoInfo.businessName || "Fili-One Village/Subdivision Management Corp.";
   doc.text(condoName, 280, 16, { align: "right" });
   
   doc.setFont("helvetica", "normal");
@@ -251,7 +251,7 @@ export const generateOfficialReceipt = async (bill: any, condoInfo: any = {}) =>
   doc.text("OFFICIAL RECEIPT", 98, 38);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
-  doc.text("(Real Estate / Condominium Association)", 98, 43);
+  doc.text("(Real Estate / Village/Subdivision Association)", 98, 43);
 
   // 3) 영수증 번호 & 발행일 (우측 상단)
   doc.setFontSize(10);
@@ -278,7 +278,7 @@ export const generateOfficialReceipt = async (bill: any, condoInfo: any = {}) =>
 
   // Address ...
   doc.text("and address at", 98, 70);
-  doc.text(`${unitText}, Fili-One Condominium, ${address}`, 125, 70);
+  doc.text(`${unitText}, Fili-One Village/Subdivision, ${address}`, 125, 70);
   doc.line(124, 71, 252, 71);
   doc.text("engaged in", 255, 70);
 

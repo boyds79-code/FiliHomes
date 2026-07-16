@@ -41,7 +41,7 @@ export default function AuthScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <TouchableOpacity activeOpacity={1} onPress={handleTriggerSecretDoor} style={{ paddingVertical: 10 }}>
-        <Text style={styles.title}>FiliCondo Login</Text>
+        <Text style={styles.title}>FiliHomes Login</Text>
       </TouchableOpacity>
 
       <View style={[styles.verticallySpaced, styles.mt20]}>

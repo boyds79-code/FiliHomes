@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import BillingManager from '../../../components/BillingManager';
-import CondoSettings from '../../../components/CondoSettings'; 
+import VillageSettings from '../../../components/VillageSettings';
 import ParcelManager from '../../../components/ParcelManager';
 import MaintenanceJobOrderManager from '../../../components/MaintenanceJobOrderManager';
 // 1. 임포트 추가
@@ -65,7 +65,7 @@ export default function DashboardPage() {
             ...(isMobile ? { position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 50, overflowY: 'auto' } : {}) 
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-              <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a', margin: 0 }}>🏢 FiliCondo</h1>
+              <h1 style={{ fontSize: '18px', fontWeight: 'bold', color: '#1e3a8a', margin: 0 }}>🏢 FiliHomes</h1>
               {isMobile && (
                 <button onClick={() => setIsSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
               )}
@@ -102,7 +102,7 @@ export default function DashboardPage() {
             </div>
             <div style={{ marginBottom: '24px' }}>
               <div style={styles.menuLabel}>Management Core</div>
-              <button onClick={() => { setActiveTab('SETTINGS'); if(isMobile) setIsSidebarOpen(false); }} style={getMenuBtnStyle(activeTab === 'SETTINGS')}>⚙️ Property Settings</button>
+              <button onClick={() => { setActiveTab('SETTINGS'); if(isMobile) setIsSidebarOpen(false); }} style={getMenuBtnStyle(activeTab === 'SETTINGS')}>⚙️ Village Settings</button>
             </div>
           </div>
         </>
@@ -125,7 +125,7 @@ export default function DashboardPage() {
           {activeTab === 'BILLINGS' && <BillingManager />}
           {activeTab === 'PARCELS' && <ParcelManager condoId={DEMO_CONDO_ID} />}
           {activeTab === 'JOB_ORDERS' && <MaintenanceJobOrderManager condoId={DEMO_CONDO_ID} />}
-          {activeTab === 'SETTINGS' && <CondoSettings showTabs={true} />}
+          {activeTab === 'SETTINGS' && <VillageSettings showTabs={true} />}
           {activeTab === 'VISITOR_LOG' && <VisitorLogManager condoId={DEMO_CONDO_ID} />}
           {activeTab === 'VEHICLES' && <VehicleRegistryManager condoId={DEMO_CONDO_ID} />}
           {activeTab === 'NOTICES' && <NoticeManager condoId={DEMO_CONDO_ID} />}

@@ -77,7 +77,7 @@ export default function HomeScreen({ navigation }: any) {
 
   // ⚡ 거주자용 원터치 초고속 하이패스 QR 모달 제어 상태 변수
   const [quickPassVisible, setQuickPassVisible] = useState(false);
-  const residentToken = `FILICONDO-RESIDENT-UNIT${activeUnitNumber}-SECURE-2026`; 
+  const residentToken = `FILIHOMES-RESIDENT-UNIT${activeUnitNumber}-SECURE-2026`; 
 
   const seenNotifIdsRef = React.useRef<Set<string>>(new Set());
   const initialNotifsLoadedRef = React.useRef<boolean>(false);
@@ -637,7 +637,7 @@ export default function HomeScreen({ navigation }: any) {
                 <Ionicons name="notifications-outline" size={18} color="#1e3a8a" style={{ marginRight: 8 }} />
                 <View style={{ flex: 1 }}>
                   <Text style={styles.adTitle}>QuickClean Laundry Express</Text>
-                  <Text style={styles.adSubtitle}>Free drop-off & pick-up at your condo lobby.</Text>
+                  <Text style={styles.adSubtitle}>Free drop-off & pick-up at your doorstep.</Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -894,7 +894,7 @@ export default function HomeScreen({ navigation }: any) {
             {/* 광고 배너 영역 */}
             <TouchableOpacity style={styles.adBanner}>
               <Text style={styles.adTitle}>📢 QuickClean Laundry Express</Text>
-              <Text style={styles.adSubtitle}>Free drop-off & pick-up at your condo lobby.</Text>
+              <Text style={styles.adSubtitle}>Free drop-off & pick-up at your doorstep.</Text>
             </TouchableOpacity>
           </>
         )}

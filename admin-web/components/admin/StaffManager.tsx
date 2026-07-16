@@ -739,7 +739,7 @@ export default function AdminStaffManager({
           currentUserPermissions.create ? (
             <div style={{ flex: 1, minWidth: '280px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <h3 style={styles.formTitle}>➕ Register New Staff</h3>
-              <p style={styles.formSubtitle}>Create authentic logins and link roles to work cockpit consoles.</p>
+              <p style={styles.formSubtitle}>Create authentic logins (Default Password: 123456) and link roles to work cockpit consoles.</p>
               
               <div style={{ ...styles.formCard, flex: 1, minWidth: undefined, height: '100%' }}>
                 <div style={styles.formGroup}>
@@ -754,10 +754,10 @@ export default function AdminStaffManager({
                 </div>
 
                 <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>Email Address</label>
+                  <label style={styles.formLabel}>EMAIL ADDRESS / ID</label>
                   <input 
                     type="email" 
-                    placeholder="e.g., juan@filicondo.com" 
+                    placeholder="e.g., juan@filihomes.com" 
                     value={newEmail} 
                     onChange={(e) => setNewEmail(e.target.value)} 
                     style={styles.textInput}

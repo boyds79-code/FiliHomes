@@ -11,7 +11,7 @@ export async function GET(req: Request) {
 
   // 1. Fetch billings, units, receipts, and condos in parallel
   let billingsQuery = supabaseAdmin.from('billings').select('*');
-  let unitsQuery = supabaseAdmin.from('units').select('id, unit_number, building_no');
+  let unitsQuery = supabaseAdmin.from('units').select('id, unit_number, block_phase_no');
 
   if (condoId) {
     billingsQuery = billingsQuery.eq('condo_id', condoId);
@@ -105,7 +105,7 @@ export async function GET(req: Request) {
     return {
       ...bill,
       unit_number: unitInfo?.unit_number || 'UNKNOWN',
-      building_no: unitInfo?.building_no || 'UNKNOWN',
+      block_phase_no: unitInfo?.block_phase_no || 'UNKNOWN',
       receipts: billReceipts
     };
   });

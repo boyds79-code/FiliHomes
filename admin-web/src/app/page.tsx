@@ -7,7 +7,7 @@ import ParcelManager from '../../components/ParcelManager';
 import RealtimeIntercomMatrix from '../../components/RealtimeIntercomMatrix';
 import StaffRadioMatrix from '../../components/StaffRadioMatrix';
 import SecuritySanctionManager from '../../components/SecuritySanctionManager';
-import CondoSettings from '../../components/CondoSettings';
+import VillageSettings from '../../components/VillageSettings';
 import OccupantManager from '../../components/OccupantManager';
 import VehicleRegistryManager from '../../components/VehicleRegistryManager';
 import AdminStaffManager from '../../components/admin/StaffManager';
@@ -81,7 +81,7 @@ const menuLabels: Record<MenuType, string> = {
   'staff-radio-amenity': 'Amenity Radio',
   'security': 'Security Center',
   'staff-payroll': 'Staff Payroll',
-  'settings-property': 'Property Settings',
+  'settings-property': 'Village Settings',
   'settings-app': 'App Settings',
   'settings-staff': 'Staff Management',
   'settings-report': 'Report Platform Issue',
@@ -143,7 +143,7 @@ const getBreadcrumbPath = (menu: MenuType): string[] => {
     case 'system-logs':
       return ["Command Center", "System & Activity Logs"];
     case 'settings-property':
-      return ["Command Center", "Settings", "Property Settings"];
+      return ["Command Center", "Settings", "Village Settings"];
     case 'settings-app':
       return ["Command Center", "Settings", "App Settings"];
     case 'settings-staff':
@@ -290,14 +290,14 @@ const sendDesktopNotification = (title: string, body: string) => {
     if (Notification.permission === 'granted') {
       new Notification(title, {
         body,
-        icon: 'https://api.dicebear.com/7.x/identicon/svg?seed=FiliCondo'
+        icon: 'https://api.dicebear.com/7.x/identicon/svg?seed=FiliHomes'
       });
     } else if (Notification.permission !== 'denied') {
       Notification.requestPermission().then(permission => {
         if (permission === 'granted') {
           new Notification(title, {
             body,
-            icon: 'https://api.dicebear.com/7.x/identicon/svg?seed=FiliCondo'
+            icon: 'https://api.dicebear.com/7.x/identicon/svg?seed=FiliHomes'
           });
         }
       });
@@ -343,7 +343,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkRequests = async () => {
       // 1. Get mock requests from localStorage
-      const stored = window.localStorage.getItem('filicondo_occupant_requests');
+      const stored = window.localStorage.getItem('filihomes_occupant_requests');
       let localRequestsCount = 0;
       let mockEmails: string[] = [];
       if (stored) {
@@ -473,7 +473,7 @@ export default function DashboardPage() {
     const fetchIssuesCount = async () => {
       let localCount = 0;
       if (typeof window !== 'undefined') {
-        const stored = window.localStorage.getItem('filicondo_platform_issues');
+        const stored = window.localStorage.getItem('filihomes_platform_issues');
         if (stored) {
           try {
             const parsed = JSON.parse(stored);
@@ -1163,7 +1163,7 @@ export default function DashboardPage() {
       <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
         <div className="flex flex-col items-center gap-3">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="font-bold text-slate-400">Loading FiliCondo Admin...</span>
+          <span className="font-bold text-slate-400">Loading FiliHomes Admin...</span>
         </div>
       </div>
     );
@@ -1179,7 +1179,7 @@ export default function DashboardPage() {
         <div className="w-full max-w-md p-8 rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 shadow-2xl relative z-10 mx-4">
           <div className="text-center mb-8">
             <span className="text-4xl">🏢</span>
-            <h1 className="text-2xl font-black text-white mt-4 tracking-tight">FiliCondo PMO Portal</h1>
+            <h1 className="text-2xl font-black text-white mt-4 tracking-tight">FiliHomes PMO Portal</h1>
             <p className="text-xs text-slate-400 mt-1">Enterprise Resources & Property Management Hub</p>
           </div>
 
@@ -1570,7 +1570,7 @@ export default function DashboardPage() {
           
           <div className="mb-10 text-center lg:text-left">
             <h1 className="hidden lg:block font-black text-xl text-blue-700 tracking-tight">
-              🏢 {condoList.find(c => c.id === activeCondoId)?.name || 'FiliCondo Admin'}
+              🏢 {condoList.find(c => c.id === activeCondoId)?.name || 'FiliHomes Admin'}
             </h1>
             <h1 className="block lg:hidden font-black text-xl text-blue-700">🏢</h1>
           </div>
@@ -2068,8 +2068,8 @@ export default function DashboardPage() {
                         ? 'bg-purple-50 text-purple-700 font-bold'
                         : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800 font-medium'
                     }`}
-                    title="Property Settings"
-                  ><span className="w-5 flex items-center justify-center shrink-0"><span className="font-bold text-lg text-purple-400 select-none">•</span></span><span className="hidden lg:inline text-xs lg:text-sm font-semibold">Property Settings</span></button>
+                    title="Village Settings"
+                  ><span className="w-5 flex items-center justify-center shrink-0"><span className="font-bold text-lg text-purple-400 select-none">•</span></span><span className="hidden lg:inline text-xs lg:text-sm font-semibold">Village Settings</span></button>
 
                   <button
                     onClick={() => setCurrentMenu('settings-app')}
@@ -2162,7 +2162,7 @@ export default function DashboardPage() {
                 </select>
               ) : (
                 <span className="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-bold text-xs">
-                  {condoList.find(c => c.id === activeCondoId)?.name || 'FiliCondo Admin'}
+                  {condoList.find(c => c.id === activeCondoId)?.name || 'FiliHomes Admin'}
                 </span>
               )}
             </div>
@@ -2246,9 +2246,9 @@ export default function DashboardPage() {
               </div>
             )
           )}
-          {currentMenu === 'settings-property' && <CondoSettings initialSubTab="property" currentUserRole={currentUserRole} condoId={activeCondoId} />}
-          {currentMenu === 'settings-app' && <CondoSettings initialSubTab="app" currentUserRole={currentUserRole} condoId={activeCondoId} />}
-          {currentMenu === 'settings-staff' && <CondoSettings initialSubTab="staff" currentUserRole={currentUserRole} condoId={activeCondoId} />}
+          {currentMenu === 'settings-property' && <VillageSettings initialSubTab="property" currentUserRole={currentUserRole} condoId={activeCondoId} />}
+          {currentMenu === 'settings-app' && <VillageSettings initialSubTab="app" currentUserRole={currentUserRole} condoId={activeCondoId} />}
+          {currentMenu === 'settings-staff' && <VillageSettings initialSubTab="staff" currentUserRole={currentUserRole} condoId={activeCondoId} />}
           {currentMenu === 'settings-report' && <ReportIssueManager condoId={activeCondoId} />}
           {currentMenu === 'settings-subscription' && <SubscriptionBillingManager condoId={activeCondoId} />}
           {currentMenu.startsWith('hq-') && (

@@ -38,7 +38,7 @@ export default function FiliStaffSecretDoor({ navigation }: any) {
       if (staffError || !staff) {
         // 계정은 맞지만 임직원 권한 명단에 없는 일반 입주민 악의적 탈취 시도 차단
         await supabase.auth.signOut();
-        Alert.alert("Access Denied ❌", "This account is not authorized as internal condominium staff.");
+        Alert.alert("Access Denied ❌", "This account is not authorized as internal village/subdivision staff.");
         return;
       }
 
@@ -77,8 +77,8 @@ export default function FiliStaffSecretDoor({ navigation }: any) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1, justifyContent: 'center', paddingHorizontal: 24 }}>
         
         <View style={styles.centerAlign}>
-          <Text style={styles.mainTitle}>FiliCondo Staff Portal</Text>
-          <Text style={styles.subText}>Condominium Operations & Gate Security Terminal</Text>
+          <Text style={styles.mainTitle}>FiliHomes Staff Portal</Text>
+          <Text style={styles.subText}>Village/Subdivision Operations & Gate Security Terminal</Text>
         </View>
 
         {/* 🎯 [수정] 2차 탭 가드를 철거하고, 진입 즉시 입력 폼이 가드들을 환영하도록 오픈 배치 */}

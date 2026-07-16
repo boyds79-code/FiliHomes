@@ -229,7 +229,7 @@ export default function VisitorManageScreen({ navigation }: any) {
     const multiEntryStr = isMultiUser ? '|MULTI_ENTRY:TRUE' : '';
     const calculatedEnd = isReusable ? calculateExpiryDate(startDate) : endDate.trim();
     
-    setQrToken(`FILICONDO-VMS|TYPE:WALK_IN|NAME:${sanitizedName}|PLATE:${sanitizedPlate}${reusableStr}${multiEntryStr}|FROM:${startDate}|TO:${calculatedEnd}|SALT:${salt}`);
+    setQrToken(`FILIHOMES-VMS|TYPE:WALK_IN|NAME:${sanitizedName}|PLATE:${sanitizedPlate}${reusableStr}${multiEntryStr}|FROM:${startDate}|TO:${calculatedEnd}|SALT:${salt}`);
     setIsRegistered(false);
   }, [visitorName, startDate, endDate, isMultiUser, salt]);
 
@@ -285,13 +285,13 @@ export default function VisitorManageScreen({ navigation }: any) {
 
   const handleSharePass = async () => {
     try {
-      const webPassUrl = `https://vms.filicondo.com/pass?token=${encodeURIComponent(qrToken)}`;
+      const webPassUrl = `https://vms.filihomes.com/pass?token=${encodeURIComponent(qrToken)}`;
       const typeLabel = isMultiUser ? '👥 Multi-User Group Pass' : '🚶 Pedestrian / Walk-in';
       const scheduleDetails = isReusable
         ? `🕒 Validity: Reusable Pass (Expires 30 Days from start date: ${startDate})`
         : `📅 Validity Period: ${startDate} ~ ${endDate}`;
 
-      const shareMessage = `[${condoName || 'Condominium'}] Visitor Access Pass (${approvalRequired ? 'PENDING' : 'APPROVED'}) 🎉\n\n` +
+      const shareMessage = `[${condoName || 'Village/Subdivision'}] Visitor Access Pass (${approvalRequired ? 'PENDING' : 'APPROVED'}) 🎉\n\n` +
         `👤 Visitor Name: ${visitorName}\n` +
         `📦 Access Type: ${typeLabel}\n` +
         `🎯 Purpose: Quick Mode Entry\n` +
@@ -507,12 +507,12 @@ export default function VisitorManageScreen({ navigation }: any) {
           {/* Dynamic Visual Token Card Box */}
           {isRegistered ? (
             <View style={styles.qrCard}>
-              <Text style={styles.cardCondoName}>{condoName || 'Phili-One Condominium'}</Text>
+              <Text style={styles.cardCondoName}>{condoName || 'Phili-One Village/Subdivision'}</Text>
               <Text style={styles.cardPassType}>
                 {isMultiUser ? 'MULTI-USER GROUP PASS' : (isReusable ? 'REUSABLE PASS (30 DAYS MAX)' : 'SINGLE-USE ENTRY PASS')}
               </Text>
               <View style={styles.qrWrapper}>
-                <QRCode value={qrToken || 'FILICONDO-VMS'} size={160} color="#0f172a" backgroundColor="#fff" />
+                <QRCode value={qrToken || 'FILIHOMES-VMS'} size={160} color="#0f172a" backgroundColor="#fff" />
               </View>
               <View style={[styles.statusBadge, { backgroundColor: '#eafaf1', borderColor: '#d1fae5' }]}>
                 <Text style={[styles.statusText, { color: '#16a34a' }]}>
@@ -524,7 +524,7 @@ export default function VisitorManageScreen({ navigation }: any) {
             <View style={[styles.qrCard, { backgroundColor: '#f1f5f9', borderColor: '#cbd5e1', borderStyle: 'dashed' }]}>
               <Text style={[styles.cardPassType, { color: '#64748b', marginTop: 10 }]}>ACCESS PASS NOT ACTIVE</Text>
               <View style={[styles.qrWrapper, { opacity: 0.15, paddingVertical: 20 }]}>
-                <QRCode value="FILICONDO-VMS" size={120} color="#64748b" backgroundColor="#fff" />
+                <QRCode value="FILIHOMES-VMS" size={120} color="#64748b" backgroundColor="#fff" />
               </View>
               <Text style={{ color: '#475569', fontSize: 13, fontWeight: '700', textAlign: 'center', marginHorizontal: 20, marginBottom: 10 }}>
                 👉 Tap the button above to generate your QR Pass.

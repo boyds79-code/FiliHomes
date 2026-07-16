@@ -82,7 +82,7 @@ export const BadgeProvider: React.FC<{ children: React.ReactNode; userId: string
           const unpaidList = bData.filter((b: any) => ['ISSUED', 'OVERDUE', 'UNPAID', 'PENDING'].includes(b.status));
           const unreadUnpaid = [];
           for (const bill of unpaidList) {
-            const isRead = await AsyncStorage.getItem(`billing_read_${bill.billing_month}`);
+            const isRead = await AsyncStorage.getItem(`billing_read_bill_${bill.id}`);
             if (isRead !== 'true') {
               unreadUnpaid.push(bill);
             }

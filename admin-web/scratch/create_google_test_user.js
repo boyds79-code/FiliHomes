@@ -14,7 +14,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
-const condoId = 'c1111111-1111-1111-1111-111111111111'; // FiliCondo target condo
+const condoId = 'c1111111-1111-1111-1111-111111111111'; // FiliHomes target condo
 
 async function run() {
   try {
@@ -38,7 +38,7 @@ async function run() {
         .insert([{
           condo_id: condoId,
           unit_number: '1207',
-          building_no: 'Tower B',
+          block_phase_no: 'Tower B',
           floor_no: '12',
           building_name: 'Tower B'
         }])
@@ -52,12 +52,12 @@ async function run() {
       console.log("✅ Unit 1207 exists. ID:", unit.id);
     }
 
-    // 2. Manage Auth User: google-test@filicondo.app
-    console.log("🔍 Checking for existing google-test@filicondo.app Auth user...");
+    // 2. Manage Auth User: google-test@filihomes.app
+    console.log("🔍 Checking for existing google-test@filihomes.app Auth user...");
     const { data: usersData, error: usersErr } = await supabase.auth.admin.listUsers();
     if (usersErr) throw usersErr;
 
-    const existingUser = usersData.users.find(u => u.email === 'google-test@filicondo.app');
+    const existingUser = usersData.users.find(u => u.email === 'google-test@filihomes.app');
     let user;
 
     if (existingUser) {
@@ -75,7 +75,7 @@ async function run() {
 
     console.log("✏️ Creating new Google Play Test user...");
     const { data: newUser, error: createErr } = await supabase.auth.admin.createUser({
-      email: 'google-test@filicondo.app',
+      email: 'google-test@filihomes.app',
       password: 'GoogleTest123!',
       email_confirm: true
     });
@@ -90,7 +90,7 @@ async function run() {
       .from('profiles')
       .upsert({
         id: user.id,
-        email: 'google-test@filicondo.app',
+        email: 'google-test@filihomes.app',
         full_name: 'Google Play Reviewer',
         role: 'resident',
         status: 'active',
@@ -130,6 +130,7 @@ async function run() {
     console.log("✏️ Inserting mock billing statements...");
     const mockBillings = [
       {
+        id: `BILL-1207-2026-05-${unit.id.substring(0, 8)}`,
         unit_id: unit.id,
         condo_id: condoId,
         billing_month: '2026-05',
@@ -146,6 +147,7 @@ async function run() {
         description: 'Regular Monthly Dues + Utilities'
       },
       {
+        id: `BILL-1207-2026-06-${unit.id.substring(0, 8)}`,
         unit_id: unit.id,
         condo_id: condoId,
         billing_month: '2026-06',
@@ -162,6 +164,7 @@ async function run() {
         description: 'Regular Dues + Summer Electricity'
       },
       {
+        id: `BILL-1207-2026-07-${unit.id.substring(0, 8)}`,
         unit_id: unit.id,
         condo_id: condoId,
         billing_month: '2026-07',
@@ -199,6 +202,7 @@ async function run() {
     const { error: passInsertErr } = await supabase
       .from('visitor_passes')
       .insert([{
+        id: 'PASS-GOOGLETEST',
         unit_id: unit.id,
         visitor_name: 'John Doe (Google Reviewer)',
         visit_type: 'WALK_IN',
@@ -214,7 +218,7 @@ async function run() {
 
     console.log("\n🎉 SUCCESS! Google Play Review account setup complete!");
     console.log("-----------------------------------------------------");
-    console.log("📧 Email: google-test@filicondo.app");
+    console.log("📧 Email: google-test@filihomes.app");
     console.log("🔑 Password: GoogleTest123!");
     console.log("🏢 Condo ID: c1111111-1111-1111-1111-111111111111 (Tower B Unit 1207)");
     console.log("-----------------------------------------------------");

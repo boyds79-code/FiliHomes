@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS public.subscription_contracts (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 8. Create HQ Staff Table (FiliCondo Company Staff)
+-- 8. Create HQ Staff Table (FiliHomes Company Staff)
 CREATE TABLE IF NOT EXISTS public.hq_staff (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS public.hq_staff (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 9. Create HQ Attendance Table (FiliCondo Staff Work Hours)
+-- 9. Create HQ Attendance Table (FiliHomes Staff Work Hours)
 CREATE TABLE IF NOT EXISTS public.hq_attendance (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     staff_id UUID NOT NULL REFERENCES public.hq_staff(id) ON DELETE CASCADE,
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS public.hq_attendance (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 10. Create HQ Payroll Table (FiliCondo Staff Payroll Ledger)
+-- 10. Create HQ Payroll Table (FiliHomes Staff Payroll Ledger)
 CREATE TABLE IF NOT EXISTS public.hq_payroll (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     staff_id UUID NOT NULL REFERENCES public.hq_staff(id) ON DELETE CASCADE,

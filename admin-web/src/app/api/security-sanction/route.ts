@@ -25,7 +25,7 @@ export async function GET() {
           user_id,
           units:unit_id (
             unit_number,
-            building_no
+            block_phase_no
           )
         `)
         .in('user_id', userIds);
@@ -37,7 +37,7 @@ export async function GET() {
           if (uu.units) {
             unitMap.set(uu.user_id, {
               unit_number: uu.units.unit_number,
-              tower_name: uu.units.building_no || ''
+              tower_name: uu.units.block_phase_no || ''
             });
           }
         });

@@ -4,7 +4,7 @@
 
 env: load .env
 env: export EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_SUPABASE_ANON_KEY EXPO_PUBLIC_GEMINI_API_KEY
-Starting project at /Users/chriskim/Documents/FiliCondo/mobile-app
+Starting project at /Users/chriskim/Documents/FiliHomes/mobile-app
 Starting Metro Bundler
 warning: Bundler cache is empty, rebuilding (this may take a minute)
 Waiting on http://localhost:8081
@@ -767,7 +767,7 @@ We recommend you instead use a development build to avoid limitations. Learn mor
  LOG  [BadgeContext] Support message count: 0
  LOG  [BadgeContext] Active Job Orders count: 1
  LOG  [BadgeContext] Updated OS Badge count: 1 (Home: 1, Support Chat: 0)
- ERROR  SyntaxError: /Users/chriskim/Documents/FiliCondo/mobile-app/src/screens/BillingScreen.tsx: 'import' and 'export' may only appear at the top level. (265:6)
+ ERROR  SyntaxError: /Users/chriskim/Documents/FiliHomes/mobile-app/src/screens/BillingScreen.tsx: 'import' and 'export' may only appear at the top level. (265:6)
 
   263 |
   264 |       // 🚨 임시 디버깅용 Alert 띄우기
@@ -776,57 +776,57 @@ We recommend you instead use a development build to avoid limitations. Learn mor
   266 |       Alert.alert("DEBUG Billings", JSON.stringify({
   267 |         activeUnitId,
   268 |         bDataLength: bData?.length,
-    at constructor (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:365:19)
-    at TypeScriptParserMixin.raise (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:6616:19)
-    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12888:18)
-    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9525:18)
-    at TypeScriptParserMixin.parseStatementLike (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12784:17)
-    at TypeScriptParserMixin.parseStatementListItem (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12764:17)
-    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13333:61)
-    at TypeScriptParserMixin.parseBlockBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13326:10)
-    at TypeScriptParserMixin.parseBlock (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13314:10)
-    at TypeScriptParserMixin.parseTryStatement (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13222:23)
-    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12821:21)
-    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9525:18)
-    at TypeScriptParserMixin.parseStatementLike (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12784:17)
-    at TypeScriptParserMixin.parseStatementListItem (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12764:17)
-    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13333:61)
-    at TypeScriptParserMixin.parseBlockBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13326:10)
-    at TypeScriptParserMixin.parseBlock (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13314:10)
-    at TypeScriptParserMixin.parseFunctionBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12117:24)
-    at TypeScriptParserMixin.parseArrowExpression (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12092:10)
-    at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:11281:10)
-    at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9783:18)
-    at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:11211:27)
-    at TypeScriptParserMixin.parseSubscript (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:11137:19)
-    at TypeScriptParserMixin.parseSubscript (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9289:18)
-    at TypeScriptParserMixin.parseSubscripts (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:11111:19)
-    at TypeScriptParserMixin.parseExprSubscripts (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:11102:17)
-    at TypeScriptParserMixin.parseUpdate (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:11083:21)
-    at TypeScriptParserMixin.parseMaybeUnary (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:11063:23)
-    at TypeScriptParserMixin.parseMaybeUnary (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9854:18)
-    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:10916:61)
-    at TypeScriptParserMixin.parseExprOps (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:10921:23)
-    at TypeScriptParserMixin.parseMaybeConditional (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:10898:23)
-    at TypeScriptParserMixin.parseMaybeAssign (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:10848:21)
-    at TypeScriptParserMixin.parseMaybeAssign (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9803:20)
-    at /Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:10817:39
-    at TypeScriptParserMixin.allowInAnd (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12438:16)
-    at TypeScriptParserMixin.parseMaybeAssignAllowIn (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:10817:17)
-    at TypeScriptParserMixin.parseVar (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13401:91)
-    at TypeScriptParserMixin.parseVarStatement (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13247:10)
-    at TypeScriptParserMixin.parseVarStatement (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9425:31)
-    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12868:23)
-    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9525:18)
-    at TypeScriptParserMixin.parseStatementLike (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12784:17)
-    at TypeScriptParserMixin.parseStatementListItem (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12764:17)
-    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13333:61)
-    at TypeScriptParserMixin.parseBlockBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13326:10)
-    at TypeScriptParserMixin.parseBlock (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:13314:10)
-    at TypeScriptParserMixin.parseFunctionBody (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12117:24)
-    at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:12103:10)
-    at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/chriskim/Documents/FiliCondo/mobile-app/node_modules/@babel/parser/lib/index.js:9189:18)
- ERROR  [Error: TransformError SyntaxError: /Users/chriskim/Documents/FiliCondo/mobile-app/src/screens/BillingScreen.tsx: 'import' and 'export' may only appear at the top level. (265:6)
+    at constructor (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:365:19)
+    at TypeScriptParserMixin.raise (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:6616:19)
+    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12888:18)
+    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9525:18)
+    at TypeScriptParserMixin.parseStatementLike (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12784:17)
+    at TypeScriptParserMixin.parseStatementListItem (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12764:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13333:61)
+    at TypeScriptParserMixin.parseBlockBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13326:10)
+    at TypeScriptParserMixin.parseBlock (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13314:10)
+    at TypeScriptParserMixin.parseTryStatement (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13222:23)
+    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12821:21)
+    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9525:18)
+    at TypeScriptParserMixin.parseStatementLike (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12784:17)
+    at TypeScriptParserMixin.parseStatementListItem (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12764:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13333:61)
+    at TypeScriptParserMixin.parseBlockBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13326:10)
+    at TypeScriptParserMixin.parseBlock (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13314:10)
+    at TypeScriptParserMixin.parseFunctionBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12117:24)
+    at TypeScriptParserMixin.parseArrowExpression (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12092:10)
+    at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:11281:10)
+    at TypeScriptParserMixin.parseAsyncArrowFromCallExpression (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9783:18)
+    at TypeScriptParserMixin.parseCoverCallAndAsyncArrowHead (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:11211:27)
+    at TypeScriptParserMixin.parseSubscript (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:11137:19)
+    at TypeScriptParserMixin.parseSubscript (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9289:18)
+    at TypeScriptParserMixin.parseSubscripts (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:11111:19)
+    at TypeScriptParserMixin.parseExprSubscripts (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:11102:17)
+    at TypeScriptParserMixin.parseUpdate (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:11083:21)
+    at TypeScriptParserMixin.parseMaybeUnary (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:11063:23)
+    at TypeScriptParserMixin.parseMaybeUnary (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9854:18)
+    at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:10916:61)
+    at TypeScriptParserMixin.parseExprOps (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:10921:23)
+    at TypeScriptParserMixin.parseMaybeConditional (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:10898:23)
+    at TypeScriptParserMixin.parseMaybeAssign (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:10848:21)
+    at TypeScriptParserMixin.parseMaybeAssign (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9803:20)
+    at /Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:10817:39
+    at TypeScriptParserMixin.allowInAnd (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12438:16)
+    at TypeScriptParserMixin.parseMaybeAssignAllowIn (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:10817:17)
+    at TypeScriptParserMixin.parseVar (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13401:91)
+    at TypeScriptParserMixin.parseVarStatement (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13247:10)
+    at TypeScriptParserMixin.parseVarStatement (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9425:31)
+    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12868:23)
+    at TypeScriptParserMixin.parseStatementContent (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9525:18)
+    at TypeScriptParserMixin.parseStatementLike (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12784:17)
+    at TypeScriptParserMixin.parseStatementListItem (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12764:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13333:61)
+    at TypeScriptParserMixin.parseBlockBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13326:10)
+    at TypeScriptParserMixin.parseBlock (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:13314:10)
+    at TypeScriptParserMixin.parseFunctionBody (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12117:24)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:12103:10)
+    at TypeScriptParserMixin.parseFunctionBodyAndFinish (/Users/chriskim/Documents/FiliHomes/mobile-app/node_modules/@babel/parser/lib/index.js:9189:18)
+ ERROR  [Error: TransformError SyntaxError: /Users/chriskim/Documents/FiliHomes/mobile-app/src/screens/BillingScreen.tsx: 'import' and 'export' may only appear at the top level. (265:6)
 
 [0m [90m 263 |[39m
  [90m 264 |[39m       [90m// 🚨 임시 디버깅용 Alert 띄우기[39m
@@ -1762,7 +1762,7 @@ We recommend you instead use a development build to avoid limitations. Learn mor
  LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
  LOG  [BadgeContext] Updated OS Badge count: 0 (Home: 0, Support Chat: 0)
  LOG  [BadgeContext] Info changed, refreshing badges. Condo: null, Unit: null
- LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Condominium", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
+ LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Village/Subdivision", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
  LOG  [BadgeContext] Notices count: 0 (Total: 2, lastRead: 1782297699377)
  LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
  LOG  [BadgeContext] Parcels count: 0
@@ -3353,7 +3353,7 @@ iOS Bundled 1300ms index.ts (1 module)
  LOG  [BadgeContext] Updated OS Badge count: 2 (Home: 2, Support Chat: 0)
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)
  LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
- LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Condominium", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
+ LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Village/Subdivision", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
  LOG  [BadgeContext] Parcels count: 0
  LOG  [BadgeContext] Skip Visitors fetch (no activeUnitId)
  LOG  [BadgeContext] No Intercom chats found for unit
@@ -4209,7 +4209,7 @@ iOS Bundled 57ms index.ts (1 module)
  LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
  LOG  [BadgeContext] Updated OS Badge count: 2 (Home: 2, Support Chat: 0)
  LOG  [BadgeContext] Updated OS Badge count: 2 (Home: 2, Support Chat: 0)
- LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Condominium", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
+ LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Village/Subdivision", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)
  LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
  LOG  [BadgeContext] Parcels count: 0
@@ -4762,7 +4762,7 @@ iOS Bundled 57ms index.ts (1 module)
  LOG  [BadgeContext] Updated OS Badge count: 2 (Home: 2, Support Chat: 0)
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)
  LOG  [BadgeContext] Skip Billings fetch (no activeUnitId)
- LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Condominium", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
+ LOG  🚀 Policy loaded from DB: {"amenity_billing_enabled": true, "amenity_booking_enabled": true, "amenity_booking_required": true, "amenity_settings": {"Gym": {"enabled": true, "max_capacity": 10}, "Pool": {"enabled": true, "max_capacity": 15}, "Spa": {"charge_enabled": true, "enabled": true, "fee": 200, "max_capacity": 5}}, "approval_policy": "REQUIRED", "billing_types": ["Electricity", "Water", "Association Dues", "Parking"], "condo_id": "c1111111-1111-1111-1111-111111111111", "is_bazaar_enabled": true, "is_community_enabled": true, "parcel_delivery_policy": "GUARD_HOUSE", "parcel_lockers_enabled": false, "parking_mode": "MANUAL", "penalty_due_day": 5, "pmo_hours_end": "18:00", "pmo_hours_start": "09:00", "visitor_parking_enabled": true, "visitor_parking_policy": "BILLING_ENABLED", "visitor_scope": "MAIN_GATE_ONLY"} {"base_parking_fee": 5000, "max_visitor_parking_fee": 300, "name": "Phili-One Village/Subdivision", "parking_grace_period_mins": 15, "visitor_parking_fee_per_hour": 50}
  LOG  [BadgeContext] No Intercom chats found for unit
  LOG  [BadgeContext] Skip Job orders fetch (no activeUnitId)
  LOG  [BadgeContext] Updated OS Badge count: 2 (Home: 2, Support Chat: 0)
@@ -4849,7 +4849,7 @@ iOS Bundled 57ms index.ts (1 module)
  LOG  🔍 Current unitId: 1dba72f2-2edc-41ae-98d4-53dec93f2bf1
  LOG  🔍 Current unitId: 1dba72f2-2edc-41ae-98d4-53dec93f2bf1
  LOG  🔍 Current unitId: 1dba72f2-2edc-41ae-98d4-53dec93f2bf1
- LOG  ✅ DB 업데이트 성공: [{"created_at": "2026-06-26T23:06:16.674176+00:00", "entry_time": "2026-06-27T00:10:21.64+00:00", "exit_time": null, "id": 96, "plate_number": null, "purpose": "Quick Mode Entry", "qr_code_value": "FILICONDO-VMS|TYPE:WALK_IN|NAME:Cleaning|PLATE:WALK-IN|FROM:2026-06-27|TO:2026-06-27", "status": "REJECTED", "time_in": "2026-06-26T23:06:16.674176+00:00", "time_out": null, "unit_id": "1dba72f2-2edc-41ae-98d4-53dec93f2bf1", "user_id": "045d6444-f94c-462f-9a84-66e6e12ca0db", "vehicle_model": null, "vehicle_type": null, "visit_date": "2026-06-27", "visit_type": "WALK_IN", "visitor_name": "Cleaning"}]
+ LOG  ✅ DB 업데이트 성공: [{"created_at": "2026-06-26T23:06:16.674176+00:00", "entry_time": "2026-06-27T00:10:21.64+00:00", "exit_time": null, "id": 96, "plate_number": null, "purpose": "Quick Mode Entry", "qr_code_value": "FILIHOMES-VMS|TYPE:WALK_IN|NAME:Cleaning|PLATE:WALK-IN|FROM:2026-06-27|TO:2026-06-27", "status": "REJECTED", "time_in": "2026-06-26T23:06:16.674176+00:00", "time_out": null, "unit_id": "1dba72f2-2edc-41ae-98d4-53dec93f2bf1", "user_id": "045d6444-f94c-462f-9a84-66e6e12ca0db", "vehicle_model": null, "vehicle_type": null, "visit_date": "2026-06-27", "visit_type": "WALK_IN", "visitor_name": "Cleaning"}]
  LOG  [BadgeContext] Visitor passes change detected via Realtime
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)
@@ -4875,7 +4875,7 @@ iOS Bundled 57ms index.ts (1 module)
  LOG  [BadgeContext] Updated OS Badge count: 5 (Home: 5, Support Chat: 0)
  LOG  [BadgeContext] Active Job Orders count: 0
  LOG  [BadgeContext] Updated OS Badge count: 5 (Home: 5, Support Chat: 0)
- LOG  ✅ DB 업데이트 성공: [{"created_at": "2026-06-26T23:43:42.330579+00:00", "entry_time": "2026-06-27T00:10:26.762+00:00", "exit_time": null, "id": 97, "plate_number": null, "purpose": "Quick Mode Entry", "qr_code_value": "FILICONDO-VMS|TYPE:WALK_IN|NAME:Cleaning|PLATE:WALK-IN|FROM:2026-06-27|TO:2026-06-27", "status": "REJECTED", "time_in": "2026-06-26T23:43:42.330579+00:00", "time_out": null, "unit_id": "1dba72f2-2edc-41ae-98d4-53dec93f2bf1", "user_id": "045d6444-f94c-462f-9a84-66e6e12ca0db", "vehicle_model": null, "vehicle_type": null, "visit_date": "2026-06-27", "visit_type": "WALK_IN", "visitor_name": "Cleaning"}]
+ LOG  ✅ DB 업데이트 성공: [{"created_at": "2026-06-26T23:43:42.330579+00:00", "entry_time": "2026-06-27T00:10:26.762+00:00", "exit_time": null, "id": 97, "plate_number": null, "purpose": "Quick Mode Entry", "qr_code_value": "FILIHOMES-VMS|TYPE:WALK_IN|NAME:Cleaning|PLATE:WALK-IN|FROM:2026-06-27|TO:2026-06-27", "status": "REJECTED", "time_in": "2026-06-26T23:43:42.330579+00:00", "time_out": null, "unit_id": "1dba72f2-2edc-41ae-98d4-53dec93f2bf1", "user_id": "045d6444-f94c-462f-9a84-66e6e12ca0db", "vehicle_model": null, "vehicle_type": null, "visit_date": "2026-06-27", "visit_type": "WALK_IN", "visitor_name": "Cleaning"}]
  LOG  [BadgeContext] Visitor passes change detected via Realtime
  LOG  🔍 Current unitId: 1dba72f2-2edc-41ae-98d4-53dec93f2bf1
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)
@@ -4900,7 +4900,7 @@ iOS Bundled 57ms index.ts (1 module)
  LOG  [BadgeContext] Active Job Orders count: 0
  LOG  [BadgeContext] Updated OS Badge count: 4 (Home: 4, Support Chat: 0)
  LOG  [BadgeContext] Updated OS Badge count: 4 (Home: 4, Support Chat: 0)
- LOG  ✅ DB 업데이트 성공: [{"created_at": "2026-06-26T23:02:14.404948+00:00", "entry_time": "2026-06-27T00:10:30.245+00:00", "exit_time": null, "id": 95, "plate_number": null, "purpose": "Quick Mode Entry", "qr_code_value": "FILICONDO-VMS|TYPE:WALK_IN|NAME:Cleaning Lady|PLATE:WALK-IN|FROM:2026-06-27|TO:2026-06-27", "status": "REJECTED", "time_in": "2026-06-26T23:02:14.404948+00:00", "time_out": null, "unit_id": "1dba72f2-2edc-41ae-98d4-53dec93f2bf1", "user_id": "045d6444-f94c-462f-9a84-66e6e12ca0db", "vehicle_model": null, "vehicle_type": null, "visit_date": "2026-06-27", "visit_type": "WALK_IN", "visitor_name": "Cleaning Lady"}]
+ LOG  ✅ DB 업데이트 성공: [{"created_at": "2026-06-26T23:02:14.404948+00:00", "entry_time": "2026-06-27T00:10:30.245+00:00", "exit_time": null, "id": 95, "plate_number": null, "purpose": "Quick Mode Entry", "qr_code_value": "FILIHOMES-VMS|TYPE:WALK_IN|NAME:Cleaning Lady|PLATE:WALK-IN|FROM:2026-06-27|TO:2026-06-27", "status": "REJECTED", "time_in": "2026-06-26T23:02:14.404948+00:00", "time_out": null, "unit_id": "1dba72f2-2edc-41ae-98d4-53dec93f2bf1", "user_id": "045d6444-f94c-462f-9a84-66e6e12ca0db", "vehicle_model": null, "vehicle_type": null, "visit_date": "2026-06-27", "visit_type": "WALK_IN", "visitor_name": "Cleaning Lady"}]
  LOG  [BadgeContext] Visitor passes change detected via Realtime
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)
  LOG  [BadgeContext] Notices count: 2 (Total: 2, lastRead: 0)

@@ -14,7 +14,7 @@ files_to_update = [
     "components/BillingManager.tsx" # Include BillingManager just in case
 ]
 
-base_dir = "/Users/chriskim/Documents/FiliCondo/admin-web"
+base_dir = "/Users/chriskim/Documents/FiliHomes/admin-web"
 
 for relative_path in files_to_update:
     file_path = os.path.join(base_dir, relative_path)

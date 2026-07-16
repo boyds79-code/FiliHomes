@@ -39,9 +39,9 @@ const csvRows = tsvContent.trim().split('\n').map(row => {
 }).join('\n');
 
 // Write TSV
-fs.writeFileSync('/Users/chriskim/Documents/FiliCondo/survey_questions.tsv', tsvContent, 'utf-8');
+fs.writeFileSync('/Users/chriskim/Documents/FiliHomes/survey_questions.tsv', tsvContent, 'utf-8');
 
 // Write CSV with UTF-8 BOM for MS Excel compatibility
-fs.writeFileSync('/Users/chriskim/Documents/FiliCondo/survey_questions.csv', '\ufeff' + csvRows, 'utf-8');
+fs.writeFileSync('/Users/chriskim/Documents/FiliHomes/survey_questions.csv', '\ufeff' + csvRows, 'utf-8');
 
 console.log("TSV and CSV files successfully created in the workspace!");

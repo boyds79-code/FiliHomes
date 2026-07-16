@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
     let query = adminClient
       .from('units')
-      .select('id, unit_number, building_no');
+      .select('id, unit_number, block_phase_no');
 
     if (condoId) {
       query = query.eq('condo_id', condoId);
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     const mappedData = data?.map((unit: any) => ({
       id: unit.id,
       unit_number: unit.unit_number,
-      tower_name: unit.building_no || ''
+      tower_name: unit.block_phase_no || ''
     })) || [];
 
     return NextResponse.json(mappedData);

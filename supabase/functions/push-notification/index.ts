@@ -48,12 +48,42 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: "No push tokens found for the target" }), { status: 404 });
     }
 
+    // Calculate unread billings count for the badge count
+    let badgeCount = record.badge || 1;
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      if (supabaseUrl && supabaseServiceKey && unit_id) {
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+        // Get user_id of this unit
+        const { data: profData } = await supabase.from('profiles').select('id').eq('unit_id', unit_id).maybeSingle();
+        if (profData?.id) {
+          // Get all active units of this user
+          const { data: userUnits } = await supabase.from('user_units').select('unit_id').eq('user_id', profData.id).eq('status', 'active');
+          if (userUnits && userUnits.length > 0) {
+            const unitIds = userUnits.map((u: any) => u.unit_id);
+            const { count } = await supabase
+              .from('billings')
+              .select('*', { count: 'exact', head: true })
+              .in('unit_id', unitIds)
+              .in('status', ['ISSUED', 'OVERDUE', 'UNPAID', 'PENDING']);
+            if (count !== null && count > 0) {
+              badgeCount = count;
+            }
+          }
+        }
+      }
+    } catch (badgeErr) {
+      console.error("Failed to count unread billings for badge:", badgeErr);
+    }
+
     // 여러 개의 토큰에 대해 푸시 알림 요청 생성
     const notifications = pushTokens.map(token => ({
       to: token,
       sound: 'default',
       title: title || '알림',
       body: message,
+      badge: badgeCount, // 🎯 스마트폰 홈 화면 앱 아이콘 뱃지 숫자 지정!
     }));
 
     const res = await fetch('https://exp.host/--/api/v2/push/send', {

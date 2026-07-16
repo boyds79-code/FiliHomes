@@ -130,7 +130,7 @@ export default function AdminDashboard() {
   return (
     <div style={webStyles.adminBody}>
       <header style={webStyles.adminHeader}>
-        <h2>🏢 Solea Condominium PMO & Guard Integrated System</h2>
+        <h2>🏢 Solea Village/Subdivision PMO & Guard Integrated System</h2>
         <p>Live Server Database Syncing Dashboard Active</p>
       </header>
 

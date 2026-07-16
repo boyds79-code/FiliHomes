@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid data format' }, { status: 400 });
     }
 
-    // 2. Fetch all units for this condo to map unit_number + building_no to unit_id
+    // 2. Fetch all units for this condo to map unit_number + block_phase_no to unit_id
     const { data: unitsData, error: unitsError } = await supabaseAdmin
       .from('units')
-      .select('id, unit_number, building_no')
+      .select('id, unit_number, block_phase_no')
       .eq('condo_id', condoId);
 
     if (unitsError) {
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     const unitMap = new Map();
     if (unitsData) {
       unitsData.forEach(u => {
-        const key = `${u.unit_number}_${u.building_no || ''}`.toLowerCase().trim();
+        const key = `${u.unit_number}_${u.block_phase_no || ''}`.toLowerCase().trim();
         unitMap.set(key, u.id);
       });
     }
@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
       .map((b: any) => {
         const mapKey = `${b.unit_no}_${b.tower || ''}`.toLowerCase().trim();
         const unitId = unitMap.get(mapKey);
-        if (!unitId) return null; // Exclude if unit number doesn't exist
+        if (!unitId) return null; // Exclude if house/lot number doesn't exist
 
         const amount = b.amount !== undefined ? b.amount : (b.outstanding_balance || 0);
         const billingMonth = parseBillingMonth(b.billing_period || b.billing_month);

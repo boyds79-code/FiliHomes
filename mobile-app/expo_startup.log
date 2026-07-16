@@ -1,6 +1,6 @@
 env: load .env
 env: export EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_SUPABASE_ANON_KEY
-Starting project at /Users/chriskim/Documents/FiliCondo/mobile-app
+Starting project at /Users/chriskim/Documents/FiliHomes/mobile-app
 Starting Metro Bundler
 warning: Bundler cache is empty, rebuilding (this may take a minute)
 Waiting on http://localhost:8081

@@ -12,7 +12,7 @@ export default function SubscriptionBillingManager({ condoId }: SubscriptionBill
 
   // Upload Form states
   const [billingPeriod, setBillingPeriod] = useState('2026-06');
-  const [amount, setAmount] = useState<number>(25000); // Default flat fee
+  const [amount, setAmount] = useState<number>(4000); // Default fee (e.g., 200 households * 20 PHP)
   const [receiptUrl, setReceiptUrl] = useState('');
   const [referenceNo, setReferenceNo] = useState('');
   const [extracting, setExtracting] = useState(false);
@@ -152,7 +152,7 @@ export default function SubscriptionBillingManager({ condoId }: SubscriptionBill
           💳 Platform Subscription & Billing
         </h2>
         <p className="text-sm text-slate-500 mt-1">
-          Pay your monthly FiliCondo software licensing fees, submit transfer receipts, and review billing statements.
+          Pay your monthly FiliHomes software licensing fees (PHP 20 per household/month), submit transfer receipts, and review billing statements.
         </p>
       </div>
 
@@ -273,7 +273,7 @@ export default function SubscriptionBillingManager({ condoId }: SubscriptionBill
 
             <div className="bg-slate-50 rounded-lg p-3 text-[11px] text-slate-500 border border-slate-100 leading-relaxed">
               <strong>HQ Settlement Account:</strong><br />
-              Banco de Oro (BDO) | FiliCondo Technologies Inc.<br />
+              Banco de Oro (BDO) | FiliHomes Technologies Inc.<br />
               Account No: <strong>0012-3456-7890</strong>
             </div>
 

@@ -283,7 +283,7 @@ export default function App() {
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Verify your biometric data to unlock FiliCondo',
+        promptMessage: 'Verify your biometric data to unlock FiliHomes',
         fallbackLabel: 'Enter Passcode',
         disableDeviceFallback: false,
       });
@@ -486,7 +486,7 @@ export default function App() {
       <View style={appLockStyles.container}>
         <View style={appLockStyles.content}>
           <Text style={appLockStyles.lockIcon}>🔒</Text>
-          <Text style={appLockStyles.title}>FiliCondo Secure</Text>
+          <Text style={appLockStyles.title}>FiliHomes Secure</Text>
           <Text style={appLockStyles.subtitle}>This application is secured with Face ID / Biometrics.</Text>
           <TouchableOpacity 
             style={appLockStyles.unlockButton} 
@@ -508,11 +508,9 @@ export default function App() {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             {session && session.user ? (
               <> 
-                {/* 🎯 Role-based navigation stack routing */}
+                {/* 🎯 Role-based navigation stack routing (PMO_MANAGER disabled on mobile per requests) */}
                 {userRole === 'GUARD' ? (
                   <Stack.Screen name="FiliStaffGuardMain" component={FiliStaffGuardMain as React.ComponentType<any>} options={{ gestureEnabled: false }} />
-                ) : userRole === 'PMO_MANAGER' ? (
-                  <Stack.Screen name="FiliStaffAdminMain" component={FiliStaffAdminMain as React.ComponentType<any>} />
                 ) : userRole === 'TECHNICIAN' ? (
                   <Stack.Screen name="MaintenanceTechApp" component={MaintenanceTechApp as React.ComponentType<any>} options={{ gestureEnabled: false }} />
                 ) : userRole === 'AMENITY_STAFF' ? (

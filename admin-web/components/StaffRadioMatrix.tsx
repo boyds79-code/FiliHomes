@@ -46,7 +46,7 @@ export default function StaffRadioMatrix({ condoId, department }: { condoId: str
       if (!session) {
         console.log("Authenticating Supabase client for Staff Radio...");
         await supabase.auth.signInWithPassword({
-          email: 'solea.admin@filicondo.com',
+          email: 'solea.admin@filihomes.com',
           password: 'password123'
         });
       }

@@ -80,7 +80,7 @@ export default function ReportIssueManager({ condoId }: ReportIssueManagerProps)
             🛠️ Report Platform Issue
           </h2>
           <p className="text-sm text-slate-500 mt-1">
-            Submit bugs, operational issues, or system requests directly to FiliCondo Platform Operator.
+            Submit bugs, operational issues, or system requests directly to FiliHomes Platform Operator.
           </p>
         </div>
       </div>

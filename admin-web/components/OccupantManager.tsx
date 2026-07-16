@@ -193,7 +193,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
   // Load and sync pending requests
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const stored = window.localStorage.getItem('filicondo_occupant_requests');
+      const stored = window.localStorage.getItem('filihomes_occupant_requests');
       if (stored) {
         setPendingRequests(JSON.parse(stored));
       } else {
@@ -235,7 +235,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
             created_at: new Date(Date.now() - 7200000).toISOString()
           }
         ];
-        window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(defaults));
+        window.localStorage.setItem('filihomes_occupant_requests', JSON.stringify(defaults));
         setPendingRequests(defaults);
         // Dispatch event for dashboard to count it
         window.dispatchEvent(new Event('occupantRequestsUpdated'));
@@ -267,7 +267,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
               towerName: matchedUnit?.tower_name || req.towerName
             };
           });
-          window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
+          window.localStorage.setItem('filihomes_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
           return updated;
         });
       }
@@ -302,7 +302,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
           phone: occ.profiles?.phone || null,
           unitId: occ.unit_id,
           unitNumber: occ.units?.unit_number || 'N/A',
-          towerName: occ.units?.building_no || '',
+          towerName: occ.units?.block_phase_no || '',
           unitRole: occ.role,
           isPayer: occ.is_payer,
           created_at: occ.created_at,
@@ -310,7 +310,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
           documentUrl: occ.document_url || null
         }));
 
-      const stored = window.localStorage.getItem('filicondo_occupant_requests');
+      const stored = window.localStorage.getItem('filihomes_occupant_requests');
       const localRequests = stored ? JSON.parse(stored) : [];
       // Keep only mock requests from local storage
       const mockRequests = localRequests.filter((r: any) => r.id.startsWith('req-'));
@@ -318,7 +318,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
       const combined = [...dbPending, ...mockRequests.filter((mr: any) => !dbPending.some((db: any) => db.email.toLowerCase() === mr.email.toLowerCase()))];
       
       setPendingRequests(combined);
-      window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(combined));
+      window.localStorage.setItem('filihomes_occupant_requests', JSON.stringify(combined));
       window.dispatchEvent(new Event('occupantRequestsUpdated'));
     } catch (err) {
       console.error("Error fetching occupants:", err);
@@ -332,8 +332,8 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
       const XLSX = await import('xlsx');
       
       const sheetData = filteredOccupants.map(occ => ({
-        'Unit Number': occ.units?.unit_number || 'N/A',
-        'Building/Tower': occ.units?.tower_name || 'N/A',
+        'House/Lot Number': occ.units?.unit_number || 'N/A',
+        'Block/Phase': occ.units?.tower_name || 'N/A',
         'Full Name': occ.profiles?.full_name || 'N/A',
         'Email Address': occ.profiles?.email || 'N/A',
         'Phone Number': occ.profiles?.phone || 'N/A',
@@ -450,7 +450,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
       
       const updated = pendingRequests.filter(r => r.id !== req.id);
       setPendingRequests(updated);
-      window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
+      window.localStorage.setItem('filihomes_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
       
       // Dispatch custom event to notify components (like Dashboard)
       window.dispatchEvent(new Event('occupantRequestsUpdated'));
@@ -477,7 +477,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
       }
       const updated = pendingRequests.filter(r => r.id !== reqId);
       setPendingRequests(updated);
-      window.localStorage.setItem('filicondo_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
+      window.localStorage.setItem('filihomes_occupant_requests', JSON.stringify(updated.filter(r => r.id.startsWith('req-'))));
       window.dispatchEvent(new Event('occupantRequestsUpdated'));
       fetchOccupants();
     } catch (err: any) {
@@ -536,7 +536,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
     setSavingRowId(mappingId);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const requestedBy = user?.email || 'admin@filicondo.com';
+      const requestedBy = user?.email || 'admin@filihomes.com';
 
       const response = await fetch('/api/admin/occupants/modify-requests', {
         method: 'POST',
@@ -599,7 +599,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
   const handleApproveModification = async (requestId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const approvedBy = user?.email || 'admin@filicondo.com';
+      const approvedBy = user?.email || 'admin@filihomes.com';
 
       const response = await fetch('/api/admin/occupants/modify-requests/action', {
         method: 'POST',
@@ -628,7 +628,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
     if (!confirm("Are you sure you want to reject this modification request?")) return;
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const approvedBy = user?.email || 'admin@filicondo.com';
+      const approvedBy = user?.email || 'admin@filihomes.com';
 
       const response = await fetch('/api/admin/occupants/modify-requests/action', {
         method: 'POST',
@@ -798,7 +798,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
                         <tr key={invite.id} className="hover:bg-slate-50/50">
                           <td className="py-4 px-4 font-semibold text-slate-800">{invite.email}</td>
                           <td className="py-4 px-4">
-                            {invite.units?.building_no ? `${invite.units.building_no} - ` : ''}Unit {invite.units?.unit_number}
+                            {invite.units?.block_phase_no ? `${invite.units.block_phase_no} - ` : ''}Unit {invite.units?.unit_number}
                           </td>
                           <td className="py-4 px-4 capitalize font-medium">{invite.role.replace('_', ' ')}</td>
                           <td className="py-4 px-4 text-center">
@@ -859,7 +859,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
 
             <form onSubmit={handleRegisterOccupant} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase">Condo Unit *</label>
+                <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase">House/Lot *</label>
                 <select
                   value={selectedUnitId}
                   onChange={(e) => setSelectedUnitId(e.target.value)}
@@ -1164,7 +1164,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-bold text-slate-800 text-sm">
-                                Unit {orig?.units?.unit_number || 'N/A'} {orig?.units?.building_no ? `(${orig.units.building_no})` : ''}
+                                Unit {orig?.units?.unit_number || 'N/A'} {orig?.units?.block_phase_no ? `(${orig.units.block_phase_no})` : ''}
                               </div>
                               <div className="text-[11px] text-slate-500 mt-1">
                                 Requested by: <span className="font-mono text-blue-600 font-bold">{req.requested_by}</span> on {new Date(req.created_at).toLocaleString()}
@@ -1312,7 +1312,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
                               <div className="font-bold text-slate-800">
                                 Unit {req.user_units?.units?.unit_number || 'N/A'}
                               </div>
-                              <div className="text-[10px] text-slate-400">{req.user_units?.units?.building_no || ''}</div>
+                              <div className="text-[10px] text-slate-400">{req.user_units?.units?.block_phase_no || ''}</div>
                             </td>
                             <td className="py-4 px-4">
                               <div className="font-semibold text-slate-800">{req.full_name}</div>
@@ -1446,7 +1446,7 @@ export default function OccupantManager({ condoId, initialTab = 'DIRECTORY' }: O
                 <table className="w-full text-left text-xs text-slate-600">
                   <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-black tracking-wider">
                     <tr>
-                      <th className="py-3 px-4 rounded-l-lg">Unit No.</th>
+                      <th className="py-3 px-4 rounded-l-lg">House/Lot No.</th>
                       <th className="py-3 px-4">Resident Info</th>
                       <th className="py-3 px-4">Unit Role</th>
                       <th className="py-3 px-4">Registered Vehicles</th>

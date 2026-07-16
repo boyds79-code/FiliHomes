@@ -36,21 +36,21 @@ export default function SystemLogManager({ condoId }: { condoId: string }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [actionFilter, setActionFilter] = useState('ALL');
   const [loading, setLoading] = useState(false);
-  const [unitsMap, setUnitsMap] = useState<Record<string, { unit_number: string, building_no: string }>>({});
+  const [unitsMap, setUnitsMap] = useState<Record<string, { unit_number: string, block_phase_no: string }>>({});
 
   // 1. Fetch Units Map to resolve tower/unit details for visitor logs
   const fetchUnitsMap = async () => {
     try {
       const { data, error } = await supabase
         .from('units')
-        .select('id, unit_number, building_no')
+        .select('id, unit_number, block_phase_no')
         .eq('condo_id', condoId);
       if (!error && data) {
-        const mapping: Record<string, { unit_number: string, building_no: string }> = {};
+        const mapping: Record<string, { unit_number: string, block_phase_no: string }> = {};
         data.forEach(u => {
           mapping[u.id] = {
             unit_number: u.unit_number || '',
-            building_no: u.building_no || 'Tower A'
+            block_phase_no: u.block_phase_no || 'Tower A'
           };
         });
         setUnitsMap(mapping);
@@ -120,7 +120,7 @@ export default function SystemLogManager({ condoId }: { condoId: string }) {
       if (error) {
         console.error("Error querying visitor_logs:", error);
       } else {
-        // Filter by condo units if map is loaded
+        // Filter by house/lots if map is loaded
         let filtered = (data as any[]) || [];
         if (Object.keys(unitsMap).length > 0) {
           filtered = filtered.filter(log => {
@@ -197,7 +197,7 @@ export default function SystemLogManager({ condoId }: { condoId: string }) {
         const plate = log.visitor_passes?.plate_number || 'Walk-in';
         const type = log.visitor_passes?.visit_type || 'N/A';
         const unitId = log.visitor_passes?.unit_id;
-        const unit = unitId && unitsMap[unitId] ? `${unitsMap[unitId].building_no} - ${unitsMap[unitId].unit_number}` : 'Unknown';
+        const unit = unitId && unitsMap[unitId] ? `${unitsMap[unitId].block_phase_no} - ${unitsMap[unitId].unit_number}` : 'Unknown';
         const fee = `₱${log.parking_fee}`;
         const paid = log.is_paid ? 'Paid' : 'Unpaid';
         csvContent += `"${entry}","${exit}","${name}","${plate}","${type}","${unit}","${fee}","${paid}"\n`;
@@ -426,7 +426,7 @@ export default function SystemLogManager({ condoId }: { condoId: string }) {
                   {filteredVisitorLogs.map((log) => {
                     const unitId = log.visitor_passes?.unit_id;
                     const unitInfo = unitId && unitsMap[unitId] 
-                      ? `${unitsMap[unitId].building_no} - ${unitsMap[unitId].unit_number}` 
+                      ? `${unitsMap[unitId].block_phase_no} - ${unitsMap[unitId].unit_number}` 
                       : 'N/A';
                     return (
                       <tr key={log.id} className="hover:bg-slate-50/50 transition">

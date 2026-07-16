@@ -4,7 +4,7 @@ serve(async (req) => {
   try {
     // 1. Verify shared webhook secret for security
     const authHeader = req.headers.get("x-webhook-secret");
-    const expectedSecret = Deno.env.get("CRON_MONITOR_SECRET") || "FiliCondoSecretToken123";
+    const expectedSecret = Deno.env.get("CRON_MONITOR_SECRET") || "FiliHomesSecretToken123";
     
     if (authHeader !== expectedSecret) {
       console.warn("Unauthorized attempt to invoke system-error-email Function.");
@@ -15,7 +15,7 @@ serve(async (req) => {
     const { job_name, run_id, error_message, end_time } = payload;
 
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL') || 'admin@filicondo.com';
+    const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL') || 'admin@filihomes.com';
 
     if (!RESEND_API_KEY) {
       console.error("Missing RESEND_API_KEY environment variable. Cannot send email alert.");
@@ -54,7 +54,7 @@ serve(async (req) => {
           <p style="margin-bottom: 0;">Please check the Supabase dashboard or query the <code style="background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-family: monospace;">cron.job_run_details</code> table for more details.</p>
         </div>
         <div style="background-color: #f8fafc; padding: 16px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 11px; color: #94a3b8;">
-          This is an automated system alert sent from FiliCondo Database Monitor.
+          This is an automated system alert sent from FiliHomes Database Monitor.
         </div>
       </div>
     `;
@@ -66,9 +66,9 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'FiliCondo System <system@filicondo.com>',
+        from: 'FiliHomes System <system@filihomes.com>',
         to: ADMIN_EMAIL,
-        subject: `🚨 [FiliCondo Alert] pg_cron Job Failed: ${job_name || 'Unknown'}`,
+        subject: `🚨 [FiliHomes Alert] pg_cron Job Failed: ${job_name || 'Unknown'}`,
         html: emailBody,
       }),
     });

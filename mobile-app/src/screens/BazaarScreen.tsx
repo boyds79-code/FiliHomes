@@ -467,7 +467,7 @@ export default function BazaarScreen({ navigation }: any) {
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.authCard}>
           <Text style={styles.authEmoji}>🛡️</Text>
           <Text style={styles.authTitle}>Bazaar Security Activation</Text>
-          <Text style={styles.authDesc}>For high security and privacy in Cebu condominium networks, your real unit number will be completely encrypted. Please create a market alias to activate your marketplace profile.</Text>
+          <Text style={styles.authDesc}>For high security and privacy in Cebu village/subdivision networks, your real house/lot number will be completely encrypted. Please create a market alias to activate your marketplace profile.</Text>
           <View style={styles.inputWrapper}>
             <TextInput style={styles.authInput} placeholder="Enter your market alias nickname..." placeholderTextColor="#94a3b8" maxLength={15} value={regInput} onChangeText={setRegInput} />
           </View>

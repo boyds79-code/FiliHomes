@@ -13,4 +13,4 @@ const LOCAL_IP = getLocalIp();
 
 export const API_BASE_URL = __DEV__ 
   ? `http://${LOCAL_IP}:3000`
-  : 'https://filicondo.hey-driver.com';
+  : 'https://filihomes.hey-driver.com';

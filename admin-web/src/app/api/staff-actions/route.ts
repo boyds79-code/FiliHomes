@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   try {
     if (action === 'INSERT') {
       const email = data.email;
-      const password = 'password123';
+      const password = '123456';
       
       // 1. Create the user account in Supabase Auth
       const { data: authUser, error: authError } = await adminClient.auth.admin.createUser({

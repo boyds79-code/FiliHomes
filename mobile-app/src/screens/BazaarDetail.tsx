@@ -90,7 +90,7 @@ export default function BazaarDetail({ route, navigation }: any) {
     } else {
       setRelatedItems([
         { id: 'm1', title: '💻 MacBook Pro 16" Intel i9', price: 38000, image_url: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=200' },
-        { id: 'm2', title: '🏡 Condominium Short Lease', price: 25000, image_url: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=200' }
+        { id: 'm2', title: '🏡 Village/Subdivision Short Lease', price: 25000, image_url: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?q=80&w=200' }
       ]);
     }
   };

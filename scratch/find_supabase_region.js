@@ -22,8 +22,8 @@ const regions = [
 
 const passwords = [
   'SoleaResidences',
-  'FiliCondo123',
-  'filicondo',
+  'FiliHomes123',
+  'filihomes',
   'password123',
   'postgres',
   'admin123'

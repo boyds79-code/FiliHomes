@@ -75,13 +75,19 @@ export default function SignUpScreen({ navigation }: any) {
         .eq('condo_id', condoId)
         .order('unit_number');
       if (error) throw error;
-      setUnits(data || []);
+      
+      const formatted = (data || []).map((u: any) => ({
+        id: u.id,
+        unit_number: u.unit_number,
+        block_phase_no: u.building_no
+      }));
+      setUnits(formatted);
     } catch (e: any) {
       console.error("Error fetching units:", e);
       // Fallback static list in case of RLS constraints
       setUnits([
-        { id: 'u1111111-1111-1111-1111-111111111111', unit_number: '101', building_no: 'Tower A' },
-        { id: 'u2222222-2222-2222-2222-222222222222', unit_number: '102', building_no: 'Tower A' }
+        { id: 'u1111111-1111-1111-1111-111111111111', unit_number: '101', block_phase_no: 'Tower A' },
+        { id: 'u2222222-2222-2222-2222-222222222222', unit_number: '102', block_phase_no: 'Tower A' }
       ]);
     } finally {
       setLoadingUnits(false);
@@ -243,7 +249,7 @@ export default function SignUpScreen({ navigation }: any) {
           <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
             <Text style={styles.backText}>❮ Back</Text>
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>FiliCondo Sign Up</Text>
+          <Text style={styles.headerTitle}>FiliHomes Sign Up</Text>
           <View style={{ width: 60 }} />
         </View>
 
@@ -297,7 +303,7 @@ export default function SignUpScreen({ navigation }: any) {
             </View>
           ) : (
             <View style={styles.conditionalBlock}>
-              <Text style={styles.inputLabel}>Select Condo *</Text>
+              <Text style={styles.inputLabel}>Select Village / Subdivision *</Text>
               {loadingCondos ? (
                 <ActivityIndicator size="small" color="#0038a8" style={{ marginVertical: 12 }} />
               ) : (
@@ -318,7 +324,7 @@ export default function SignUpScreen({ navigation }: any) {
 
               {selectedCondoId !== '' && (
                 <>
-                  <Text style={styles.inputLabel}>Select Unit *</Text>
+                  <Text style={styles.inputLabel}>Select Home / Address *</Text>
                   {loadingUnits ? (
                     <ActivityIndicator size="small" color="#0038a8" style={{ marginVertical: 12 }} />
                   ) : (
@@ -331,7 +337,7 @@ export default function SignUpScreen({ navigation }: any) {
                             onPress={() => setSelectedUnitId(u.id)}
                           >
                             <Text style={[styles.selectOptionText, selectedUnitId === u.id && styles.selectOptionTextActive]}>
-                              {u.building_no ? `${u.building_no} - ` : ''}Unit {u.unit_number}
+                              {u.block_phase_no ? `${u.block_phase_no} - Lot ` : 'Lot '}{u.unit_number}
                             </Text>
                           </TouchableOpacity>
                         ))}

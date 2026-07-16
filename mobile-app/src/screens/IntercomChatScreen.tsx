@@ -274,7 +274,7 @@ export default function IntercomChatScreen({ route, navigation }: any) {
         return;
       }
 
-      // Fetch unit's building_no to set as target_building
+      // Fetch unit's block_phase_no to set as target_building
       let targetBuilding = null;
       if (currentUnit?.unit_id) {
         const { data: uData } = await supabase
@@ -441,7 +441,7 @@ export default function IntercomChatScreen({ route, navigation }: any) {
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
         <View style={styles.titleWrapper}>
-          <Text style={styles.navTitle}>Condominium Intercom</Text>
+          <Text style={styles.navTitle}>Village/Subdivision Intercom</Text>
           <Text style={styles.navStatus}>
             {currentView === 'CHAT_ROOM' 
               ? `● Connected: ${

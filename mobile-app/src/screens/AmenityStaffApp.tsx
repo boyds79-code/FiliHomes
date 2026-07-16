@@ -24,7 +24,7 @@ interface AmenityBooking {
   } | null;
   units: {
     unit_number: string | null;
-    building_no: string | null;
+    block_phase_no: string | null;
     condo_id: string | null;
   } | null;
 }
@@ -550,7 +550,7 @@ export default function AmenityStaffApp({ navigation }: any) {
 
         // 3. Fetch units for unit_ids separately to bypass missing foreign key constraint in PostgREST
         const unitIds = Array.from(new Set(bookingsData.map(b => b.unit_id).filter(Boolean)));
-        let unitsMap: Record<string, { unit_number: string | null; building_no: string | null; condo_id: string | null }> = {};
+        let unitsMap: Record<string, { unit_number: string | null; block_phase_no: string | null; condo_id: string | null }> = {};
         if (unitIds.length > 0) {
           const { data: unitsData, error: unitsError } = await supabase
             .from('units')
@@ -561,7 +561,7 @@ export default function AmenityStaffApp({ navigation }: any) {
             unitsData.forEach(u => {
               unitsMap[u.id] = {
                 unit_number: u.unit_number,
-                building_no: u.building_no,
+                block_phase_no: u.building_no,
                 condo_id: u.condo_id
               };
             });
@@ -917,7 +917,7 @@ export default function AmenityStaffApp({ navigation }: any) {
     if (statusFilter === 'CONFIRMED' && b.status !== 'CONFIRMED') return false;
     if (statusFilter === 'COMPLETED' && b.status !== 'COMPLETED') return false;
 
-    // Search query match (resident name, unit number, amenity ID)
+    // Search query match (resident name, house/lot number, amenity ID)
     const name = b.profiles?.full_name?.toLowerCase() || '';
     const unitNo = b.units?.unit_number?.toLowerCase() || '';
     const amenity = b.amenity_id?.toLowerCase() || '';
@@ -1214,7 +1214,7 @@ export default function AmenityStaffApp({ navigation }: any) {
               renderItem={({ item }: { item: AmenityBooking }) => {
                 const residentName = item.profiles?.full_name || 'Resident';
                 const unitNumber = item.units?.unit_number || 'N/A';
-                const buildingNo = item.units?.building_no || 'Tower';
+                const buildingNo = item.units?.block_phase_no || 'Tower';
                 const isConfirmed = item.status === 'CONFIRMED';
                 const isPending = item.status === 'PENDING';
                 const isCheckingIn = checkingInId === item.id;

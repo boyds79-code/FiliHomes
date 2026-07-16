@@ -102,7 +102,7 @@ export default function MaintenanceJobOrderManager({ condoId, initialView }: { c
       if (data) {
         setJobOrders(data.map((item: any) => ({
           id: item.id,
-          unit_no: item.units?.building_no ? `${item.units.building_no} - ${item.units.unit_number}` : (item.units?.unit_number || 'N/A'),
+          unit_no: item.units?.block_phase_no ? `${item.units.block_phase_no} - ${item.units.unit_number}` : (item.units?.unit_number || 'N/A'),
           title: item.title || 'Untitled',
           description: item.description || '',
           image_url: item.image_url || null,

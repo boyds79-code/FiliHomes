@@ -215,7 +215,7 @@ export default function RadioModule({ assignedBuilding = 'Tower A', guardName = 
         .in('chat_id', chatIds)
         .order('created_at', { ascending: true });
 
-      // Group messages by unit number and map chats
+      // Group messages by house/lot number and map chats
       const groupedMsgs: Record<string, any[]> = {};
       const unitIdMap: Record<string, number> = {};
 

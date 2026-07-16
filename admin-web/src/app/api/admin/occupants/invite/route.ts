@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         created_at,
         used_at,
         unit_id,
-        units (unit_number, building_no)
+        units (unit_number, block_phase_no)
       `)
       .eq('condo_id', condoId)
       .order('created_at', { ascending: false });
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       .select('name')
       .eq('id', condoId)
       .single();
-    const condoName = condoData?.name || "FiliCondo";
+    const condoName = condoData?.name || "FiliHomes";
 
     for (const invite of invitations) {
       const { email, unitId, role = 'tenant' } = invite;
@@ -106,11 +106,11 @@ export async function POST(req: Request) {
       // 2. Fetch unit details for email body
       const { data: unitData } = await adminClient
         .from('units')
-        .select('unit_number, building_no')
+        .select('unit_number, block_phase_no')
         .eq('id', unitId)
         .single();
       const unitNumber = unitData?.unit_number || 'N/A';
-      const buildingNo = unitData?.building_no || '';
+      const buildingNo = unitData?.block_phase_no || '';
       const unitDisplay = buildingNo ? `${buildingNo} - Unit ${unitNumber}` : `Unit ${unitNumber}`;
 
       // 3. Set expiration (7 days from now)
@@ -146,14 +146,14 @@ export async function POST(req: Request) {
       try {
         if (!isMock && resend) {
           const { data: emailData, error: emailErr } = await resend.emails.send({
-            from: `FiliCondo <onboarding@resend.dev>`, 
+            from: `FiliHomes <onboarding@resend.dev>`, 
             to: [email],
             subject: `🏢 Welcome to ${condoName} - App Invitation Code`,
             html: `
               <div style="font-family: Arial, sans-serif; padding: 24px; background-color: #f8fafc; color: #1e293b; max-width: 600px; margin: 0 auto; border-radius: 16px; border: 1px solid #e2e8f0;">
                 <h2 style="color: #0038a8; margin-bottom: 20px;">Welcome to ${condoName}!</h2>
                 <p>Hello,</p>
-                <p>You have been invited to register as a <strong>${role === 'owner' ? 'Home Owner' : 'Resident'}</strong> for <strong>${unitDisplay}</strong> in FiliCondo.</p>
+                <p>You have been invited to register as a <strong>${role === 'owner' ? 'Home Owner' : 'Resident'}</strong> for <strong>${unitDisplay}</strong> in FiliHomes.</p>
                 
                 <div style="background-color: #ffffff; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #cbd5e1; margin: 24px 0;">
                   <span style="font-size: 14px; color: #64748b; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Your Invitation Code</span>
@@ -163,7 +163,7 @@ export async function POST(req: Request) {
                 
                 <p>Please follow these steps to get started:</p>
                 <ol style="line-height: 1.6;">
-                  <li>Download the <strong>FiliCondo</strong> mobile app.</li>
+                  <li>Download the <strong>FiliHomes</strong> mobile app.</li>
                   <li>On the login screen, tap <strong>"Sign Up with Invite Code"</strong>.</li>
                   <li>Enter your email, desired password, and the 6-digit code above.</li>
                   <li>Your account will be instantly verified and linked to your unit!</li>
@@ -171,7 +171,7 @@ export async function POST(req: Request) {
                 
                 <p style="margin-top: 30px; font-size: 12px; color: #94a3b8;">If you did not request this invitation, please contact your building's Property Management Office (PMO).</p>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-top: 24px;" />
-                <p style="font-size: 11px; color: #94a3b8; text-align: center;">Powered by FiliCondo PropTech Systems</p>
+                <p style="font-size: 11px; color: #94a3b8; text-align: center;">Powered by FiliHomes PropTech Systems</p>
               </div>
             `
           });

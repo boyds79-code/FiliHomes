@@ -58,7 +58,20 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json(data || []);
+    const formattedData = (data || []).map((job: any) => {
+      if (job.units) {
+        return {
+          ...job,
+          units: {
+            unit_number: job.units.unit_number,
+            block_phase_no: job.units.building_no
+          }
+        };
+      }
+      return job;
+    });
+
+    return NextResponse.json(formattedData);
   } catch (error: any) {
     console.error("API Route Error (job_orders):", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${supabaseServiceKey}`,
           },
-          body: JSON.stringify({ record: notif })
+          body: JSON.stringify({ record: { ...notif, badge: 1 } })
         });
         return { status: response.status, text: await response.text() };
       } catch (e: any) {

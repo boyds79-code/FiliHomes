@@ -16,7 +16,7 @@ interface AmenityBooking {
   } | null;
   units: {
     unit_number: string | null;
-    building_no: string | null;
+    block_phase_no: string | null;
   } | null;
 }
 
@@ -72,7 +72,7 @@ export default function FiliStaffAdminMain() {
 
         // 3. Fetch units for unit_ids to bypass missing foreign key constraint in PostgREST
         const unitIds = Array.from(new Set(bookingsData.map(b => b.unit_id).filter(Boolean)));
-        let unitsMap: Record<string, { unit_number: string | null; building_no: string | null }> = {};
+        let unitsMap: Record<string, { unit_number: string | null; block_phase_no: string | null }> = {};
         
         if (unitIds.length > 0) {
           const { data: unitsData, error: unitsError } = await supabase
@@ -84,7 +84,7 @@ export default function FiliStaffAdminMain() {
             unitsData.forEach(u => {
               unitsMap[u.id] = {
                 unit_number: u.unit_number,
-                building_no: u.building_no
+                block_phase_no: u.building_no
               };
             });
           }
@@ -267,7 +267,7 @@ export default function FiliStaffAdminMain() {
           todayBookings.map((booking) => {
             const residentName = booking.profiles?.full_name || 'Resident';
             const unitNumber = booking.units?.unit_number || 'N/A';
-            const buildingNo = booking.units?.building_no || 'Tower';
+            const buildingNo = booking.units?.block_phase_no || 'Tower';
             const isCheckingIn = checkingInId === booking.id;
             
             return (

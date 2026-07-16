@@ -29,7 +29,7 @@ const CondoConfigContext = createContext<CondoConfigContextType | undefined>(und
 
 export function CondoConfigProvider({ children, session }: { children: React.ReactNode, session: any }) {
   const [themeColor, setThemeColor] = useState('#0038a8');
-  const [condoName, setCondoName] = useState('FiliCondo');
+  const [condoName, setCondoName] = useState('FiliHomes');
   const [unitNumber, setUnitNumber] = useState('');
   const [unitId, setUnitId] = useState<string | null>(null);
   const [condoId, setCondoId] = useState<string | null>(null);
@@ -47,7 +47,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
   // 안전하게 기본값을 설정하는 함수
   const useFallbackData = () => {
     setThemeColor('#0038a8');
-    setCondoName('Fili-One Condominium');
+    setCondoName('Fili-One Village/Subdivision');
     setUnitNumber('1206');
     setUnitId(null); // 에러/매칭 실패 시 가짜 데이터가 고정되는 현상 방지
     setCondoId(null);
@@ -149,7 +149,7 @@ export function CondoConfigProvider({ children, session }: { children: React.Rea
       }
       
       setUnitNumber('1206'); // 나중에 DB에서 가져오게 확장 가능
-      setCondoName('Fili-One Condominium');
+      setCondoName('Fili-One Village/Subdivision');
       setThemeColor('#0038a8');
     } catch (err) {
       console.error("Config load error:", err);

@@ -6,7 +6,7 @@ import { supabase } from '../src/lib/supabaseClient';
 interface Parcel {
   id: string;
   unit_no: string;
-  building_no: string; 
+  block_phase_no: string; 
   carrier_name: string;
   tracking_number: string;
   recipient_name: string;
@@ -21,7 +21,7 @@ interface AuditLog {
   id: string;
   timestamp: string;
   unit_no: string;
-  building_no: string;
+  block_phase_no: string;
   event_type: 'INTAKE' | 'WARNING_SENT' | 'HANDOVER_RELEASE';
   carrier_name: string;
   operator: string;
@@ -108,20 +108,20 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
 
       if (parcelError) throw parcelError;
 
-      // Map unit numbers to retrieve their building names from the 'units' table
+      // Map house/lot numbers to retrieve their building names from the 'units' table
       const uniqueUnitNos = Array.from(new Set((parcelData || []).map(p => p.unit_no).filter(Boolean)));
       const unitMapping: Record<string, string> = {};
 
       if (uniqueUnitNos.length > 0) {
         const { data: unitData, error: unitError } = await supabase
           .from('units')
-          .select('unit_number, building_no')
+          .select('unit_number, block_phase_no')
           .in('unit_number', uniqueUnitNos);
         
         if (!unitError && unitData) {
           unitData.forEach(u => {
             if (u.unit_number) {
-              unitMapping[u.unit_number] = u.building_no || 'Tower A';
+              unitMapping[u.unit_number] = u.block_phase_no || 'Tower A';
             }
           });
         }
@@ -131,7 +131,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
       const mergedData = (parcelData || []).map(p => ({
         ...p,
         id: String(p.id),
-        building_no: unitMapping[p.unit_no] || 'Tower A'
+        block_phase_no: unitMapping[p.unit_no] || 'Tower A'
       }));
 
       setParcels(mergedData);
@@ -166,13 +166,13 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
       if (uniqueUnitNos.length > 0) {
         const { data: unitData } = await supabase
           .from('units')
-          .select('unit_number, building_no')
+          .select('unit_number, block_phase_no')
           .in('unit_number', uniqueUnitNos);
         
         if (unitData) {
           unitData.forEach(u => {
             if (u.unit_number) {
-              unitMapping[u.unit_number] = u.building_no || 'Tower A';
+              unitMapping[u.unit_number] = u.block_phase_no || 'Tower A';
             }
           });
         }
@@ -188,7 +188,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
           id: `LOG-INTAKE-${p.id}`,
           timestamp: p.created_at ? formatLocalTimestamp(p.created_at) : '2026-06-19 12:00',
           unit_no: p.unit_no || 'Unknown',
-          building_no: building,
+          block_phase_no: building,
           event_type: 'INTAKE',
           carrier_name: p.carrier_name || 'Lobby Drop-off',
           operator: p.registered_by || 'Guard',
@@ -206,7 +206,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
             id: `LOG-RELEASE-${p.id}`,
             timestamp: formatLocalTimestamp(releaseTime),
             unit_no: p.unit_no || 'Unknown',
-            building_no: building,
+            block_phase_no: building,
             event_type: 'HANDOVER_RELEASE',
             carrier_name: p.carrier_name || 'Lobby Drop-off',
             operator: p.released_by || 'Guard',
@@ -234,7 +234,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
       id: `LOG-GEN-${Date.now()}`,
       timestamp,
       unit_no: unitNo,
-      building_no: tower,
+      block_phase_no: tower,
       event_type: "WARNING_SENT",
       carrier_name: carrier,
       operator: "PMO Desk Controller",
@@ -273,12 +273,12 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
 
   // 🎯 MACRO SCALE CALCULATIONS: Counts active holding parcels per specific spatial target sector
   const countTowerParcels = (towerName: string) => {
-    return parcels.filter(p => p.building_no === towerName).length;
+    return parcels.filter(p => p.block_phase_no === towerName).length;
   };
 
   // 🎯 MICRO SCALE GROUPING: Group single rows into unit aggregates inside the active chosen popup modal frame
   const getGroupedVaultParcelsForTower = (towerName: string) => {
-    const filtered = parcels.filter(p => p.building_no === towerName && (p.unit_no.includes(searchQuery) || p.recipient_name.toLowerCase().includes(searchQuery.toLowerCase())));
+    const filtered = parcels.filter(p => p.block_phase_no === towerName && (p.unit_no.includes(searchQuery) || p.recipient_name.toLowerCase().includes(searchQuery.toLowerCase())));
     const map: { [key: string]: Parcel[] } = {};
     
     filtered.forEach(p => {
@@ -330,7 +330,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
                   <div key={p.id} style={styles.overdueCard}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div>
-                        <span style={styles.overdueUnitText}>{p.building_no} — Unit {p.unit_no}</span>
+                        <span style={styles.overdueUnitText}>{p.block_phase_no} — Unit {p.unit_no}</span>
                         <div style={styles.overdueDetailText}>Receiver: <strong>{p.recipient_name}</strong></div>
                         <div style={styles.overdueDetailText}>Carrier: 🚚 {p.carrier_name} ({p.tracking_number})</div>
                         <div style={styles.overdueTimeAlert}>Unclaimed Since: {p.received_at}</div>
@@ -338,7 +338,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
                       <span style={styles.pulseWarningBadge}>⚠️ Retain Overdue</span>
                     </div>
                     <div style={styles.overdueActionRow}>
-                      <button onClick={() => handleSendOverdueWarning(p.unit_no, p.carrier_name, p.building_no)} style={styles.warningPushBtn}>📢 Send Warning Push</button>
+                      <button onClick={() => handleSendOverdueWarning(p.unit_no, p.carrier_name, p.block_phase_no)} style={styles.warningPushBtn}>📢 Send Warning Push</button>
                       <button onClick={() => handleBuzzSentryGuard(p.unit_no)} style={styles.buzzGuardBtn}>📱 Buzz Guard</button>
                     </div>
                   </div>
@@ -622,7 +622,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
                 <div key={p.id} style={styles.overdueCard}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                     <div>
-                      <span style={styles.overdueUnitText}>{p.building_no} — Unit {p.unit_no}</span>
+                      <span style={styles.overdueUnitText}>{p.block_phase_no} — Unit {p.unit_no}</span>
                       <div style={styles.overdueDetailText}>Receiver: <strong>{p.recipient_name}</strong></div>
                       <div style={styles.overdueDetailText}>Carrier: 🚚 {p.carrier_name} ({p.tracking_number})</div>
                       <div style={styles.overdueTimeAlert}>Unclaimed Since: {p.received_at}</div>
@@ -630,7 +630,7 @@ export default function ParcelManager({ condoId, initialView }: { condoId: strin
                     <span style={styles.pulseWarningBadge}>⚠️ Retain Overdue</span>
                   </div>
                   <div style={styles.overdueActionRow}>
-                    <button onClick={() => handleSendOverdueWarning(p.unit_no, p.carrier_name, p.building_no)} style={styles.warningPushBtn}>📢 Send Warning Push</button>
+                    <button onClick={() => handleSendOverdueWarning(p.unit_no, p.carrier_name, p.block_phase_no)} style={styles.warningPushBtn}>📢 Send Warning Push</button>
                     <button onClick={() => handleBuzzSentryGuard(p.unit_no)} style={styles.buzzGuardBtn}>📱 Buzz Guard</button>
                   </div>
                 </div>

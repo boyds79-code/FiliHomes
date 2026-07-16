@@ -18,7 +18,7 @@ export async function GET(req: Request) {
           is_payer,
           lease_start_date,
           lease_end_date,
-          units (unit_number, building_no),
+          units (unit_number, block_phase_no),
           profiles:user_id (email, full_name, phone)
         )
       `);

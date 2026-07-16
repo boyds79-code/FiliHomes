@@ -33,7 +33,7 @@ export async function POST(req: Request) {
       .from('profiles')
       .update({ 
         full_name: 'Deleted Resident', 
-        email: `deleted_${userId}@filicondo.com`,
+        email: `deleted_${userId}@filihomes.com`,
         phone: null,
         avatar_url: null,
         status: 'deleted',

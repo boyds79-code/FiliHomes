@@ -1,12 +1,12 @@
-# 🏢 FiliCondo Project Development History
+# 🏢 FiliHomes Project Development History
 
 ## 📌 Project Overview
-- **목표:** 필리핀 현지 콘도(아파트)의 다중 소유/임대 구조를 지원하고, 유지보수, 수납, 보안, 제휴 비즈니스를 통합하는 "초연결 PropTech 슈퍼 앱" 구축.
+- **목표:** 필리핀 현지 빌리지, Subdivision 및 타운하우스 단지(100~300세대 규모)를 대상으로 유지보수, 수납(세대당 20페소 과금), 보안, 제휴 비즈니스를 통합하는 "초연결 PropTech 주거 관리 솔루션" 구축.
 - **주요 기술 스택:**
   - **Frontend (Mobile):** React Native (Expo), AsyncStorage (Offline-first)
   - **Frontend (Web/PWA):** Next.js, React
   - **Backend (BaaS):** Supabase (PostgreSQL, Auth, Storage, Edge Functions, Realtime, pg_cron)
-- **아키텍처 특징:** 하나의 앱으로 수백 개 콘도를 서비스하는 **완벽한 멀티테넌시(Multi-tenancy)** 및 **서버 주도형 동적 UI(Server-Driven UI)** 채택.
+- **아키텍처 특징:** 하나의 앱으로 수백 개 단지(Village/Subdivision)를 서비스하는 **완벽한 멀티테넌시(Multi-tenancy)** 및 **서버 주도형 동적 UI(Server-Driven UI)** 채택.
 
 ---
 
@@ -87,7 +87,7 @@
 - **최근 업데이트 (2026-06-21):**
   - **Resident Service Hub 그리드 재정렬:** 홈 화면의 서비스 허브 메뉴를 사용자 요청 순서(Visitor, Job Order, Community, Notices, Amenities, Bazaar)에 맞춰 6개 그리드로 재배치하고, Support Chat 항목을 그리드에서 제외함.
   - **Messages 탭 구조 고도화:** 하단 Messages 탭(`DirectChatListScreen`)에 진입 시, **Support Chat**(로비 가드/PMO 오피스 연결) 영역과 **1:1 Chatting**(입주민 간 개인 채팅) 영역을 섹션으로 나누어 명확하게 인지할 수 있도록 레이아웃을 개편하고 각 진입 링크를 연결함.
-  - **테마 통일 및 필리핀 국기 색상 도입:** 앱명 "FiliCondo"의 상징성을 살려 기본 테마 컬러를 필리핀 국기 청색인 **Phili Blue(`#0038a8`)**로 전격 통일했습니다. 또한 사용자의 선호에 따라 전체 배경, 액센트(강조 선, 탭 활성화 바) 등 기본 테마 색상은 Phili Blue로 단일화하여 깔끔함을 유지하고, 실시간 알림 카운터, 미수령 우편함 알림 뱃지, 연체 고지 등 **뱃지 컨트롤 색상만 필리핀 국기의 빨간색(`#ce1126`)**으로 통일 적용하여 극적인 대비 효과와 시각적 명확성을 주었습니다. 마지막으로 개발 단계의 레이아웃 및 컬러 테마 선택 스위처 바를 홈 화면에서 완전히 제거하여 프로덕션 배포용의 정돈된 화면을 구축했습니다.
+  - **테마 통일 및 필리핀 국기 색상 도입:** 앱명 "FiliHomes"의 상징성을 살려 기본 테마 컬러를 필리핀 국기 청색인 **Phili Blue(`#0038a8`)**로 전격 통일했습니다. 또한 사용자의 선호에 따라 전체 배경, 액센트(강조 선, 탭 활성화 바) 등 기본 테마 색상은 Phili Blue로 단일화하여 깔끔함을 유지하고, 실시간 알림 카운터, 미수령 우편함 알림 뱃지, 연체 고지 등 **뱃지 컨트롤 색상만 필리핀 국기의 빨간색(`#ce1126`)**으로 통일 적용하여 극적인 대비 효과와 시각적 명확성을 주었습니다. 마지막으로 개발 단계의 레이아웃 및 컬러 테마 선택 스위처 바를 홈 화면에서 완전히 제거하여 프로덕션 배포용의 정돈된 화면을 구축했습니다.
   - **하단 탭 바 정리 (Community & Bazaar 제거):** 홈 화면의 서비스 허브에 Community와 Bazaar 메뉴가 이미 탑재되어 있으므로, 하단 탭 바에서 해당 탭들을 완전히 제거하여 3개 탭(Home, Messages, My Page) 체제로 간소화하였습니다. 이를 위해 두 화면을 Stack.Navigator로 이관하고, 관련 디테일 화면들의 이동 경로를 Stack Screen 대상으로 직접 정렬했습니다.
   - **Support Chat 뒤로가기 탐색 오류 수정 및 카드 UI 고도화:** Messages 탭에서 로비 가드 및 PMO 오피스 다이렉트 채팅으로 바로 진입한 후 뒤로가기 버튼을 누를 때 인터폰 부서 선택 Gateway 스크린(`ROUTING_GATE`)에 가두어지던 탐색 버그를 수정하여 곧장 Messages 탭으로 복귀하게 하였습니다. 또한 Messages 탭 내 Support Chat 리스트의 형태를 인터폰 스크린의 고도화된 대형 카드 스타일(이모지, 전용 태그, 상세 안내)과 100% 동일하게 맞춰 프리미엄 디자인 일관성을 높였습니다.
 - MVP 및 코어 비즈니스 로직(100 Credits 분량) 100% 설계 및 코드 작성 완료.

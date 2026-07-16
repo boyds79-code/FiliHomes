@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FiliCondo",
-    "slug": "filicondo",
+    "name": "FiliHomes",
+    "slug": "filihomes",
     "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.filicondo.app",
+      "bundleIdentifier": "com.filihomes.app",
       "buildNumber": "16",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Face ID is used to provide quick, secure biometric login to your account, protecting your private billing and unit access data.",
@@ -24,7 +24,7 @@
       }
     },
     "android": {
-      "package": "com.filicondo.app",
+      "package": "com.filihomes.app",
       "versionCode": 16,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -33,6 +33,12 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -72,6 +78,12 @@
       "eas": {
         "projectId": "f5a14c1a-8d8e-4f6b-bc17-29b697b3bdb2"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f5a14c1a-8d8e-4f6b-bc17-29b697b3bdb2"
     }
   }
 }

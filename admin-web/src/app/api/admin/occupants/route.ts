@@ -26,7 +26,7 @@ export async function GET(req: Request) {
         unit_id,
         document_name,
         document_url,
-        units (unit_number, building_no),
+        units (unit_number, block_phase_no),
         profiles:user_id (id, email, phone, full_name, role)
       `)
       .eq('condo_id', condoId);
@@ -44,7 +44,7 @@ export async function GET(req: Request) {
 
     const mappedData = data?.map((item: any) => {
       if (item.units) {
-        item.units.tower_name = item.units.building_no || '';
+        item.units.tower_name = item.units.block_phase_no || '';
       }
       return item;
     });

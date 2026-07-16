@@ -27,21 +27,21 @@ export default function VisitorLogManager({ condoId }: { condoId: string }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTower, setSelectedTower] = useState('ALL');
   const [filterUnit, setFilterUnit] = useState('');
-  const [unitsMap, setUnitsMap] = useState<Record<string, { unit_number: string, building_no: string }>>({});
+  const [unitsMap, setUnitsMap] = useState<Record<string, { unit_number: string, block_phase_no: string }>>({});
   const [visitorLogSubTab, setVisitorLogSubTab] = useState<'WALK_IN' | 'VEHICLE'>('WALK_IN');
 
   const fetchUnitsMap = async () => {
     try {
       const { data, error } = await supabase
         .from('units')
-        .select('id, unit_number, building_no')
+        .select('id, unit_number, block_phase_no')
         .eq('condo_id', condoId);
       if (!error && data) {
-        const mapping: Record<string, { unit_number: string, building_no: string }> = {};
+        const mapping: Record<string, { unit_number: string, block_phase_no: string }> = {};
         data.forEach(u => {
           mapping[u.id] = {
             unit_number: u.unit_number || '',
-            building_no: u.building_no || 'Tower A'
+            block_phase_no: u.block_phase_no || 'Tower A'
           };
         });
         setUnitsMap(mapping);
@@ -144,7 +144,7 @@ export default function VisitorLogManager({ condoId }: { condoId: string }) {
       if (selectedTower !== 'ALL') {
         filteredData = filteredData.filter((log) => {
           const unitId = log.visitor_passes?.unit_id;
-          return unitId && unitsMap[unitId]?.building_no === selectedTower;
+          return unitId && unitsMap[unitId]?.block_phase_no === selectedTower;
         });
       }
       if (filterUnit.trim()) {
@@ -266,7 +266,7 @@ export default function VisitorLogManager({ condoId }: { condoId: string }) {
                     <td className="font-bold text-slate-800">{log.visitor_passes?.visitor_name || 'N/A'}</td>
                     <td>{log.visitor_passes?.purpose || '-'}</td>
                     <td>
-                      {unitInfo?.building_no || '-'} / {unitInfo?.unit_number ? `Unit ${unitInfo.unit_number}` : '-'}
+                      {unitInfo?.block_phase_no || '-'} / {unitInfo?.unit_number ? `Unit ${unitInfo.unit_number}` : '-'}
                     </td>
                     <td>{log.gate_location || 'Main Gate'}</td>
                     <td>
@@ -312,7 +312,7 @@ export default function VisitorLogManager({ condoId }: { condoId: string }) {
                     <td className="font-bold text-slate-800">{log.visitor_passes?.visitor_name || 'N/A'}</td>
                     <td className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded w-fit">{log.visitor_passes?.plate_number || 'N/A'}</td>
                     <td>
-                      {unitInfo?.building_no || '-'} / {unitInfo?.unit_number ? `Unit ${unitInfo.unit_number}` : '-'}
+                      {unitInfo?.block_phase_no || '-'} / {unitInfo?.unit_number ? `Unit ${unitInfo.unit_number}` : '-'}
                     </td>
                     <td>{log.gate_location || 'Main Gate'}</td>
                     <td>

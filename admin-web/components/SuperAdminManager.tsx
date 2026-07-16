@@ -623,7 +623,7 @@ export default function SuperAdminManager({ activeTab = 'analytics', setActiveTa
       const newStaff = await createHQStaff({
         name: hqStaffName.trim(),
         role: hqStaffRole.trim(),
-        hourly_rate: 350, // default hourly rate behind the scenes
+        hourly_rate: 350, // default hourly rate
         hire_date: hqStaffHire,
         status: 'ACTIVE',
         email: hqStaffEmail.trim() || undefined,
@@ -865,7 +865,7 @@ export default function SuperAdminManager({ activeTab = 'analytics', setActiveTa
           <span className="bg-blue-600 text-[10px] uppercase font-black px-2.5 py-1 rounded-full tracking-wider">
             Platform Operator Console
           </span>
-          <h2 className="text-3xl font-black mt-2 tracking-tight">🏢 FiliCondo HQ Management</h2>
+          <h2 className="text-3xl font-black mt-2 tracking-tight">🏢 FiliHomes HQ Management</h2>
           <p className="text-sm text-slate-400 mt-1 max-w-xl font-medium">
             Centralized hub to manage multi-condo ad distribution, monitor server traffic & app usage, and resolve PMO reported tickets.
           </p>
@@ -1761,7 +1761,7 @@ export default function SuperAdminManager({ activeTab = 'analytics', setActiveTa
                   {uploadingFile ? (
                     <>
                       <span className="inline-block animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full mb-1"></span>
-                      <span className="text-xs font-bold text-blue-700">Uploading Bank Statement document to FiliCondo Cloud Storage...</span>
+                      <span className="text-xs font-bold text-blue-700">Uploading Bank Statement document to FiliHomes Cloud Storage...</span>
                     </>
                   ) : uploadedFileName ? (
                     <>
@@ -1961,7 +1961,7 @@ export default function SuperAdminManager({ activeTab = 'analytics', setActiveTa
                   {adUploadingFile ? (
                     <>
                       <span className="inline-block animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full mb-1"></span>
-                      <span className="text-xs font-bold text-blue-700">Uploading Bank Statement document to FiliCondo Cloud Storage...</span>
+                      <span className="text-xs font-bold text-blue-700">Uploading Bank Statement document to FiliHomes Cloud Storage...</span>
                     </>
                   ) : adUploadedFileName ? (
                     <>
@@ -2247,7 +2247,7 @@ export default function SuperAdminManager({ activeTab = 'analytics', setActiveTa
                         type="email"
                         value={hqStaffEmail}
                         onChange={(e) => setHqStaffEmail(e.target.value)}
-                        placeholder="e.g. maria@filicondo.com"
+                        placeholder="e.g. maria@filihomes.com"
                         className="w-full text-sm bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition"
                         required
                       />

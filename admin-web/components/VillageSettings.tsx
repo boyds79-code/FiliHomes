@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import AdminStaffManager from './admin/StaffManager';
 import { supabase } from '../src/lib/supabaseClient';
 
-export default function CondoSettings({ 
+export default function VillageSettings({ 
   initialSubTab = 'property',
   currentUserRole = 'PMO_MANAGER',
   showTabs = false,
@@ -183,7 +183,7 @@ export default function CondoSettings({
     try {
       const { data, error } = await supabase
         .from('units')
-        .select('id, unit_number, building_no')
+        .select('id, unit_number, block_phase_no')
         .eq('condo_id', currentCondoId);
       if (!error && data) setUnits(data);
     } catch (e) {
@@ -485,15 +485,15 @@ export default function CondoSettings({
         let errorReason = '';
         let matchedUnitId = '';
 
-        // Cross-match unit_number and building_no
+        // Cross-match unit_number and block_phase_no
         const matchedUnit = units.find(u => 
           u.unit_number.toLowerCase() === unit_no.toLowerCase() &&
-          (!tower || (u.building_no || '').toLowerCase() === tower.toLowerCase())
+          (!tower || (u.block_phase_no || '').toLowerCase() === tower.toLowerCase())
         );
 
         if (!unit_no) {
           isValid = false;
-          errorReason = 'Missing Unit Number';
+          errorReason = 'Missing House/Lot Number';
         } else if (!matchedUnit) {
           isValid = true;
           errorReason = 'NEW_UNIT';
@@ -597,7 +597,7 @@ export default function CondoSettings({
                 borderBottom: subTab === 'property' ? '2px solid #6b21a8' : '2px solid transparent',
               }}
             >
-              🏢 Property Settings
+              🏡 Village Settings
             </button>
             <button
               type="button"
@@ -624,7 +624,7 @@ export default function CondoSettings({
           </div>
         ) : (
           <h2 style={{ fontSize: '18px', fontWeight: 'bold', color: '#0f172a', paddingBottom: '10px' }}>
-            {subTab === 'property' ? '🏢 Property Settings' : subTab === 'app' ? '⚙️ App Settings' : '👥 Staff Management'}
+            {subTab === 'property' ? '🏡 Village Settings' : subTab === 'app' ? '⚙️ App Settings' : '👥 Staff Management'}
           </h2>
         )}
 
@@ -647,21 +647,21 @@ export default function CondoSettings({
         <form id="property-form" onSubmit={handleSaveSettings} style={styles.formGrid}>
           {/* SECTION 1: Architecture Profiling */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <h3 style={styles.sectionHeading}>🏢 Architectural Profile</h3>
+            <h3 style={styles.sectionHeading}>🏡 Subdivision/Village Profile</h3>
             <div style={styles.settingsCard}>
               <div style={styles.inputGroup}>
-                <label style={styles.inputLabel}>Property Registered Name</label>
+                <label style={styles.inputLabel}>Village/Subdivision Name</label>
                 <input type="text" value={condoName} onChange={(e) => setCondoName(e.target.value)} required style={{ ...styles.textInput, backgroundColor: isEditing ? '#ffffff' : '#f8fafc', color: isEditing ? '#0f172a' : '#64748b' }} disabled={!isEditing} />
               </div>
 
               <div style={styles.inputRow}>
                 <div style={{ flex: 1 }}>
-                  <label style={styles.inputLabel}>Total Contracted Units</label>
+                  <label style={styles.inputLabel}>Total Dwellings / Homes</label>
                   <input type="number" value={totalUnits} onChange={(e) => { const v = e.target.value; setTotalUnits(v === '' ? '' : Number(v)); }} required style={{ ...styles.textInput, backgroundColor: isEditing ? '#ffffff' : '#f8fafc', color: isEditing ? '#0f172a' : '#64748b' }} disabled={!isEditing} />
                 </div>
                 <div style={{ flex: 2 }}>
-                  <label style={styles.inputLabel}>Building Towers / Sectors (Split with commas)</label>
-                  <input type="text" value={buildingsInput} onChange={(e) => setBuildingsInput(e.target.value)} required style={{ ...styles.textInput, backgroundColor: isEditing ? '#ffffff' : '#f8fafc', color: isEditing ? '#0f172a' : '#64748b' }} placeholder="Tower A, Tower B" disabled={!isEditing} />
+                  <label style={styles.inputLabel}>Blocks / Phases / Streets (Split with commas)</label>
+                  <input type="text" value={buildingsInput} onChange={(e) => setBuildingsInput(e.target.value)} required style={{ ...styles.textInput, backgroundColor: isEditing ? '#ffffff' : '#f8fafc', color: isEditing ? '#0f172a' : '#64748b' }} placeholder="Phase 1, Block 2, Mabuhay St" disabled={!isEditing} />
                 </div>
               </div>
             </div>
@@ -701,7 +701,7 @@ export default function CondoSettings({
             <h3 style={{ ...styles.sectionHeading, color: '#6b21a8' }}>✍️ Authorized Digital Signature</h3>
             <div style={{ ...styles.settingsCard, borderColor: '#c084fc' }}>
               <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 12px 0' }}>
-                Upload the signature PNG payload of the authorized Building Manager to embed onto receipts.
+                Upload the signature PNG payload of the authorized Village Manager to embed onto receipts.
               </p>
               <div style={styles.uploadBoxZone}>
                 <input type="file" id="sig-file" style={{ display: 'none' }} onChange={handleSignatureUpload} disabled={!isEditing || uploading} />
@@ -723,10 +723,10 @@ export default function CondoSettings({
                 <div style={styles.configLeft}>
                   <input type="file" id="occupants-csv" style={{ display: 'none' }} onChange={handleBulkFileUploadParsed} disabled={!isEditing || isBulkSyncing} />
                   <label htmlFor="occupants-csv" style={{ ...styles.signatureFileLabel, opacity: (!isEditing || isBulkSyncing) ? 0.5 : 1, cursor: (!isEditing || isBulkSyncing) ? 'not-allowed' : 'pointer', display: 'block', textAlign: 'center', fontSize: '11px', padding: '6px 12px' }}>📁 {uploadedFileName ? `Selected: ${uploadedFileName}` : 'Select Occupants CSV File'}</label>
-                  <p style={{ color: '#94a3b8', fontSize: '9px', marginTop: '4px' }}>Format: UnitNo, Name, Email, Phone, Role (owner/tenant/family_member), LeaseStart, LeaseEnd, IsPayer(true/false)</p>
+                  <p style={{ color: '#94a3b8', fontSize: '9px', marginTop: '4px' }}>Format: Address/LotNo, Name, Email, Phone, Role (owner/tenant/family_member), LeaseStart, LeaseEnd, IsPayer(true/false)</p>
                 </div>
                 <div style={styles.configRight}>
-                  Import unified tenant and landlord rosters directly via a CSV file. Uploaded records will automatically map to existing condo units in the database.
+                  Import unified tenant and landlord rosters directly via a CSV file. Uploaded records will automatically map to existing houses/lots in the database.
                 </div>
               </div>
 
@@ -753,7 +753,7 @@ export default function CondoSettings({
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left' }}>
                       <thead>
                         <tr style={{ backgroundColor: '#f8fafc', color: '#475569', borderBottom: '1px solid #e5e7eb' }}>
-                          <th style={{ padding: '6px' }}>Unit</th>
+                          <th style={{ padding: '6px' }}>Address / Lot</th>
                           <th style={{ padding: '6px' }}>Name</th>
                           <th style={{ padding: '6px' }}>Email</th>
                           <th style={{ padding: '6px' }}>Role</th>
@@ -769,7 +769,7 @@ export default function CondoSettings({
                             <td style={{ padding: '6px', textTransform: 'capitalize' }}>{row.unitRole}</td>
                             <td style={{ padding: '6px', textAlign: 'right', fontWeight: 'bold', color: row.isValid ? (row.errorReason === 'NEW_UNIT' ? '#3b82f6' : '#16a34a') : '#ef4444' }}>
                               {row.isValid 
-                                ? (row.errorReason === 'NEW_UNIT' ? '🆕 New Unit' : 'Ready') 
+                                ? (row.errorReason === 'NEW_UNIT' ? '🆕 New Home/Address' : 'Ready') 
                                 : row.errorReason
                               }
                             </td>
@@ -893,7 +893,7 @@ export default function CondoSettings({
                   </select>
                 </div>
                 <div style={styles.configRight}>
-                  Configure visitor parking billing. Setting this to 'Billing Enabled' will automatically generate visitor parking billing receipts upon exit according to condo pricing policies.
+                  Configure visitor parking billing. Setting this to 'Billing Enabled' will automatically generate visitor parking billing receipts upon exit according to village pricing policies.
                 </div>
               </div>
 

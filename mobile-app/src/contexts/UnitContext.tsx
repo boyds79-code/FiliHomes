@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { Session } from '@supabase/supabase-js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 유닛 정보 인터페이스 정의
 interface AssignedUnit {
@@ -10,6 +11,8 @@ interface AssignedUnit {
   unit_number: string;
   condo_name: string;
   role: string;
+  block_phase_no?: string;
+  has_badge?: boolean;
 }
 
 interface UnitContextType {
@@ -50,7 +53,7 @@ export function UnitProvider({ session, children }: { session?: Session | null; 
           unit_id,
           condo_id,
           role,
-          units (unit_number),
+          units (unit_number, building_no),
           condos (name)
         `)
         .eq('user_id', activeSession.user.id)
@@ -65,7 +68,36 @@ export function UnitProvider({ session, children }: { session?: Session | null; 
           role: item.role,
           unit_number: item.units?.unit_number || '',
           condo_name: item.condos?.name || '',
+          block_phase_no: item.units?.building_no || '',
+          has_badge: false
         }));
+
+        // Fetch unpaid billings for each unit to determine unread badge status
+        try {
+          const unitIds = formattedUnits.map(u => u.unit_id);
+          const { data: billsData } = await supabase
+            .from('billings')
+            .select('id, unit_id, status')
+            .in('unit_id', unitIds)
+            .in('status', ['ISSUED', 'OVERDUE', 'UNPAID', 'PENDING']);
+
+          if (billsData) {
+            for (const u of formattedUnits) {
+              const unitBills = billsData.filter(b => b.unit_id === u.unit_id);
+              let hasUnread = false;
+              for (const b of unitBills) {
+                const isRead = await AsyncStorage.getItem(`billing_read_bill_${b.id}`);
+                if (isRead !== 'true') {
+                  hasUnread = true;
+                  break;
+                }
+              }
+              u.has_badge = hasUnread;
+            }
+          }
+        } catch (badgeErr) {
+          console.error("Failed to calculate unit badges:", badgeErr);
+        }
 
         setMyUnits(formattedUnits);
         // 기본값으로 첫 번째 유닛을 활성화 (단, 1206이 목록에 있는 경우 1206을 기본 활성화)
@@ -80,12 +112,31 @@ export function UnitProvider({ session, children }: { session?: Session | null; 
   };
 
   // 사용자가 리스트에서 다른 유닛을 선택했을 때 앱 전역 상태를 교체하는 함수
-  const switchUnit = (unitId: string) => {
+  const switchUnit = async (unitId: string) => {
     const target = myUnits.find((u: AssignedUnit) => u.unit_id === unitId);
     if (target) {
       setCurrentUnit(target);
-      // TIP: 차후 Unit 04의 CondoConfig(테마색상/기능토글) 및 빌링 내역도 
-      // 이 currentUnit 변경을 감지하여 자동으로 리프레시되도록 연결합니다.
+      
+      // 🚨 Supabase DB의 profiles 테이블 내 unit_id와 condo_id를 즉시 동기화 업데이트하여 푸시/뱃지 연동 해결
+      if (activeSession?.user) {
+        try {
+          const { error } = await supabase
+            .from('profiles')
+            .update({
+              unit_id: target.unit_id,
+              condo_id: target.condo_id
+            })
+            .eq('id', activeSession.user.id);
+          
+          if (error) {
+            console.error("Failed to update profile unit mapping on switch:", error);
+          } else {
+            console.log(`✅ DB Profile synced successfully to unit ${target.unit_number} of condo ${target.condo_name}`);
+          }
+        } catch (err) {
+          console.error("DB Profile switch sync error:", err);
+        }
+      }
     }
   };
 

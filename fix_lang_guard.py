@@ -1,6 +1,6 @@
 import re
 
-file_path = '/Users/chriskim/Documents/FiliCondo/mobile-app/src/screens/FiliStaffGuardMain.tsx'
+file_path = '/Users/chriskim/Documents/FiliHomes/mobile-app/src/screens/FiliStaffGuardMain.tsx'
 
 with open(file_path, 'r', encoding='utf-8') as f:
     content = f.read()

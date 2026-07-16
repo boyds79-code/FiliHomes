@@ -15,7 +15,7 @@ interface Billing {
   status: string;
   created_at: string;
   unit_number?: string;
-  building_no?: string;
+  block_phase_no?: string;
   receipt_url?: string; 
   electricity_usage?: number;
   water_usage?: number;
@@ -93,7 +93,7 @@ export default function BillingManager({ initialView, condoId }: { initialView?:
   const [confirmedMatchRef, setConfirmedMatchRef] = useState<string | null>(null);
   const [aiDetectedAmount, setAiDetectedAmount] = useState<number | null>(null);
 
-  // Condo Settings (for penalty & buildings)
+  // Village Settings (for penalty & buildings)
   const [condoSettings, setCondoSettings] = useState<any>(null);
 
   // 💬 1:1 Intercom Chat states
@@ -120,7 +120,7 @@ export default function BillingManager({ initialView, condoId }: { initialView?:
 
     // Load persisted bank feed from localStorage
     if (typeof window !== 'undefined') {
-      const savedFeed = localStorage.getItem('filicondo_bank_feed');
+      const savedFeed = localStorage.getItem('filihomes_bank_feed');
       if (savedFeed) {
         try {
           const parsed = JSON.parse(savedFeed);
@@ -403,7 +403,7 @@ const fetchBillings = async () => {
             };
 
             const unit_no = String(getVal(['unit_no', 'unit_number', 'unitno', 'unit', 'room', 'no']) || '').trim();
-            const tower = String(getVal(['tower', 'building', 'building_no', 'buildingno', 'block']) || '').trim();
+            const tower = String(getVal(['tower', 'building', 'block_phase_no', 'buildingno', 'block']) || '').trim();
             const condo_dues = parseFloat(getVal(['condo_dues', 'association_dues', 'associationdues', 'dues']) || 0);
             const electricity = parseFloat(getVal(['electricity', 'electricity_bill']) || 0);
             const water = parseFloat(getVal(['water', 'water_bill']) || 0);
@@ -490,7 +490,7 @@ const fetchBillings = async () => {
           };
 
           const unit_no = String(getVal(['unit_no', 'unit_number', 'unitno', 'unit', 'room', 'no']) || '').trim();
-          const tower = String(getVal(['tower', 'building', 'building_no', 'buildingno', 'block']) || '').trim();
+          const tower = String(getVal(['tower', 'building', 'block_phase_no', 'buildingno', 'block']) || '').trim();
           const condo_dues = parseFloat(getVal(['condo_dues', 'association_dues', 'associationdues', 'dues']) || 0);
           const electricity = parseFloat(getVal(['electricity', 'electricity_bill']) || 0);
           const water = parseFloat(getVal(['water', 'water_bill']) || 0);
@@ -609,7 +609,7 @@ const fetchBillings = async () => {
       });
         
       setBankFeed(parsedFeed);
-      localStorage.setItem('filicondo_bank_feed', JSON.stringify(parsedFeed));
+      localStorage.setItem('filihomes_bank_feed', JSON.stringify(parsedFeed));
       setUploading(false);
       setIsLedgerSynced(true);
       alert(`🎉 ${parsedFeed.length} bank transactions imported!`);
@@ -705,7 +705,7 @@ const fetchBillings = async () => {
   const handleOpenChatModal = (bill: Billing, computedTotal: number) => {
     setChatBill(bill);
     setChatMessage(
-      `[PMO Notice]\nDear resident of Tower ${bill.building_no} Unit ${bill.unit_number},\n\nYour billing statement for ${bill.billing_month} is currently overdue. The total outstanding amount is ₱${computedTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}.\n\nPlease settle this balance at your earliest convenience or contact the PMO office if you have any questions.\n\nThank you,\nPMO Office`
+      `[PMO Notice]\nDear resident of Tower ${bill.block_phase_no} Unit ${bill.unit_number},\n\nYour billing statement for ${bill.billing_month} is currently overdue. The total outstanding amount is ₱${computedTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}.\n\nPlease settle this balance at your earliest convenience or contact the PMO office if you have any questions.\n\nThank you,\nPMO Office`
     );
     setIsChatModalOpen(true);
   };
@@ -759,7 +759,7 @@ const fetchBillings = async () => {
           .from('intercom_chats')
           .insert([{
             user_id: targetUserId,
-            target_building: chatBill.building_no || null
+            target_building: chatBill.block_phase_no || null
           }])
           .select('id')
           .single();
@@ -807,7 +807,7 @@ const fetchBillings = async () => {
   };
 
 const baseFilteredBills = bills.filter((bill) => {
-  const matchBuilding = selectedBuilding === 'ALL' || bill.building_no === selectedBuilding;
+  const matchBuilding = selectedBuilding === 'ALL' || bill.block_phase_no === selectedBuilding;
   const matchUnit = !searchUnit || bill.unit_number?.toLowerCase().includes(searchUnit.toLowerCase()) || bill.unit_id.toLowerCase().includes(searchUnit.toLowerCase());
   const matchMonth = selectedMonth === 'ALL' || bill.billing_month === selectedMonth;
   return matchBuilding && matchUnit && matchMonth;
@@ -835,7 +835,7 @@ console.log("Filtered count:", finalFilteredBills.length);
 console.log("All statuses:", bills.map(b => b.status));
 console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, status: b.status })));
 
-  const buildingsList = ['ALL', ...Array.from(new Set(bills.map(b => b.building_no).filter(Boolean)))];
+  const buildingsList = ['ALL', ...Array.from(new Set(bills.map(b => b.block_phase_no).filter(Boolean)))];
   const monthsList = ['ALL', ...Array.from(new Set(bills.map(b => b.billing_month).filter(Boolean))).sort().reverse()];
 
   return (
@@ -844,7 +844,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
       {/* Demo Identity Context Box */}
       <div style={{ display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: '#f1f5f9', padding: '12px 18px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
         <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#475569', textTransform: 'uppercase' }}>🛠️ Demo Identity Context:</span>
-        <button onClick={() => setIsMasterAccount(true)} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: isMasterAccount ? '#2563eb' : '#ffffff', color: isMasterAccount ? '#ffffff' : '#475569' }}>👑 Condo Master Mode</button>
+        <button onClick={() => setIsMasterAccount(true)} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: isMasterAccount ? '#2563eb' : '#ffffff', color: isMasterAccount ? '#ffffff' : '#475569' }}>👑 Village Master Mode</button>
         <button onClick={() => setIsMasterAccount(false)} style={{ padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', border: 'none', cursor: 'pointer', backgroundColor: !isMasterAccount ? '#2563eb' : '#ffffff', color: !isMasterAccount ? '#ffffff' : '#475569' }}>👥 General Staff Mode</button>
       </div>
 
@@ -1092,7 +1092,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                   )}
                   <div style={{ flex: '0 0 120px' }}>
                     <div style={{ fontWeight: 'bold', color: '#0f172a', fontSize: '14px' }}>Unit {bill.unit_number}</div>
-                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500', marginTop: '3px' }}>{bill.building_no}</div>
+                    <div style={{ fontSize: '11px', color: '#64748b', fontWeight: '500', marginTop: '3px' }}>{bill.block_phase_no}</div>
                   </div>
                   
                   <div style={{ flex: '3 1 240px', display: 'flex', flexDirection: 'column' }}>
@@ -1165,7 +1165,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                         <div style={styles.cardValue}>₱{Number(bill.parking_fee || 0).toLocaleString()}</div>
                       </div>
                       <div style={styles.detailCard}>
-                        <span style={styles.cardLabel}>🏢 Association Condo Dues</span>
+                        <span style={styles.cardLabel}>🏡 Association Dues</span>
                         <div style={styles.cardValue}>₱{Number(bill.condo_dues).toLocaleString()}</div>
                       </div>
                       <div style={{...styles.detailCard, backgroundColor: '#fef2f2', borderColor: '#fecaca'}}>
@@ -1207,7 +1207,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
 
             <form onSubmit={handleWalkInFormSubmit} style={styles.walkInForm}>
               <p style={styles.walkInDescription}>
-                Search by unit number, select the exact statement, and enter the remitted amount.
+                Search by house/lot number, select the exact statement, and enter the remitted amount.
               </p>
 
               <div style={styles.formGroup}>
@@ -1234,7 +1234,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                     return (
                       <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', border: '1px solid #cbd5e1', borderRadius: '8px', backgroundColor: '#f8fafc' }}>
                         <div>
-                          <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#0f172a' }}>{b.building_no} - Unit {b.unit_number}</div>
+                          <div style={{ fontSize: '13px', fontWeight: 'bold', color: '#0f172a' }}>{b.block_phase_no} - Unit {b.unit_number}</div>
                           <div style={{ fontSize: '11px', color: '#64748b' }}>Period: {b.billing_month} | Total: ₱{bTotal.toLocaleString()}</div>
                         </div>
                         <button type="button" onClick={() => setWalkInSelectedBill(b)} style={{ backgroundColor: '#2563eb', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 'bold', cursor: 'pointer' }}>Select</button>
@@ -1249,7 +1249,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <span style={{ fontSize: '11px', color: '#0284c7', fontWeight: 'bold', textTransform: 'uppercase' }}>Selected Target</span>
-                      <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#0f172a' }}>{walkInSelectedBill.building_no} - Unit {walkInSelectedBill.unit_number}</div>
+                      <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#0f172a' }}>{walkInSelectedBill.block_phase_no} - Unit {walkInSelectedBill.unit_number}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <span style={{ fontSize: '11px', color: '#64748b' }}>Statement Total</span>
@@ -1343,7 +1343,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
 
             <form onSubmit={handleSendChatMessage} style={styles.walkInForm}>
               <div style={{ padding: '12px 14px', backgroundColor: '#fee2e2', border: '1px solid #fca5a5', borderRadius: '8px', fontSize: '12px', color: '#991b1b' }}>
-                <strong>Unit {chatBill.unit_number} ({chatBill.building_no}) - Overdue Notice</strong>
+                <strong>Unit {chatBill.unit_number} ({chatBill.block_phase_no}) - Overdue Notice</strong>
                 <div style={{ marginTop: '4px' }}>Please write a message to notify the resident of their outstanding balance. The message will appear in their Intercom PMO chat room.</div>
               </div>
 
@@ -1382,7 +1382,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
             <div style={styles.consoleHeader}>
               <div>
                 <span style={styles.consoleLabel}>Security Audit Desk</span>
-                <h3 style={styles.consoleTitle}>Unified Receipt Audit Console — Unit {activeBill.unit_number} ({activeBill.building_no})</h3>
+                <h3 style={styles.consoleTitle}>Unified Receipt Audit Console — Unit {activeBill.unit_number} ({activeBill.block_phase_no})</h3>
               </div>
               <button style={styles.closeButton} onClick={() => { setActiveBill(null); setVisionMatchedRef(null); setConfirmedMatchRef(null); }}>✕</button>
             </div>
@@ -1672,7 +1672,7 @@ console.log("Filtered data details:", baseFilteredBills.map(b => ({ id: b.id, st
         // Move the matched item to the top of bankFeed
         const updatedFeed = [match, ...bankFeed.filter(tx => tx.trans_id !== match.trans_id)];
         setBankFeed(updatedFeed);
-        localStorage.setItem('filicondo_bank_feed', JSON.stringify(updatedFeed));
+        localStorage.setItem('filihomes_bank_feed', JSON.stringify(updatedFeed));
         setVisionMatchedRef(match.ref_no);
         setConfirmedMatchRef(match.ref_no); // Auto-confirm match on Vision AI success!
         

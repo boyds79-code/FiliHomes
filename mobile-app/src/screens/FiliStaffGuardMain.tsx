@@ -26,7 +26,7 @@ interface Parcel {
   status: string;
   secure_pass_code: string; // 🎯 Aligned with Core Database Schema for proxy token cross-checking
   recipient_name?: string;
-  building_no?: string; // 🏢 Added building name for tower-level grouping
+  block_phase_no?: string; // 🏢 Added building name for tower-level grouping
   created_at?: string; // 🕒 Added created_at to calculate overdue parcels
 }
 
@@ -181,7 +181,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
   const submitDirectCourier = async () => {
     if (!directUnits.trim()) {
-      Alert.alert("Error", "Please enter at least one unit number.");
+      Alert.alert("Error", "Please enter at least one house/lot number.");
       return;
     }
     if (!courierBase64) {
@@ -310,7 +310,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
   const [gateSubView, setGateSubView] = useState<'WALK_IN' | 'VEHICLE'>('WALK_IN');
   const [walkInPasses, setWalkInPasses] = useState<any[]>([]);
   const [currentTime, setCurrentTime] = useState(Date.now());
-  const [unitsMap, setUnitsMap] = useState<Record<string, { unit_number: string, building_no: string }>>({});
+  const [unitsMap, setUnitsMap] = useState<Record<string, { unit_number: string, block_phase_no: string }>>({});
   const [selectedTowerFilter, setSelectedTowerFilter] = useState<string>('ALL');
   const [unitFilterQuery, setUnitFilterQuery] = useState<string>('');
   const [availableTowers, setAvailableTowers] = useState<string[]>(['Tower A', 'Tower B']);
@@ -403,7 +403,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
     if (selectedTowerFilter !== 'ALL') {
       holdingParcels = holdingParcels.filter(p => 
-        p.building_no === selectedTowerFilter
+        p.block_phase_no === selectedTowerFilter
       );
     }
 
@@ -425,7 +425,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
       unit: unitNo,
       parcels: groups[unitNo],
       count: groups[unitNo].length,
-      building_no: groups[unitNo][0]?.building_no || 'Tower A'
+      block_phase_no: groups[unitNo][0]?.block_phase_no || 'Tower A'
     })).sort((a, b) => {
       const numA = parseInt(a.unit.replace(/[^0-9]/g, ''), 10);
       const numB = parseInt(b.unit.replace(/[^0-9]/g, ''), 10);
@@ -457,7 +457,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           // Trigger alert when tech is VISITING a specific unit
           const unitId = payload.new.unit_id;
           
-          // Get unit number and display in alert
+          // Get house/lot number and display in alert
           supabase.from('units').select('unit_number').eq('id', unitId).maybeSingle().then(({ data }) => {
             const unitNo = data?.unit_number || 'Unknown';
             Alert.alert(
@@ -939,11 +939,11 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         .select('id, unit_number, building_no');
       
       if (!error && data) {
-        const mapping: Record<string, { unit_number: string, building_no: string }> = {};
+        const mapping: Record<string, { unit_number: string, block_phase_no: string }> = {};
         data.forEach(u => {
           mapping[u.id] = {
             unit_number: u.unit_number || '',
-            building_no: u.building_no || 'Tower A'
+            block_phase_no: u.building_no || 'Tower A'
           };
         });
         setUnitsMap(mapping);
@@ -1059,7 +1059,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         status: p.status,
         secure_pass_code: p.secure_pass_code || '',
         recipient_name: p.recipient_name || 'Resident',
-        building_no: unitMapping[p.unit_no] || 'Tower A',
+        block_phase_no: unitMapping[p.unit_no] || 'Tower A',
         created_at: p.created_at || new Date().toISOString()
       }));
       setDbParcels(parsed);
@@ -1131,7 +1131,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           body: JSON.stringify({
             contents: [{
               parts: [
-                { text: "Extract only the Unit Number from this parcel shipping label photo. Return only the numbers." },
+                { text: "Extract only the House/Lot Number from this parcel shipping label photo. Return only the numbers." },
                 { inline_data: { mime_type: "image/jpeg", data: base64Image } }
               ]
             }]
@@ -1155,7 +1155,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           setScanUnit(cleanUnit);
           Alert.alert("OCR Success ✅", `Extracted Unit: ${cleanUnit}`);
         } else {
-          Alert.alert("OCR Failed ⚠️", "Cannot find unit number in the image.");
+          Alert.alert("OCR Failed ⚠️", "Cannot find house/lot number in the image.");
         }
       } else {
         Alert.alert("OCR Failed ⚠️", "Invalid response structure.");
@@ -1281,7 +1281,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
   const submitParcelRegistration = async () => {
     if (!scanTracking.trim() || !scanUnit.trim()) {
-      Alert.alert("Input Required ⚠️", "Please enter Tracking barcode and Unit Number.");
+      Alert.alert("Input Required ⚠️", "Please enter Tracking barcode and House/Lot Number.");
       return;
     }
     if (!parcelPhotoBase64) {
@@ -1874,7 +1874,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
   const showVisitorPassDetails = async (pass: any) => {
     let unitNo = unitsMap[pass.unit_id]?.unit_number;
-    let building = unitsMap[pass.unit_id]?.building_no;
+    let building = unitsMap[pass.unit_id]?.block_phase_no;
 
     if ((!unitNo || !building) && pass.unit_id) {
       try {
@@ -1923,7 +1923,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
             unitNumber = unitData.unit_number;
           }
         } catch (err) {
-          console.error("Error fetching fallback unit number for re-request:", err);
+          console.error("Error fetching fallback house/lot number for re-request:", err);
         }
       }
       const finalUnitNumber = unitNumber || 'Unknown';
@@ -2064,7 +2064,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
     setIsSignatureModalOpen(false);
     Alert.alert(
       "Handover Completed 🔐",
-      `[SUCCESS DEPLOYED]\nUnit No: ${selectedUnit}\nClaimant: ${claimantName} (${claimantRelationship})\nItems Cleared: ${targetIds.length} Parcels\nSentry Proof: Immutable Signature Encoded.`
+      `[SUCCESS DEPLOYED]\nHouse/Lot No: ${selectedUnit}\nClaimant: ${claimantName} (${claimantRelationship})\nItems Cleared: ${targetIds.length} Parcels\nSentry Proof: Immutable Signature Encoded.`
     );
 
     setClaimantName('');
@@ -2222,7 +2222,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         status: p.status,
         secure_pass_code: p.secure_pass_code || '',
         recipient_name: p.recipient_name || 'Resident',
-        building_no: buildingNo,
+        block_phase_no: buildingNo,
         created_at: p.created_at || new Date().toISOString()
       })));
 
@@ -2276,8 +2276,8 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
       passData = data;
 
-      // Fallback: If not found but starts with 'FILICONDO-VMS|', parse the token components
-      if (!passData && scannedData.startsWith('FILICONDO-VMS|')) {
+      // Fallback: If not found but starts with 'FILIHOMES-VMS|', parse the token components
+      if (!passData && scannedData.startsWith('FILIHOMES-VMS|')) {
         const parts = scannedData.split('|');
         const tokenData: Record<string, string> = {};
         parts.forEach(part => {
@@ -2396,7 +2396,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
         // They are currently inside, so this scan is an EXIT/CHECKOUT!
         const plate = passData.plate_number || 'WALK-IN';
         const targetUnitNo = unitsMap[passData.unit_id]?.unit_number || 'N/A';
-        const targetBuilding = unitsMap[passData.unit_id]?.building_no || '';
+        const targetBuilding = unitsMap[passData.unit_id]?.block_phase_no || '';
         
         Alert.alert(
           "Visitor Exit QR Scanned 🔄",
@@ -2431,7 +2431,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
           const plate = passData.plate_number;
           if (plate) {
             const targetUnitNo = unitsMap[passData.unit_id]?.unit_number || 'N/A';
-            const targetBuilding = unitsMap[passData.unit_id]?.building_no || '';
+            const targetBuilding = unitsMap[passData.unit_id]?.block_phase_no || '';
             Alert.alert(
               "Visitor Exit QR Scanned 🚗",
               `Confirm checkout for vehicle?\nVisitor Name: ${passData.visitor_name}\nUnit: ${targetUnitNo} ${targetBuilding ? `(${targetBuilding})` : ''}\nPlate: ${plate}`,
@@ -2484,7 +2484,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
       if (gateSubView === 'VEHICLE') {
         const targetUnitNo = unitsMap[passData.unit_id]?.unit_number || 'N/A';
-        const targetBuilding = unitsMap[passData.unit_id]?.building_no || '';
+        const targetBuilding = unitsMap[passData.unit_id]?.block_phase_no || '';
         setVehicleTargetUnit(targetUnitNo);
         setIsCameraLive(false);
         isProcessingScan.current = false;
@@ -2547,7 +2547,7 @@ export default function FiliStaffGuardMain({ navigation }: any) {
 
       // Show details popup for valid QR scan, allowing entry on confirmation
       const targetUnitNo = unitsMap[passData.unit_id]?.unit_number || 'N/A';
-      const targetBuilding = unitsMap[passData.unit_id]?.building_no || '';
+      const targetBuilding = unitsMap[passData.unit_id]?.block_phase_no || '';
       
       // Close camera modal first to prevent accidental touch/press propagation during scan transition
       setIsCameraLive(false);
@@ -3216,7 +3216,7 @@ const takeAddressPhoto = async () => {
                       : `Resend in ${remainingSecs}s`;
 
                     const unitNo = unitsMap[pass.unit_id]?.unit_number || 'N/A';
-                    const building = unitsMap[pass.unit_id]?.building_no || 'N/A';
+                    const building = unitsMap[pass.unit_id]?.block_phase_no || 'N/A';
 
                     return (
                       <TouchableOpacity 
@@ -3348,7 +3348,7 @@ const takeAddressPhoto = async () => {
                       : `Resend in ${remainingSecs}s`;
 
                     const unitNo = unitsMap[pass.unit_id]?.unit_number || 'N/A';
-                    const building = unitsMap[pass.unit_id]?.building_no || 'N/A';
+                    const building = unitsMap[pass.unit_id]?.block_phase_no || 'N/A';
 
                     return (
                       <TouchableOpacity 
@@ -3551,7 +3551,7 @@ const takeAddressPhoto = async () => {
                            style={[styles.unitInput, { backgroundColor: themeColors.inputBg, color: themeColors.inputText, borderColor: themeColors.inputBorder }]} 
                            value={scanUnit} 
                            onChangeText={(val) => { setScanUnit(val); }} 
-                           placeholder="Unit Number (e.g. 1204)"
+                           placeholder="House/Lot Number (e.g. 1204)"
                            placeholderTextColor={themeColors.mutedText}
                            onSubmitEditing={Keyboard.dismiss}
                            returnKeyType="done"
@@ -3664,12 +3664,12 @@ const takeAddressPhoto = async () => {
                         </View>
                       )}
 
-                      <Text style={[styles.modalInputLabelMeta, { color: themeColors.mutedText, marginTop: 14, marginBottom: 6 }]}>2. Search Room Unit Number</Text>
+                      <Text style={[styles.modalInputLabelMeta, { color: themeColors.mutedText, marginTop: 14, marginBottom: 6 }]}>2. Search Room House/Lot Number</Text>
                       <TextInput 
                         style={[styles.modalInternalInput, { backgroundColor: themeColors.inputBg, color: themeColors.inputText, borderColor: themeColors.inputBorder }]} 
                         value={unitFilterQuery} 
                         onChangeText={setUnitFilterQuery} 
-                        placeholder="Type unit number..."
+                        placeholder="Type house/lot number..."
                         placeholderTextColor={themeColors.mutedText}
                         onSubmitEditing={Keyboard.dismiss}
                         returnKeyType="done"
@@ -3686,7 +3686,7 @@ const takeAddressPhoto = async () => {
                           .map((group) => (
                           <View key={group.unit} style={[styles.parcelSharedRowCard, { backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]}>
                             <View style={{ flex: 0.72 }}>
-                              <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 15 }}>📍 Resident Unit {group.unit} ({group.building_no})</Text>
+                              <Text style={{ color: themeColors.text, fontWeight: '900', fontSize: 15 }}>📍 Resident Unit {group.unit} ({group.block_phase_no})</Text>
                               <View style={styles.parcelCountBadge}>
                                 <Text style={styles.parcelCountBadgeText}>📦 {group.count} {group.count > 1 ? 'Parcels' : 'Parcel'} Holding</Text>
                               </View>

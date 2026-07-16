@@ -1,6 +1,6 @@
 import os
 
-file_path = "/Users/chriskim/Documents/FiliCondo/admin-web/src/app/api/upload-billings/route.ts"
+file_path = "/Users/chriskim/Documents/FiliHomes/admin-web/src/app/api/upload-billings/route.ts"
 with open(file_path, 'r') as f:
     content = f.read()
 

@@ -22,17 +22,19 @@ export function UnitSwitcherBar() {
       >
         <View>
           <Text style={styles.condoText}>{currentUnit.condo_name}</Text>
-          <Text style={styles.unitText}>Unit {currentUnit.unit_number} ({currentUnit.role.toUpperCase()})</Text>
+          <Text style={styles.unitText}>
+            {currentUnit.block_phase_no ? `${currentUnit.block_phase_no} - Lot ` : 'Lot '}{currentUnit.unit_number} ({currentUnit.role.toUpperCase()})
+          </Text>
         </View>
         {myUnits.length > 1 && (
           <Text style={styles.arrowIcon}>▼</Text>
         )}
       </TouchableOpacity>
-
+ 
       <Modal visible={modalVisible} transparent={true} animationType="fade">
         <TouchableOpacity style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Asset / Unit</Text>
+            <Text style={styles.modalTitle}>Select Home / Address</Text>
             <FlatList
               data={myUnits}
               keyExtractor={(item) => item.unit_id}
@@ -47,8 +49,15 @@ export function UnitSwitcherBar() {
                     setModalVisible(false);
                   }}
                 >
-                  <Text style={styles.itemCondo}>{item.condo_name}</Text>
-                  <Text style={styles.itemUnit}>Unit {item.unit_number} - {item.role}</Text>
+                  <View style={{ flex: 1, paddingRight: 20 }}>
+                    <Text style={styles.itemCondo}>{item.condo_name}</Text>
+                    <Text style={styles.itemUnit}>
+                      {item.block_phase_no ? `${item.block_phase_no} - Lot ` : 'Lot '}{item.unit_number} - {item.role.toUpperCase()}
+                    </Text>
+                  </View>
+                  {item.has_badge && (
+                    <View style={styles.redDot} />
+                  )}
                 </TouchableOpacity>
               )}
             />
@@ -66,9 +75,19 @@ const styles = StyleSheet.create({
   unitText: { color: '#ffffff', fontSize: 16, fontWeight: 'bold', marginTop: 2 },
   arrowIcon: { color: '#ffffff', fontSize: 12 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center' },
-  modalContent: { width: '85%', backgroundColor: '#fff', borderRadius: 16, padding: 20, maxHeight: '60%' },
+  modalContent: { width: '92%', backgroundColor: '#fff', borderRadius: 16, padding: 20, maxHeight: '60%' },
   modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, color: '#333' },
-  unitItem: { padding: 15, backgroundColor: '#f8f9fa', borderRadius: 10, marginBottom: 10 },
+  unitItem: { padding: 15, backgroundColor: '#f8f9fa', borderRadius: 10, marginBottom: 10, flexDirection: 'row', alignItems: 'center', position: 'relative' },
   itemCondo: { fontSize: 14, fontWeight: '600', color: '#555' },
-  itemUnit: { fontSize: 12, color: '#888', marginTop: 4 }
+  itemUnit: { fontSize: 12, color: '#888', marginTop: 4 },
+  redDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#ef4444',
+    position: 'absolute',
+    right: 15,
+    top: '50%',
+    marginTop: -5
+  }
 });

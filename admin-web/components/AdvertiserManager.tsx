@@ -451,7 +451,7 @@ export default function AdvertiserManager({ advertiserName }: AdvertiserManagerP
                   <div className="flex items-center gap-2">
                     <span className="text-lg">🏙️</span>
                     <div>
-                      <h4 className="font-black text-[10px] text-slate-900 leading-none">FiliCondo Resident</h4>
+                      <h4 className="font-black text-[10px] text-slate-900 leading-none">FiliHomes Resident</h4>
                       <span className="text-[9px] text-slate-400 font-bold">{selectedCondo ? selectedCondo.name : 'Resident Home'}</span>
                     </div>
                   </div>
@@ -699,14 +699,14 @@ export default function AdvertiserManager({ advertiserName }: AdvertiserManagerP
                   <>
                     📱 <strong>GCash Wallet Transfer Account:</strong><br />
                     GCash Account Number: <strong>0917-123-4567</strong><br />
-                    Recipient Name: <strong>FiliCondo Billing Tech Inc.</strong>
+                    Recipient Name: <strong>FiliHomes Billing Tech Inc.</strong>
                   </>
                 ) : (
                   <>
                     🏦 <strong>BDO Settlement Account:</strong><br />
                     Bank: <strong>Banco de Oro (BDO)</strong><br />
                     Account Number: <strong>0012-8888-9999</strong><br />
-                    Account Name: <strong>FiliCondo Technologies Inc.</strong>
+                    Account Name: <strong>FiliHomes Technologies Inc.</strong>
                   </>
                 )}
               </div>

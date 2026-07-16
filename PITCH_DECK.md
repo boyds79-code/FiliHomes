@@ -1,10 +1,10 @@
-# FiliCondo: Investment Pitch Deck
+# FiliHomes: Investment Pitch Deck
 
 ---
 
 ## Slide 1: Cover Page
-### **FiliCondo: The Future of Smart Residential Operations**
-* **Subtitle**: The AI-Powered All-in-One Property Management Platform for the Philippines' Booming Condominium Market
+### **FiliHomes: The Future of Smart Residential Operations**
+* **Subtitle**: The AI-Powered All-in-One Property Management Platform for the Philippines' Booming Village/Subdivision Market
 * **Key Message**: Elevating property value, slashing operational overhead, and delivering a premium, contactless living experience for residents, staff, and administrators.
 
 ---
@@ -41,7 +41,7 @@
 ---
 
 ## Slide 5: Product Moat & Key Differentiators
-### **Why FiliCondo Wins**
+### **Why FiliHomes Wins**
 * **1. AI-Driven Bank Reconciliation**: Deciphers transaction screenshots and bank logs in real-time, eliminating manual verification and payment spoofing.
 * **2. Hardware-Free Access Control**: Provides secure, real-time gate logging via QR codes on mobile devices, completely bypassing expensive IoT installation costs.
 * **3. Precision Billing Engine**: Handles partial payments, dynamic late fee accruals, and automatic billing-cycle carryovers out-of-the-box.
@@ -49,15 +49,15 @@
 ---
 
 ## Slide 6: Market Opportunity
-### **Tapping into the Philippine Condominium Boom**
+### **Tapping into the Philippine Village/Subdivision Boom**
 * **Massive Supply & Demand Growth**:
-  * Colliers projects **12,940 new condominium units** to be completed in 2026 alone, with an annual average delivery of **5,250 units** through 2030.
+  * Colliers projects **12,940 new village/subdivision units** to be completed in 2026 alone, with an annual average delivery of **5,250 units** through 2030.
   * Q1 2026 saw a **765% YoY increase** in pre-selling net take-up, proving explosive demand for high-rise residential units.
 * **High Vacancy Driving Cost Sensitivity (Why now?)**:
-  * Vacancy rates are projected to peak at **25.6% by end-2026**. Condominium corporations face heavy pressure to cut operational expenses (OPEX) to maintain yields.
-  * Flat rental rates (PHP 705/sqm) make low-cost, high-efficiency B2B SaaS solutions like FiliCondo essential for PMOs.
+  * Vacancy rates are projected to peak at **25.6% by end-2026**. Village/Subdivision corporations face heavy pressure to cut operational expenses (OPEX) to maintain yields.
+  * Flat rental rates (PHP 705/sqm) make low-cost, high-efficiency B2B SaaS solutions like FiliHomes essential for PMOs.
 * **Serviceable Obtainable Market (SOM)**:
-  * Premium condominiums in dense Philippine urban districts (e.g., BGC, Makati, Ortigas) where mobile wallet payment adoption (GCash, Maya) is near 100%.
+  * Premium village/subdivisions in dense Philippine urban districts (e.g., BGC, Makati, Ortigas) where mobile wallet payment adoption (GCash, Maya) is near 100%.
 * **Visual Market Data**:
   ![Colliers Q1 2026 Philippine Real Estate Market Data](colliers_condo_market_data.png)
 
@@ -65,7 +65,7 @@
 
 ## Slide 7: Business Model
 ### **Highly Scalable, Multi-Stream Revenue Engine**
-* **B2B SaaS Subscription**: Recurrent monthly licensing fee billed per unit to the Condominium Corporation or Property Management Office (PMO) for platform access.
+* **B2B SaaS Subscription**: Recurrent monthly licensing fee billed per unit to the Village/Subdivision Corporation or Property Management Office (PMO) for platform access.
 * **Direct System & Hardware Sales (Future Expansion)**: Direct sales and supply of specialized hardware-software integration systems down the line, such as smart parking management systems, automated gate security solutions, and physical access control units.
 * **Targeted Advertising & Local Sponsorships**: In-app advertising revenue from local merchants and home service providers (e.g., cleaning, laundry, internet installation) targeting residents directly.
 * **Value-Added Service Commissions**: Fees from premium amenity bookings and community marketplace transactions, excluding payment transaction fees.
@@ -74,26 +74,24 @@
 
 ## Slide 8: Financial Projections & Milestones
 ### **Data-Driven Revenue Projections**
-* **SaaS Subscription Pricing (Weighted Avg: PHP 3,833/month/condo)**:
-  * **Tier 1 (≤ 200 units)**: PHP 3,000 / month / condo (33.3% share)
-  * **Tier 2 (201 - 500 units)**: PHP 4,000 / month / condo (50.0% share)
-  * **Tier 3 (> 500 units)**: PHP 5,000 / month / condo (16.7% share)
-* **Localized Advertising (PHP 5,000/month/condo)**:
-  * Based on 5 active advertiser placements per condo at PHP 1,000 / month per condo.
-  * (Multi-property bundles: 5 condos for PHP 4,000/month; 10 condos for PHP 7,000/month per advertiser).
-* **Total Projected Revenue per Condo**: **PHP 8,833 / month** (approx. USD 150)
+* **SaaS Subscription Pricing**: PHP 20 / household / month
+  * For an average subdivision of 200 households: **PHP 4,000 / month** per property.
+  * Fits 100-300 unit villages perfectly with flexible pay-per-household scaling.
+* **Localized Advertising (PHP 3,000/month/village)**:
+  * Based on active local advertiser placements, sponsored home service referrals (laundry, water delivery, cleaning) at PHP 600 / month per advertiser.
+* **Total Projected Revenue per Village**: **PHP 7,000 / month** (approx. USD 120)
 * **3-Year ARR (Annual Recurring Revenue) Targets**:
-  * **Year 1 (20 Condos)**: **ARR PHP 2,120,000** (approx. USD 36k)
-  * **Year 2 (100 Condos)**: **ARR PHP 10,600,000** (approx. USD 181k)
-  * **Year 3 (300 Condos)**: **ARR PHP 31,800,000** (approx. USD 543k) + Hardware Direct Sales
+  * **Year 1 (30 Villages)**: **ARR PHP 2,520,000** (approx. USD 43k)
+  * **Year 2 (150 Villages)**: **ARR PHP 12,600,000** (approx. USD 215k)
+  * **Year 3 (500 Villages)**: **ARR PHP 42,000,000** (approx. USD 720k) + Hardware Direct Sales (Gate logs, parking sensors)
 * **Visual Projections**:
-  ![FiliCondo 3-Year ARR Projections](revenue_projections_chart.jpg)
+  ![FiliHomes 3-Year ARR Projections](revenue_projections_chart.jpg)
 
 ---
 
 ## Slide 9: Traction & Validation
 ### **Proven Operational Success**
-* **Rapid Onboarding**: Active pilots and commercial deployments across multiple condominium towers, managing thousands of residential units.
+* **Rapid Onboarding**: Active pilots and commercial deployments across multiple village/subdivision towers, managing thousands of residential units.
 * **Administrative Efficiency**: Reduced staff billing verification time by **over 85%** using our AI payment validation dashboard.
 * **Improved Cash Flow**: Average collection speed improved by **30%** within the first two months of deployment due to automated mobile push reminders.
 * **High Engagement**: Monthly active app utilization rate exceeds **80%** among residents.
@@ -119,8 +117,8 @@
 ---
 
 ## Slide 12: Call to Action
-### **Partner with FiliCondo**
+### **Partner with FiliHomes**
 * *Join us in building the digital infrastructure for modern urban living.*
 * **Presenter**: [Founder Name / Title]
-* **Contact**: investment@filicondo.com
-* **Website**: [www.filicondo.com](http://www.filicondo.com)
+* **Contact**: investment@filihomes.com
+* **Website**: [www.filihomes.com](http://www.filihomes.com)
